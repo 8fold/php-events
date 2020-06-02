@@ -9,7 +9,6 @@ use Eightfold\Shoop\{Shoop, ESString};
 use Eightfold\Events\Data\Interfaces\Day;
 use Eightfold\Events\Data\Traits\DayImp;
 
-
 class Event implements Day
 {
     use DayImp;
