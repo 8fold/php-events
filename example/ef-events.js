@@ -24,7 +24,6 @@ function efEventsDisplayModal(target, id) {
 
     document.addEventListener("focus", function(event) {
         if (efEVisible && ! efEModal.contains(event.target)) {
-            console.log(event.target);
             event.stopPropagation();
             efEModal.focus();
         }
