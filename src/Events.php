@@ -13,7 +13,6 @@ use Eightfold\Events\Data\Traits\PathImp;
 use Eightfold\Events\Data\Year;
 use Eightfold\Events\Data\Month;
 
-
 class Events implements Path
 {
     use PathImp;
