@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\Events\Tests\Data;
+namespace Eightfold\Events\Tests;
 
 use PHPUnit\Framework\TestCase;
 

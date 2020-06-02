@@ -53,9 +53,13 @@ $grid = Shoop::string($uri)->divide("/", false)->isEmpty(function($result, $part
     });
 });
 
-$view = UIKit::webView("8fold Events Example", $grid->unfold())->meta(
-        UIKit::link()->attr("rel stylesheet", "href /grids.css"),
-        UIKit::script()->attr("src /ef-events.js")
-    );
+$view = UIKit::webView(
+            "8fold Events Example", 
+            $grid->unfold(), 
+            UIKit::button("Test page with button on it.")
+        )->meta(
+            UIKit::link()->attr("rel stylesheet", "href /grids.css"),
+            UIKit::script()->attr("src /ef-events.js")
+        );
 
 print $view;

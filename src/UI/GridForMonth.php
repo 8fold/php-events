@@ -171,7 +171,10 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
             }
             return "";
         })->noEmpties()->flatten()->plus(
-            UIKit::button("close")->attr("onclick efEventsCloseModals()")
+            UIKit::button("close")->attr(
+                "onclick efEventsCloseModals()"
+                // "data-ef-events-close-button true"
+            )
         );
 
         $year  = $day->year();
