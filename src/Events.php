@@ -173,13 +173,17 @@ class Events implements Path
 
     public function nearestMonthWithEvents(int $year, int $month): ?Month
     {
+        if ($this->year($year)->month($month)->hasEvents()->unfold()) {
+            return $this->year($year)->month($month);
+        }
+
         $m = $this->nextMonthWithEvents($year, $month);
         if ($m === null) {
             $m = $this->previousMonthWithEvents($year, $month);
+        } 
 
-        } elseif ($m !== null) {
+        if ($m !== null) {
             return $m;
-
         }
 
         $y = $this->nearestYearWithEvents($year);

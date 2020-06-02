@@ -6,10 +6,13 @@ error_reporting(E_ALL);
 
 require __DIR__.'/../vendor/autoload.php';
 
+use Carbon\Carbon;
+
 use Eightfold\Shoop\Shoop;
 use Eightfold\Markup\UIKit;
 
 use Eightfold\Events\Grid;
+use Eightfold\Events\Events;
 
 $uri = $_SERVER['REQUEST_URI']; // URI request
 
@@ -24,7 +27,14 @@ $grid = Shoop::string($uri)->divide("/", false)->isEmpty(function($result, $part
     }
     return $parts->count()->is(1, function($result, $count) use ($root, $dataPath, $parts) {
         if ($result) {
-            return UIKit::p("No view for root alone - presumes user will be redirected to closest month with event.");
+            $year  = Carbon::now()->year;
+            $month = Carbon::now()->month;
+            $uri = Events::init(__DIR__ ."/data")
+                ->nearestMonthWithEvents($year, $month)->uri();
+            return UIKit::div(
+                UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
+                UIKit::p("Redirect to: /". $root . $uri)
+            );
         }
         return $count->is(2, function($result, $count) use ($root, $dataPath, $parts) {
             if ($result) {
