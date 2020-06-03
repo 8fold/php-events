@@ -37,12 +37,13 @@ class Event implements Day
 
 	public function content(): ESString
 	{
-		return $this->path()->pathContent()->isEmpty(function($result, $content) {
-            if ($result) {
-                return Shoop::string("");
-            }
-            return Shoop::string($content);
-        });
+		return $this->path()->pathContent()
+            ->isEmpty(function($result, $content) {
+                if ($result) {
+                    return Shoop::string("");
+                }
+                return Shoop::string($content);
+            });
 	}
 
     public function title(): string

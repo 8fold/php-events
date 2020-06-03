@@ -20,7 +20,10 @@ trait NumbersForMonthImp
 
     public function totalEndGridBlanks(): int
     {
-        return $this->totalGridItems() - $this->totalStartGridBlanks() - $this->totalDaysInMonth();
+        $totalItems = $this->totalGridItems();
+        $totalStart = $this->totalStartGridBlanks();
+        $totalDays = $this->totalDaysInMonth();
+        return $totalItems - $totalStart - $totalDays;
     }
 
     public function totalDaysInMonth(): int
