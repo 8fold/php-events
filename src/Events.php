@@ -44,12 +44,14 @@ class Events implements Path
     public function year(int $year)
     {
         $member = "i". $year;
-        return $this->years()->hasMember($member, function($result, $years) use ($year, $member) {
-            if ($result) {
-                return $years->get($member);
-            }
-            return Year::init($this->path()->plus("/". $year));
-        });
+        return $this->years()->hasMember(
+            $member,
+            function($result, $years) use ($year, $member) {
+                if ($result) {
+                    return $years->get($member);
+                }
+                return Year::init($this->path()->plus("/". $year));
+            });
     }
 
     public function years()
@@ -111,18 +113,19 @@ class Events implements Path
 
     public function previousYearWithEvents(int $year): ?Year
     {
-        return $this->years()->sortMembers(false)->each(function($y) use ($year) {
-            $isNotGivenYear = $y->year() !== $year;
-            $isInPast       = $y->year() < $year;
-            $hasEvents      = $y->hasEvents()->unfold();
-            return ($isNotGivenYear and $isInPast and $hasEvents) ? $y : "";
+        return $this->years()->sortMembers(false)
+            ->each(function($y) use ($year) {
+                $isNotGivenYear = $y->year() !== $year;
+                $isInPast       = $y->year() < $year;
+                $hasEvents      = $y->hasEvents()->unfold();
+                return ($isNotGivenYear and $isInPast and $hasEvents) ? $y : "";
 
-        })->noEmpties()->isEmpty(function($result, $pastYears) use ($year) {
-            if ($result) {
-                return null;
-            }
-            return $pastYears->first;
-        });
+            })->noEmpties()->isEmpty(function($result, $pastYears) use ($year) {
+                if ($result) {
+                    return null;
+                }
+                return $pastYears->first;
+            });
     }
 
     public function nearestYearWithEvents(int $year): ?Year
@@ -140,35 +143,37 @@ class Events implements Path
 
     public function nextMonthWithEvents(int $year, int $month): ?Month
     {
-        return $this->year($year)->months()->sortMembers()->each(function($m) use ($month) {
-            $isNotGivenYear = $m->month() !== $month;
-            $isInFuture = $m->month() > $month;
-            $hasEvents = $m->hasEvents();
-            return ($isNotGivenYear and $isInFuture and $hasEvents) ? $m : "";
+        return $this->year($year)->months()->sortMembers()
+            ->each(function($m) use ($month) {
+                $isNotGivenYear = $m->month() !== $month;
+                $isInFuture = $m->month() > $month;
+                $hasEvents = $m->hasEvents();
+                return ($isNotGivenYear and $isInFuture and $hasEvents) ? $m : "";
 
-        })->noEmpties()->isEmpty(function($result, $futureMonths) use ($month) {
-            if ($result) {
-                return null;
-            }
-            return $futureMonths->first;
-        });
+            })->noEmpties()->isEmpty(function($result, $futureMonths) use ($month) {
+                if ($result) {
+                    return null;
+                }
+                return $futureMonths->first;
+            });
     }
 
     public function previousMonthWithEvents(int $year, int $month): ?Month
     {
-        return $this->year($year)->months()->sortMembers(false)->each(function($m) use ($month) {
-            $isNotGivenYear = $m->month() !== $month;
-            $isInPast = $m->month() < $month;
-            $hasEvents = $m->hasEvents();
-            return ($isNotGivenYear and $isInPast and $hasEvents) ? $m : "";
+        return $this->year($year)->months()->sortMembers(false)
+            ->each(function($m) use ($month) {
+                $isNotGivenYear = $m->month() !== $month;
+                $isInPast = $m->month() < $month;
+                $hasEvents = $m->hasEvents();
+                return ($isNotGivenYear and $isInPast and $hasEvents) ? $m : "";
 
-        })->noEmpties()->isEmpty(function($result, $pastMonths) use ($month) {
-            if ($result) {
-                return null;
+            })->noEmpties()->isEmpty(function($result, $pastMonths) use ($month) {
+                if ($result) {
+                    return null;
 
-            }
-            return $pastMonths->first;
-        });
+                }
+                return $pastMonths->first;
+            });
     }
 
     public function nearestMonthWithEvents(int $year, int $month): ?Month
@@ -180,7 +185,7 @@ class Events implements Path
         $m = $this->nextMonthWithEvents($year, $month);
         if ($m === null) {
             $m = $this->previousMonthWithEvents($year, $month);
-        } 
+        }
 
         if ($m !== null) {
             return $m;

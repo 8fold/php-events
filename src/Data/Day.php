@@ -69,7 +69,8 @@ class Day implements DayInterface
 
     public function dataPaths(): ESArray
     {
-        return $this->path()->divide("/", false, -1)->join("/")->start("/")->pathContent()
+        return $this->path()->divide("/", false, -1)->join("/")->start("/")
+            ->pathContent()
             ->each(function($path) {
                 $dayString = $this->uri()->divide("/")->last();
                 $startsWithDay = Shoop::string($path)->divide("/")->last()

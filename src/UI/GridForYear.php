@@ -50,10 +50,11 @@ class GridForYear implements Render, Formats, Properties, Numbers
 
     public function render()
     {
-        $months = Shoop::int($this->totalGridItems())->range(1)->each(function($month) {
-            $month = $this->events()->year($this->year())->month($month);
-            return $this->gridItem($month);
-        });
+        $months = Shoop::int($this->totalGridItems())->range(1)
+            ->each(function($month) {
+                $month = $this->events()->year($this->year())->month($month);
+                return $this->gridItem($month);
+            });
 
         return UIKit::div(
             $this->header(),
@@ -75,7 +76,8 @@ class GridForYear implements Render, Formats, Properties, Numbers
         $title = "";
         if ($year !== null) {
             $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())->format($format);
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
         }
 
         return $this->navLink($year, $title, "ef-grid-previous-year");
@@ -87,7 +89,8 @@ class GridForYear implements Render, Formats, Properties, Numbers
         $title = "";
         if ($year !== null) {
             $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())->format($format);
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
         }
         return $this->navLink($year, $title, "ef-grid-next-year");
     }
@@ -96,7 +99,8 @@ class GridForYear implements Render, Formats, Properties, Numbers
     {
         $year = $this->events()->year($this->year());
         if ($month->hasEvents()->unfold()) {
-            $cc = $this->carbon()->copy()->year($year->year())->month($month->month());
+            $cc = $this->carbon()->copy()
+                ->year($year->year())->month($month->month());
             $total = $year->totalEvents();
             return UIKit::a(
                 UIKit::abbr($cc->format($this->monthAbbrFormat))
