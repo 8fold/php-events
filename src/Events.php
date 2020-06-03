@@ -133,10 +133,10 @@ class Events implements Path
         $y = $this->nextYearWithEvents($year);
         if ($y === null) {
             $y = $this->previousYearWithEvents($year);
+        }
 
-        } elseif ($y !== null) {
+        if ($y !== null) {
             return $y;
-
         }
         return $y;
     }
