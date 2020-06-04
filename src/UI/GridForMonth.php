@@ -184,7 +184,9 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
             }
             return "";
         })->noEmpties()->flatten()->plus(
-            UIKit::button("close")->attr(
+            UIKit::button(
+                UIKit::span("close")
+            )->attr(
                 "onclick EFEventsModals.closeAll()"
             )
         );
