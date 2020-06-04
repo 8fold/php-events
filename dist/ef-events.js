@@ -68,7 +68,7 @@ EFEventsModals.prototype.closeAll = function(reason = null) {
   let modal = EFEventsModals.modal;
   if (modal !== null) {
     let containerClicked = reason === null && modal.container === event.target;
-    let closeClicked     = reason === null && modal.close === event.target;
+    let closeClicked     = reason === null && (modal.close === event.target || modal.close.contains(event.target));
     let escapeKey        = reason === "escaped";
     if (modal !== null && (containerClicked || closeClicked || escapeKey)) {
       modal.container.setAttribute("aria-hidden", true);

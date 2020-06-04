@@ -61,7 +61,7 @@ class GridForYear implements Render, Formats, Properties, Numbers
             $this->previousLink(),
             $this->nextLink(),
             ...$months
-        )->attr("class ef-events-grid-year");
+        )->attr("class ef-events-grid ef-events-grid-year");
     }
 
     public function header()
@@ -105,7 +105,7 @@ class GridForYear implements Render, Formats, Properties, Numbers
             return UIKit::a(
                 UIKit::abbr($cc->format($this->monthAbbrFormat))
                     ->attr("title ". $cc->format($this->monthTitleFormat)),
-                UIKit::span($total)
+                UIKit::span($total->unfold())
             )->attr(
                 "href ". $this->prefix() . $month->uri()
             );
