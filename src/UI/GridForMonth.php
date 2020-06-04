@@ -220,7 +220,6 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
                     })->noEmpties()
                 )->attr(
                     "id toggle-{$id}",
-                    "for {$id}",
                     "aria-expanded false",
                     "class calendar-date",
                     "onclick EFEventsModals.init(this, {$id})"
