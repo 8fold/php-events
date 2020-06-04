@@ -89,6 +89,14 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
                 return $this->gridItem($day);
             });
 
+        $emptyEvents = $eventItems->isEmpty(function($result, $array) {
+            if ($result) {
+                return UIKit::p("No events found.")
+                    ->attr("class ef-events-empty");
+            }
+            return "";
+        });
+
         $endBlanks = [""];
         if ($this->totalEndGridBlanks() >= 1) {
             $endBlanks = Shoop::int($this->totalEndGridBlanks())->range(1)
@@ -103,6 +111,11 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
 
         $render = Shoop::array($startBlanks)
             ->plus(...$days)->plus(...$endBlanks)->noEmpties();
+        $dayTitles = $this->dayTitles();
+        if ($eventItems->isEmptyUnfolded()) {
+            $dayTitles = Shoop::array([]);
+            $render = Shoop::array([$emptyEvents]);
+        }
         return UIKit::div(...Shoop::array([])
             ->plus(
                 $this->header(),
@@ -113,9 +126,9 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
                     "onclick EFEventsModals.closeAll()",
                     "aria-hidden true"
                 )
-            )->plus(...$this->dayTitles()
+            )->plus(...$dayTitles
             )->plus(...$render)
-        )->attr("class ef-events-grid-month", "aria-live assertive");
+        )->attr("class ef-events-grid ef-events-grid-month", "aria-live assertive");
     }
 
     public function header()
