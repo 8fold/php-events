@@ -108,6 +108,7 @@
 
   @include media-desktop {
     & > .ef-weekday-heading {
+      display: block;
       background-color: transparent;
       text-align: center;
       height: auto;
