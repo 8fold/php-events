@@ -52,7 +52,7 @@ class MonthTest extends TestCase
         $actual = Month::init($this->path->plus("/2020/05"))->totalDays();
         $this->assertEquals($expected, $actual);
 
-        $expected = 3;
+        $expected = 4;
         $actual = Month::init($this->path->plus("/2020/05"));
         $this->assertEquals($expected, $actual->days()->count);
 
@@ -63,18 +63,17 @@ class MonthTest extends TestCase
 
     public function testCanGetEvents()
     {
-        $expected = 4;
+        $expected = 5;
         $actual = Month::init($this->path->plus("/2020/05"))->events()->count;
         $this->assertEquals($expected, $actual);
 
-        $expected = 4;
         $actual = Month::init($this->path->plus("/2020/05"))->totalEvents();
         $this->assertEquals($expected, $actual->unfold());
     }
 
     public function testCanGetDataPath()
     {
-        $expected = $this->path ."/2020/05/20.event";
+        $expected = $this->path ."/2020/05/19.event";
         $actual = Month::init($this->path ."/2020/05")->dataPaths()->first;
         $this->assertEquals($expected, $actual);
 

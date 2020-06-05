@@ -42,7 +42,7 @@ class YearTest extends TestCase
         $actual = Year::init($this->path->plus("/2020"))->months()->count;
         $this->assertEquals($expected, $actual);
 
-        $expected = 8;
+        $expected = 9;
         $actual = Year::init($this->path->plus("/2020"))->events()->count;
         $this->assertEquals($expected, $actual);
 
@@ -59,11 +59,10 @@ class YearTest extends TestCase
 
     public function testCanGetEvents()
     {
-        $expected = 8;
+        $expected = 9;
         $actual = Year::init($this->path->plus("/2020"))->events()->count;
         $this->assertEquals($expected, $actual);
 
-        $expected = 8;
         $actual = Year::init($this->path->plus("/2020"))->totalEvents();
         $this->assertEquals($expected, $actual->unfold());
 
