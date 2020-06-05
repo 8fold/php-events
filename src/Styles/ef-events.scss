@@ -150,6 +150,9 @@
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
+          & > button {
+            display: block;
+          }
 
         }
       }
@@ -178,7 +181,6 @@
 
   & > button[disabled], & > a {
     display: grid;
-    /*grid-column: 1 / span 3;*/
     align-content: center;
     overflow: hidden;
     position: relative;
