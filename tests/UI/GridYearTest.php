@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use Eightfold\Shoop\Shoop;
 use Eightfold\Events\Events;
+use Eightfold\Events\Data\Month;
 use Eightfold\Events\UI\GridForYear;
 
 class GridYearTest extends TestCase
@@ -28,7 +29,7 @@ class GridYearTest extends TestCase
         $this->assertEquals($expected, $actual->unfold());
     }
 
-    public function testRenderPreviousLink()
+    public function testRenderNextAndPreviousLink()
     {
         $grid = GridForYear::forYear($this->path->plus("/2020"));
 
@@ -43,6 +44,16 @@ class GridYearTest extends TestCase
 
         $expected = '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>';
         $actual = $grid->nextLink();
+        $this->assertEquals($expected, $actual->unfold());
+    }
+
+    public function testGridItem()
+    {
+        $month = Month::init($this->path->plus("/2020/05"));
+
+        $expected = '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>';
+        $actual = GridForYear::forYear($this->path->plus("/2020"))
+            ->gridItem($month);
         $this->assertEquals($expected, $actual->unfold());
     }
 }
