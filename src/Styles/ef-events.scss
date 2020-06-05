@@ -23,6 +23,13 @@
     text-align: center;
   }
 
+  & > button.calendar-date, & > a {
+    &:hover {
+      cursor: pointer;
+      border-radius: 10px;
+    }
+  }
+
   @include media-desktop {
     & > .ef-weekday-heading, & > button {
       display: block;
