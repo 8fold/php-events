@@ -59,7 +59,6 @@ class GridForYear implements Render, Formats, Properties, Numbers
             });
 
         $hasEvents = $hasEvents->each(function($bool, &$break) {
-
             if ($bool) {
                 $break = true;
                 return $bool;
@@ -118,7 +117,7 @@ class GridForYear implements Render, Formats, Properties, Numbers
         if ($month->hasEvents()->unfold()) {
             $cc = $this->carbon()->copy()
                 ->year($year->year())->month($month->month());
-            $total = $year->totalEvents();
+            $total = $month->totalEvents();
             return UIKit::a(
                 UIKit::abbr($cc->format($this->monthAbbrFormat))
                     ->attr("title ". $cc->format($this->monthTitleFormat)),
