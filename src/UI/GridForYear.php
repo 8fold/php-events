@@ -50,17 +50,30 @@ class GridForYear implements Render, Formats, Properties, Numbers
 
     public function render()
     {
+        $eventItems = Shoop::array([]);
         $months = Shoop::int($this->totalGridItems())->range(1)
-            ->each(function($month) {
+            ->each(function($month) use ($eventItems) {
                 $month = $this->events()->year($this->year())->month($month);
+                if ($month->hasEvents()) {
+                    $eventItems = $eventItems->plus($month);
+                }
                 return $this->gridItem($month);
             });
 
+        $render = Shoop::array($eventItems)->noEmpties()
+            ->isEmpty(function($result, $value) {
+                if ($result) {
+                    return Shoop::array([
+                        UIKit::p("No events found.")->attr("class ef-events-empty")
+                    ]);
+                }
+                return $value;
+            });
         return UIKit::div(
             $this->header(),
             $this->previousLink(),
             $this->nextLink(),
-            ...$months
+            ...$render
         )->attr("class ef-events-grid ef-events-grid-year");
     }
 
