@@ -52,13 +52,14 @@ class GridForYear implements Render, Formats, Properties, Numbers
     {
         $hasEvents = Shoop::array([]);
         $months = Shoop::int($this->totalGridItems())->range(1)
-            ->each(function($month) use ($hasEvents) {
+            ->each(function($month) use (&$hasEvents) {
                 $month = $this->events()->year($this->year())->month($month);
                 $hasEvents = $hasEvents->plus($month->hasEvents()->unfold());
                 return $this->gridItem($month);
             });
 
-        $doesNotHaveEvent = $hasEvents->each(function($bool, &$break) {
+        $hasEvents = $hasEvents->each(function($bool, &$break) {
+
             if ($bool) {
                 $break = true;
                 return $bool;
