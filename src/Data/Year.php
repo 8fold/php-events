@@ -26,17 +26,17 @@ class Year implements Path, YearInterface
 
     private $months; // ESDictionary
 
-	static public function init(string $path): Year
-	{
-		return new Year($path);
-	}
+    static public function init(string $path): Year
+    {
+        return new Year($path);
+    }
 
-	public function __construct(string $path)
-	{
-		$this->path = $path;
+    public function __construct(string $path)
+    {
+        $this->path = $path;
 
         $this->months = Shoop::dictionary([]);
-	}
+    }
 
     public function firstMonthWithEvents(): ?Month
     {
@@ -114,14 +114,14 @@ class Year implements Path, YearInterface
         return $this->events()->count();
     }
 
-	public function events(): ESArray
-	{
+    public function events(): ESArray
+    {
         $events = Shoop::array([]);
         $this->months()->each(function($month, $timestamp) use (&$events) {
             $events = $events->plus(...$month->events());
         });
         return $events;
-	}
+    }
 
     public function dataPaths()
     {

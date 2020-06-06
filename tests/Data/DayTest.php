@@ -48,7 +48,7 @@ class DayTest extends TestCase
         ])->first()->content();
         $actual = Day::init($this->path->plus("/2020/05/20"))
             ->events()->first()->content();
-        $this->assertEquals($expected->unfold(), $actual->unfold());
+        $this->assertSame($expected->unfold(), $actual->unfold());
 
         $expected = 2;
         $actual = Day::init($this->path->plus("/2020/05/22"))->totalEvents();

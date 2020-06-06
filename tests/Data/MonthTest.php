@@ -52,7 +52,7 @@ class MonthTest extends TestCase
         $actual = Month::init($this->path->plus("/2020/05"))->totalDays();
         $this->assertEquals($expected, $actual);
 
-        $expected = 4;
+        $expected = 5;
         $actual = Month::init($this->path->plus("/2020/05"));
         $this->assertEquals($expected, $actual->days()->count);
 

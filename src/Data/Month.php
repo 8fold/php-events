@@ -26,17 +26,17 @@ class Month implements MonthInterface
 
     private $events; // ESArray
 
-	static public function init(string $path): Month
-	{
-		return new Month($path);
-	}
+    static public function init(string $path): Month
+    {
+        return new Month($path);
+    }
 
-	public function __construct(string $path)
-	{
+    public function __construct(string $path)
+    {
         $this->path = $path;
 
         $this->days = Shoop::dictionary([]);
-	}
+    }
 
     public function hasEvents(): ESBool
     {
@@ -68,19 +68,32 @@ class Month implements MonthInterface
     {
         if ($this->days->isEmpty) {
             $this->path()->pathContent()->each(function($path) {
+                $path = Shoop::string($path);
+                if ($path->endsWithUnfolded(".event")) {
+                    $year = $this->year();
+                    $month = $this->monthString();
+                    list($day, $count) = $path->divide("/")->last()
+                        ->divide(".")->first()
+                        ->has("_", function($result, $value) {
+                            if ($result) {
+                                return Shoop::string($value)
+                                    ->divide("_", false, 2);
+                            }
+                            return Shoop::array([
+                                $value,
+                                1
+                            ]);
+                        });
 
-                $path = Shoop::string($path)->divide(".", false, 2)->first()
-                    ->divide("_", false, 2)->first();
-                $year = $this->year();
-                $month = $this->monthString();
-                $day = $path->divide("/")->last()->int;
+                    $member   = "i{$year}{$month}{$day}_{$count}";
+                    $instance = Day::init($path);
 
-                $member   = "i{$year}{$month}{$day}";
-                $instance = Day::init($path);
-                $doesNotHaveMember = $this->days->hasMember($member)->not;
-                $hasEvents = $instance->hasEvents()->unfold();
-                if ($doesNotHaveMember and $hasEvents) {
-                    $this->days = $this->days->plus($instance, $member);
+                    $doesNotHaveMember = $this->days->hasMember($member)->not;
+                    $hasEvents = $instance->hasEvents()->unfold();
+                    if ($doesNotHaveMember and $hasEvents) {
+                         $this->days = $this->days->plus($instance, $member);
+                    }
+
                 }
             });
         }
