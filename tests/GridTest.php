@@ -110,7 +110,7 @@ class GridTest extends TestCase
         );
         $this->assertEquals($expected, $actual->unfold());
 
-        $expected = '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>';
+        $expected = '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)" aria-expanded="false"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>';
         $actual = $grid->gridItem(
             $events->year(2020)->month(5)->day(22)
         );
