@@ -38,6 +38,7 @@ class GridForYear implements Render, Formats, Properties, Numbers
     {
         $eventsPath = Shoop::string($path)->divide("/")->dropLast()->join("/");
         $this->events = Events::init($eventsPath);
+
         $this->path = $path;
         $this->year = Shoop::string($this->path)->divide("/")->last()->int;
         $this->carbon = Carbon::now()->year($this->year);
@@ -50,24 +51,18 @@ class GridForYear implements Render, Formats, Properties, Numbers
 
     public function render()
     {
-        $hasEvents = Shoop::array([]);
+        $eventItems = Shoop::array([]);
         $months = Shoop::int($this->totalGridItems())->range(1)
-            ->each(function($month) use (&$hasEvents) {
-                $month = $this->events()->year($this->year())->month($month);
-                $hasEvents = $hasEvents->plus($month->hasEvents()->unfold());
-                return $this->gridItem($month);
+            ->each(function($month) use (&$eventItems) {
+                $month = $this->events()
+                    ->year($this->year())->month($month);
+                if ($month->hasEvents()->unfold()) {
+                    $item = $this->gridItem($month);
+                    $eventItems = $eventItems->plus($item);
+                }
             });
-
-        $hasEvents = $hasEvents->each(function($bool, &$break) {
-            if ($bool) {
-                $break = true;
-                return $bool;
-            }
-            return "";
-        })->noEmpties()->isEmpty;
-
-        $render = $months;
-        if ($hasEvents) {
+        $render = $eventItems;
+        if ($eventItems->count()->isUnfolded(0)) {
             $render = Shoop::array([
                     UIKit::p("No events found.")->attr("class ef-events-empty")
                 ]);

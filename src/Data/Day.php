@@ -21,19 +21,19 @@ class Day implements DayInterface
 {
     use DayImp;
 
-	private $eventSeparator = "^^^^^^";
+    private $eventSeparator = "^^^^^^";
 
     private $events;
 
-	static public function init(string $path): Day
-	{
-		return new Day($path);
-	}
+    static public function init(string $path): Day
+    {
+        return new Day($path);
+    }
 
-	public function __construct(string $path)
-	{
+    public function __construct(string $path)
+    {
         $this->path = $path;
-	}
+    }
 
     public function month()
     {
@@ -55,8 +55,8 @@ class Day implements DayInterface
         return $this->events()->count();
     }
 
-	public function events(): ESArray
-	{
+    public function events(): ESArray
+    {
         return $this->dataPaths()->each(function($path) {
                 $event = Event::init($path);
                 if ($event->content()->count()->isUnfolded(0)) {
@@ -65,7 +65,7 @@ class Day implements DayInterface
                 return $event;
 
             })->noEmpties();
-	}
+    }
 
     public function dataPaths(): ESArray
     {

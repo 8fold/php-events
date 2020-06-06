@@ -60,11 +60,12 @@ class Events implements Path
             Shoop::string($this->path())->divide("/")->join("/")
                 ->pathContent()->each(function($path) {
                     $year = Shoop::string($path)->divide("/")->last()->int;
+                    if ($year > 0) {
+                        $member = "i". $year;
+                        $instance = Year::init($this->path()->plus("/". $year));
 
-                    $member = "i". $year;
-                    $instance = Year::init($this->path()->plus("/". $year));
-
-                    $this->years = $this->years->plus($instance, $member);
+                        $this->years = $this->years->plus($instance, $member);
+                    }
                 });
         }
         return $this->years;
