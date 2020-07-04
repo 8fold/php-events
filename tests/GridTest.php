@@ -4,7 +4,7 @@ namespace Eightfold\Events\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use Eightfold\Shoop\Shoop;
+use Eightfold\ShoopExtras\Shoop;
 use Eightfold\Events\Events;
 use Eightfold\Events\Grid;
 
@@ -14,8 +14,7 @@ class GridTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Shoop::string(__DIR__)->divide("/")
-            ->plus("test-events", "events")->join("/");
+        $this->path = Shoop::store(__DIR__)->plus("test-events", "events");
     }
 
 // -> totals for renddering
