@@ -75,7 +75,7 @@ class Month implements MonthInterface
                     list($day, $count) = $path->divide("/")->last()
                         ->divide(".")->first()
                         ->has("_", function($result, $value) {
-                            if ($result) {
+                            if ($result->unfold()) {
                                 return Shoop::string($value)
                                     ->divide("_", false, 2);
                             }

@@ -47,7 +47,7 @@ class Events implements Path
         return $this->years()->hasMember(
             $member,
             function($result, $years) use ($year, $member) {
-                if ($result) {
+                if ($result->unfold()) {
                     return $years->get($member);
                 }
                 return Year::init($this->path()->plus("/". $year));
@@ -105,7 +105,7 @@ class Events implements Path
             return ($isNotGivenYear and $isInFuture and $hasEvents) ? $y : "";
 
         })->noEmpties()->isEmpty(function($result, $futureYears) use ($year) {
-            if ($result) {
+            if ($result->unfold()) {
                 return null;
             }
             return $futureYears->first;
@@ -122,7 +122,7 @@ class Events implements Path
                 return ($isNotGivenYear and $isInPast and $hasEvents) ? $y : "";
 
             })->noEmpties()->isEmpty(function($result, $pastYears) use ($year) {
-                if ($result) {
+                if ($result->unfold()) {
                     return null;
                 }
                 return $pastYears->first;
@@ -152,7 +152,7 @@ class Events implements Path
                 return ($isNotGivenYear and $isInFuture and $hasEvents) ? $m : "";
 
             })->noEmpties()->isEmpty(function($result, $futureMonths) use ($month) {
-                if ($result) {
+                if ($result->unfold()) {
                     return null;
                 }
                 return $futureMonths->first;
@@ -169,7 +169,7 @@ class Events implements Path
                 return ($isNotGivenYear and $isInPast and $hasEvents) ? $m : "";
 
             })->noEmpties()->isEmpty(function($result, $pastMonths) use ($month) {
-                if ($result) {
+                if ($result->unfold()) {
                     return null;
 
                 }

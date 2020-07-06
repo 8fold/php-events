@@ -39,7 +39,7 @@ class Event implements Day
 	{
 		return $this->path()->pathContent()
             ->isEmpty(function($result, $content) {
-                if ($result) {
+                if ($result->unfold()) {
                     return Shoop::string("");
                 }
                 return Shoop::string($content);
