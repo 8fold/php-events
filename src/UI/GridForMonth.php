@@ -90,7 +90,7 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
             });
 
         $emptyEvents = $eventItems->isEmpty(function($result, $array) {
-            if ($result) {
+            if ($result->unfold()) {
                 return UIKit::p("No events found.")
                     ->attr("class ef-events-empty");
             }
