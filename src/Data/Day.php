@@ -69,7 +69,7 @@ class Day implements DayInterface
 
     public function dataPaths(): ESArray
     {
-        return $this->path()->divide("/", false, -1)->join("/")->start("/")
+        return $this->path()->divide("/", false, -1)->asString("/")->start("/")
             ->pathContent()
             ->each(function($path) {
                 $dayString = $this->uri()->divide("/")->last();
@@ -85,6 +85,6 @@ class Day implements DayInterface
     public function uri(): ESString
     {
         return $this->path()->divide("/")->toggle()->first(3)->toggle()
-            ->join("/")->start("/");
+            ->asString("/")->start("/");
     }
 }

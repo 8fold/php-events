@@ -52,7 +52,7 @@ class GridForYear implements Render, Formats, Properties, Numbers
     public function render()
     {
         $itemHasEvents = Shoop::array([]);
-        $months = Shoop::int($this->totalGridItems())->range(1)
+        $months = Shoop::int($this->totalGridItems())->asArray(1)
             ->each(function($month) use (&$itemHasEvents) {
                 $month = $this->events()
                     ->year($this->year())->month($month);
