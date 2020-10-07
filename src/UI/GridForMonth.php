@@ -67,7 +67,7 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
     {
         $startBlanks = [""];
         if ($this->totalStartGridBlanks() >= 1) {
-            $startBlanks = Shoop::int($this->totalStartGridBlanks())->range(1)
+            $startBlanks = Shoop::int($this->totalStartGridBlanks())->asArray(1)
                 ->each(function($item) {
                     return UIKit::button()->attr(
                         "disabled disabled",
@@ -78,7 +78,7 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
         }
 
         $eventItems = Shoop::array([]);
-        $days = Shoop::int($this->totalDaysInMonth())->range(1)
+        $days = Shoop::int($this->totalDaysInMonth())->asArray(1)
             ->each(function($day) use (&$eventItems) {
                 $day = $this->events()
                     ->year($this->year())->month($this->month())->day($day);
@@ -99,7 +99,7 @@ class GridForMonth implements Render, Formats, Properties, NumbersForMonth
 
         $endBlanks = [""];
         if ($this->totalEndGridBlanks() >= 1) {
-            $endBlanks = Shoop::int($this->totalEndGridBlanks())->range(1)
+            $endBlanks = Shoop::int($this->totalEndGridBlanks())->asArray(1)
                 ->each(function($item) {
                     return UIKit::button()->attr(
                         "disabled disabled",
