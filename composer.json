@@ -11,8 +11,8 @@
   ],
   "require": {
     "php": ">=7.0",
-    "8fold/php-shoop-shelf": "~0.5.0",
-    "8fold/php-markup": "~0.1",
+    "8fold/php-shoop-shelf": "~0.7.0",
+    "8fold/php-markup": "~0.5",
     "nesbot/carbon": "~2.36"
   },
   "require-dev": {
