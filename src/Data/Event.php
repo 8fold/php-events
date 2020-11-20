@@ -2,79 +2,69 @@
 
 namespace Eightfold\Events\Data;
 
-use Carbon\Carbon;
+use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\Shoop\{Shoop, ESString};
+use Eightfold\ShoopShelf\Shoop;
 
-use Eightfold\Events\Data\Interfaces\Day;
-use Eightfold\Events\Data\Traits\DayImp;
+use Eightfold\Events\Data\Traits\PartsImp;
+use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\Events\Data\Traits\MonthImp;
+use Eightfold\Events\Data\Traits\DateImp;
 
-class Event implements Day
+class Event extends DataAbstract
 {
-    use DayImp;
+    use PartsImp, YearImp, MonthImp, DateImp;
 
-	private $content = "";
+    private $count;
 
-	static public function init(string $path): Event
-	{
-		return new Event($path);
-	}
-
-	public function __construct(string $path)
-	{
-        $this->path = Shoop::string($path);
-	}
-
-    public function month()
+    public function __construct(
+        string $root,
+        int $year,
+        int $month,
+        int $date,
+        int $count
+    )
     {
-        return $this->path()->divide("/")->toggle()->first(2)->last()->int;
+        $this->root = $root;
+        $this->parts = [$year, $month, $date, $count];
     }
 
-    public function year()
+    public function path(): string
     {
-        return $this->path()->divide("/")->toggle()->first(3)->last()->int;
-    }
+        $path = Shoop::this($this->root)->divide("/")->append([
+            $this->year(),
+            $this->month(),
+            $this->date() ."_". $this->count() .".event"
+        ])->efToString("/");
+        if (Shoop::this($path)->divide(".")->first()->endsWith("_1")->unfold() and
+            Shoop::store($path)->isFile()->reversed()->unfold()
+        ) {
+            $path = Shoop::this($path)->divide(".")->first()->dropLast(2)
+                ->append(".event")->unfold();
 
-	public function content(): ESString
-	{
-		return $this->path()->pathContent()
-            ->isEmpty(function($result, $content) {
-                if ($result->unfold()) {
-                    return Shoop::string("");
-                }
-                return Shoop::string($content);
-            });
-	}
-
-    public function title(): string
-    {
-        if ($this->content()->count()->is(0)->unfold()) {
-            return "";
         }
-        return $this->content()->divide("\n\n")->first;
+        return $path;
     }
 
-    public function body(): string
+    public function content(): string
     {
-        if (strlen($this->content()) === 0) {
-            return "";
-        }
-        return $this->content()->divide("\n\n", false, 2)->last;
+        return ($this->hasEvents())
+            ? Shoop::store($this->path())->content()
+            : "";
     }
 
-    public function events()
+    public function count(): int
     {
-        return Shoop::array([$this]);
+        return $this->parts[3];
     }
 
-    public function dataPath(): ESString
+    public function couldHaveEvents(): bool
     {
-        return $this->path();
+        return $this->hasEvents();
     }
 
-    public function uri(): string
+    public function hasEvents(): bool
     {
-        return $this->path()->divide("/")->toggle()->first(3)->toggle()
-            ->join("/")->start("/")->divide(".", false, 2)->first;
+        return Shoop::store($this->path())->isFile()->unfold();
     }
 }

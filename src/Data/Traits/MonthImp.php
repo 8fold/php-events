@@ -2,20 +2,27 @@
 
 namespace Eightfold\Events\Data\Traits;
 
-use Eightfold\Events\Data\Traits\YearImp;
+use Carbon\Carbon;
+
+use Eightfold\ShoopShelf\Shoop;
 
 trait MonthImp
 {
-    use YearImp;
-
-    private $month = 0;
-
-    public function dayString(int $day = 0)
+    public function month(bool $asString = true)
     {
-        $day = ($day === 0) ? $this->day : $day;
-        if ($day < 10) {
-            $day = "0{$day}";
+        if ($asString) {
+            $month = $this->month(false);
+            if (Shoop::this($month)->isGreaterThanOrEqualTo(10)->unfold()) {
+                return strval($month);
+            }
+            return "0". $month;
         }
-        return "{$day}";
+        return $this->parts[1];
+    }
+
+    public function daysInMonth(): int
+    {
+        $carbon = Carbon::now()->year($this->year())->month($this->month());
+        return $carbon->daysInMonth;
     }
 }

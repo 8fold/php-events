@@ -2,143 +2,96 @@
 
 namespace Eightfold\Events\Data;
 
-use Carbon\Carbon;
+use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\Markup\UIKit;
-use Eightfold\Shoop\{
-    Shoop,
-    ESArray,
-    ESBool,
-    ESDictionary,
-    ESInt,
-    ESString
-};
+use Eightfold\ShoopShelf\Shoop;
 
-use Eightfold\Events\Data\Interfaces\Path;
-use Eightfold\Events\Data\Interfaces\Year as YearInterface;
+use Eightfold\Events\Data\Traits\PartsImp;
 use Eightfold\Events\Data\Traits\YearImp;
 
-use Eightfold\Events\Data\Month;
-
-class Year implements Path, YearInterface
+class Year extends DataAbstract
 {
-    use YearImp;
+    use PartsImp, YearImp;
 
-    private $months; // ESDictionary
-
-    static public function init(string $path): Year
+    static public function totalMonthsInYear(): int
     {
-        return new Year($path);
+        return 12;
     }
 
-    public function __construct(string $path)
+    public function __construct(string $root, int $year)
     {
-        $this->path = $path;
-
-        $this->months = Shoop::dictionary([]);
+        $this->root  = $root;
+        $this->parts = [$year];
     }
 
-    public function firstMonthWithEvents(): ?Month
+    public function path(): string
     {
-        $month = $this->months()->each(function($month) {
-            if ($month->hasEvents()) {
-                return $month;
-            }
-        })->noEmpties();
-
-        if ($month->count === 0) {
-            return null;
-        }
-        return $month->first;
+        return Shoop::this($this->root())->divide("/")->append($this->parts())
+            ->efToString("/");
     }
 
-    public function lastMonthWithEvents(): ?Month
+    public function content()
     {
-        $month = $this->months()->toggle()->each(function($month) {
-            if ($month->hasEvents()) {
-                return $month;
-            }
-        })->noEmpties();
+        if (Shoop::this($this->content)->length()->efIsEmpty()) {
+            Shoop::store($this->path())->content()->each(function($v, $member, &$build) {
+                $m = Shoop::this($v)->divide("/")->last();
+                $k = $m->prepend("i")->unfold();
 
-        if ($month->count === 0) {
-            return null;
-        }
-        return $month->first;
-    }
+                $month = Month::fold($this->root(), $this->year(), $m->efToInteger());
 
-    public function year()
-    {
-        return $this->path()->divide("/")->toggle()->first()->int;
-    }
-
-    public function month(int $month): Month
-    {
-        $year   = $this->year();
-        $month  = $this->monthString($month);
-        $member = "i{$year}{$month}";
-        $cached = $this->months()->{$member};
-        if ($cached === null) {
-            return Month::init($this->path()->plus("/{$month}"));
-        }
-        return $cached;
-    }
-
-    public function months(): ESDictionary
-    {
-        if ($this->months->isEmpty) {
-            $this->path()->pathContent()->each(function($path) {
-                $path = Shoop::string($path);
-                $year = $this->year();
-                $month = $path->divide("/")->last;
-
-                $member   = "i{$year}{$month}";
-                $instance = Month::init($path);
-
-                $doesNotHaveMember = $this->months->hasMember($member)->not;
-                $hasEvents = $instance->hasEvents()->unfold();
-                if ($doesNotHaveMember and $hasEvents) {
-                    $this->months = $this->months->plus($instance, $member);
-                }
+                $this->content[$k] = $month;
             });
         }
-        return $this->months;
+        return $this->content;
     }
 
-    public function hasEvents(): ESBool
+    public function count(): int
+    {}
+
+    public function couldHaveEvents(): bool
     {
-        return $this->totalEvents()->isGreaterThan(0);
+        return $this->hasEvents();
     }
 
-    public function totalEvents(): ESInt
+    public function hasEvents(): bool
     {
-        return $this->events()->count();
-    }
+        $hasEvents = false;
+        Shoop::this($this->content())->each(
+            function($x, $y, $z, &$break) use (&$hasEvents) {
+                if ($hasEvents or $x->hasEvents()) {
+                    $break = true;
+                    $hasEvents = true;
 
-    public function events(): ESArray
-    {
-        $events = Shoop::array([]);
-        $this->months()->each(function($month, $timestamp) use (&$events) {
-            $events = $events->plus(...$month->events());
-        });
-        return $events;
-    }
-
-    public function dataPaths()
-    {
-        return $this->path()->divide("/")->join("/")->pathContent()
-            ->each(function($path) {
-                $tail = $this->uri()->divide("/")->last();
-                $startsWithTail = Shoop::string($tail)->divide("/")->last()
-                    ->startsWithUnfolded($tail);
-                if ($startsWithTail) {
-                    return $path;
                 }
-                return "";
-            })->noEmpties();
+        });
+        return $hasEvents;
     }
 
-    public function uri(): ESString
+    public function monthsInYear(): int
     {
-        return $this->path()->divide("/")->last()->start("/");
+        return static::totalMonthsInYear();
+    }
+
+    public function is(int $compare): bool
+    {
+        return (Shoop::this($this->year(false))->is($compare)->unfold())
+            ? true
+            : false;
+    }
+
+    public function isAfter(int $compare): bool
+    {
+        if ($this->is($compare)) {
+            return false;
+        }
+        return Shoop::this($this->year(false))->isGreaterThan($compare)->unfold();
+    }
+
+    public function isBefore(int $compare)
+    {
+        if ($this->is($compare)) {
+            return false;
+        }
+        return ! $this->isAfter($compare);
     }
 }

@@ -3,91 +3,120 @@
 namespace Eightfold\Events\Tests\Data;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
 use Eightfold\Shoop\Shoop;
 
+use Eightfold\Events\Data\Month;
 use Eightfold\Events\Data\Event;
 
-use Eightfold\Events\Data\Month;
-
+/**
+ * @group Month
+ */
 class MonthTest extends TestCase
 {
     private $path = "";
 
     public function setUp(): void
     {
-        $this->path = Shoop::string(__DIR__)->divide("/")->dropLast()
-            ->plus("test-events", "events")->join("/");
+        $this->path = Shoop::this(__DIR__)->divide("/")->dropLast()
+            ->append(["test-events", "events"])->asString("/");
     }
 
-    public function testCanInitialize()
+    /**
+     * @test
+     */
+    public function initialize_and_event_details()
     {
-        $actual = Month::init($this->path->plus("/". date("Y") ."/". date("n")));
-        $this->assertNotNull($actual);
+        AssertEquals::applyWith(
+            1999,
+            "string",
+            2.73, // 2.01, // 0.66, // 0.49, // 0.47, // 0.42,
+            33 // 30 // 29
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 1999, 1)->year()
+        );
 
-        $month = Month::init($this->path->plus("/1999/01"));
-        $this->assertEquals(1999, $month->year());
-        $this->assertEquals(1, $month->month());
+        AssertEquals::applyWith(
+            1,
+            "string",
+            0.54, // 0.49, // 0.01, // 0.004, // 0.003,
+            30
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 1999, 1)->month()
+        );
     }
 
-    public function testCanGetYear()
+    /**
+     * @test
+     */
+    public function days_in_month()
     {
-        $expected = date("Y");
-        $actual = Month::init($this->path->plus("/". date("Y") ."/". date("n")))
-            ->year();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            31,
+            "integer",
+            27.03, // 16.3,
+            1919 // 1905 // 1903 // 1901
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 2020, 5)->daysInMonth()
+        );
     }
 
-    public function testCanGetMonth()
+    /**
+     * @test
+     */
+    public function content()
     {
-        $expected = date("n");
-        $actual = Month::init($this->path->plus("/". date("Y") ."/". date("n")))
-            ->month();
-        $this->assertEquals($expected, $actual);
+        // TODO: DaysCollection with fluent api
+        AssertEquals::applyWith(
+            4,
+            "integer",
+            10.6, // 10.37, // 9.23,
+            396
+        )->unfoldUsing(
+            Month::fold($this->path, 2020, 5)->count()
+        );
     }
 
-    public function testCanGetDays()
+    /**
+     * @test
+     */
+    public function has_events()
     {
-        $expected = 31;
-        $actual = Month::init($this->path->plus("/2020/05"))->totalDays();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            true,
+            "boolean",
+            13.1, // 9.36,
+            416 // 415
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 2020, 5)->hasEvents()
+        );
 
-        $expected = 5;
-        $actual = Month::init($this->path->plus("/2020/05"));
-        $this->assertEquals($expected, $actual->days()->count);
+        AssertEquals::applyWith(
+            false,
+            "boolean",
+            0.21,
+            1
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 2020, 6)->hasEvents()
+        );
 
-        $expected = "Hello, World!";
-        $actual = $actual->day(20)->events()->first()->content();
-        $this->assertEquals($expected, $actual);
-    }
+        AssertEquals::applyWith(
+            false,
+            "boolean",
+            0.31, // 0.28,
+            1
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 2020, 10)->couldHaveEvents()
+        );
 
-    public function testCanGetEvents()
-    {
-        $expected = 5;
-        $actual = Month::init($this->path->plus("/2020/05"))->events()->count;
-        $this->assertEquals($expected, $actual);
-
-        $actual = Month::init($this->path->plus("/2020/05"))->totalEvents();
-        $this->assertEquals($expected, $actual->unfold());
-    }
-
-    public function testCanGetDataPath()
-    {
-        $expected = $this->path ."/2020/05/19.event";
-        $actual = Month::init($this->path ."/2020/05")->dataPaths()->first;
-        $this->assertEquals($expected, $actual);
-
-        $actual = Month::init($expected)->couldHaveEvents();
-        $this->assertTrue($actual);
-
-        $actual = Month::init($this->path->plus("/2021/05"))->couldHaveEvents();
-        $this->assertFalse($actual);
-    }
-
-    public function testCanGetUri()
-    {
-        $expected = "/2020/05";
-        $actual = Month::init($this->path->plus("/2020/05"))->uri();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            true,
+            "boolean",
+            5.32,
+            414
+        )->unfoldUsing(
+            Month::fold($this->path->unfold(), 2022, 12)->hasEvents()
+        );
     }
 }

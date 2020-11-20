@@ -4,21 +4,25 @@ namespace Eightfold\Events;
 
 use Eightfold\Events\UI\Grid as UIGrid;
 
+use Eightfold\Events\UI\GridForYear;
+use Eightfold\Events\UI\GridForMonth;
+
 class Grid
 {
     static public function forYear(
-        string $path,
-        string $class = \Eightfold\Events\UI\GridForYear::class
+        string $root,
+        int $year
     )
     {
-        return new $class($path);
+        return GridForYear::fold($root, $year);
     }
 
     static public function forMonth(
-        string $path,
-        string $class = \Eightfold\Events\UI\GridForMonth::class
+        string $root,
+        int $year,
+        int $month
     )
     {
-        return new $class($path);
+        return GridForMonth::fold($root, $year, $month);
     }
 }

@@ -3,8 +3,10 @@
 namespace Eightfold\Events\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
-use Eightfold\ShoopExtras\Shoop;
+use Eightfold\ShoopShelf\Shoop;
+
 use Eightfold\Events\Events;
 use Eightfold\Events\Grid;
 
@@ -14,32 +16,83 @@ class GridTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Shoop::store(__DIR__)->plus("test-events", "events");
+        $this->path = Shoop::this(__DIR__)->divide("/")
+            ->append(["test-events", "events"])->asString("/");
     }
 
-// -> totals for renddering
+// -> totals for rendering
+
+    /**
+     * @test
+     * @group current
+     */
     public function testTotalGridItems()
     {
-        $grid = Grid::forYear($this->path->plus("/2020"));
+        AssertEquals::applyWith(
+            12,
+            "integer",
+            0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
+            25
+        )->unfoldUsing(
+            Grid::forYear($this->path->unfold(), 2020)->totalGridItems()
+        );
 
-        $this->assertEquals(12, $grid->totalGridItems());
+        AssertEquals::applyWith(
+            4,
+            "integer",
+            10.82, // .87,
+            1909 // 1883 // 1882 // 1881
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->totalStartGridBlanks()
+        );
 
-        $grid = Grid::forMonth($this->path->plus("/2020/05"));
+        AssertEquals::applyWith(
+            31,
+            "integer",
+            0.49, // 0.41,
+            25
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->daysInMonth()
+        );
 
-        $this->assertEquals(4, $grid->totalStartGridBlanks());
 
-        $this->assertEquals(31, $grid->totalDaysInMonth());
+        AssertEquals::applyWith(
+            0,
+            "integer",
+            0.15, // 0.14,
+            1
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->totalEndGridBlanks()
+        );
 
-        $this->assertEquals(0, $grid->totalEndGridBlanks());
+        // break
+        AssertEquals::applyWith(
+            2,
+            "integer",
+            0.1, // 0.09,
+            1
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 4)->totalStartGridBlanks()
+        );
 
-        $grid = Grid::forMonth($this->path->plus("/2020/04"));
+        AssertEquals::applyWith(
+            30,
+            "integer",
+            0.14,
+            1
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 4)->daysInMonth()
+        );
 
-        $this->assertEquals(2, $grid->totalStartGridBlanks());
 
-        $this->assertEquals(30, $grid->totalDaysInMonth());
-
-        $this->assertEquals(3, $grid->totalEndGridBlanks());
-
+        AssertEquals::applyWith(
+            3,
+            "integer",
+            0.14, // 0.12,
+            1
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 4)->totalEndGridBlanks()
+        );
     }
 
 // -> forYear
