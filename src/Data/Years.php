@@ -23,11 +23,11 @@ class Years extends DataAbstract
     public function content()
     {
         if (Shoop::this($this->content)->length()->efIsEmpty()) {
-            Shoop::store($this->path())->content()->each(function($v, $m, &$build) {
+            Shoop::store($this->path())->folders()->each(function($v, $m, &$build) {
                 $y = Shoop::this($v)->divide("/")->last();
                 $k = $y->prepend("i")->unfold();
 
-                $year = Year::fold($this->root(), $y->unfold());
+                $year = Year::fold($this->root(), $y->efToInteger());
 
                 $this->content[$k] = $year;
             });
