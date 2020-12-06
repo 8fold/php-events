@@ -3,6 +3,7 @@
 namespace Eightfold\Events\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
 use Eightfold\Shoop\Shoop;
 
@@ -10,149 +11,95 @@ use Eightfold\Events\Events;
 
 class EventsTest extends TestCase
 {
-    private $path;
+    private $path = "";
 
     public function setUp(): void
     {
-        $this->path = Shoop::string(__DIR__)->divide("/")->dropLast()
-            ->plus("tests", "test-events", "events")->join("/");
+        $this->path = Shoop::this(__DIR__)->divide("/")
+            ->append(["test-events", "events"])->asString("/");
     }
 
-    public function testCanGetYears()
+    /**
+     * @test
+     */
+    public function seek_year_with_events()
     {
-        $expected = 2;
-        $actual = Events::init($this->path)->years()->count;
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            2022,
+            "string",
+            6.71, // 6.19, // 5.95,
+            444 // 443 // 439
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->nextYearWithEvents(2020)->year()
+        );
+
+        AssertEquals::applyWith(
+            2022,
+            "string",
+            4.1, // 3.63,
+            1
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->previousYearWithEvents(2023)->year()
+        );
     }
 
-    public function testDateHasEvents()
+    /**
+     * @test
+     */
+    public function seek_month_with_events()
     {
-        $actual = Events::init($this->path)->couldHaveEvents();
-        $this->assertTrue($actual);
+        AssertEquals::applyWith(
+            5,
+            "string",
+            21.3, // 9.32, // 7.66, // 7.56, // 7.34, // 7.3, // 7.18,
+            594 // 496 // 486 // 481
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->nextMonthWithEvents(1990, 4)->month()
+        );
 
-        $events = Events::init($this->path);
-        $hasEvents = $events->dateHasEvents(2020, 5, 20);
-        $this->assertTrue($hasEvents->unfold());
+        AssertEquals::applyWith(
+            5,
+            "string",
+            7.35, // 7.33, // 7.07, // 6.96,
+            451
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->nextMonthWithEvents(2020, 4)->month()
+        );
 
-        $hasEvents = $events->dateHasEvents(2019, 6, 20);
-        $this->assertFalse($hasEvents->unfold());
-    }
+        AssertEquals::applyWith(
+            5,
+            "string",
+            5.47, // 5.3, // 5.07, // 4.78, // 4.7, // 4.61,
+            28
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->nextMonthWithEvents(2020, 12)->month()
+        );
 
-    public function testMonthHasEvents()
-    {
-        $events = Events::init($this->path);
-        $hasEvents = $events->monthHasEvents(2020, 4);
-        $this->assertFalse($hasEvents->unfold());
+        AssertEquals::applyWith(
+            5,
+            "string",
+            2.53, // 1.85, // 1.84, // 1.81, // 1.78,
+            1
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->previousMonthWithEvents(2020, 7)->month()
+        );
 
-        $hasEvents = $events->monthHasEvents(2020, 5);
-        $this->assertTrue($hasEvents->unfold());
-    }
+        AssertEquals::applyWith(
+            12,
+            "string",
+            10.31, // 8.67,
+            496
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->previousMonthWithEvents(2023, 1)->month()
+        );
 
-    public function testYearHasEvents()
-    {
-        $events = Events::init($this->path);
-        $hasEvents = $events->yearHasEvents(2020);
-        $this->assertTrue($hasEvents->unfold());
-
-        $hasEvents = $events->yearHasEvents(2021);
-        $this->assertFalse($hasEvents->unfold());
-    }
-
-    public function testNextYearWithEvents()
-    {
-        $events = Events::init($this->path);
-
-        $expected = 2022;
-        $actual = $events->nextYearWithEvents(2020);
-        $this->assertEquals($expected, $actual->year());
-
-        $actual = $events->nextYearWithEvents(2022);
-        $this->assertNull($actual);
-    }
-
-    public function testPreviousYearWithEvents()
-    {
-        $events = Events::init($this->path);
-        $expected = 2022;
-        $actual = $events->previousYearWithEvents(2023);
-        $this->assertEquals($expected, $actual->year());
-
-        $expected = 2020;
-        $actual = $events->previousYearWithEvents(2022);
-        $this->assertEquals($expected, $actual->year());
-
-        $actual = $events->previousYearWithEvents(2010);
-        $this->assertNull($actual);
-    }
-
-    public function testNextMonthWithEvents()
-    {
-        $events = Events::init($this->path);
-
-        $expected = 5;
-        $actual = $events->nextMonthWithEvents(2020, 4);
-        $this->assertEquals($expected, $actual->month());
-
-        $expected = 12;
-        $actual = $events->nextMonthWithEvents(2020, 5);
-        $this->assertEquals($expected, $actual->month());
-
-        // TODO: stays confined to year, should it try next year??
-        $expected = 4;
-        $actual = $events->nextMonthWithEvents(2020, 12);
-        $this->assertNull($actual);
-
-        $actual = $events->nextMonthWithEvents(2022, 12);
-        $this->assertNull($actual);
-    }
-
-    public function testPreviousMonthWithEvents()
-    {
-        $events = Events::init($this->path);
-
-        $expected = 5;
-        $actual = $events->previousMonthWithEvents(2020, 10);
-        $this->assertEquals($expected, $actual->month());
-
-        $expected = 5;
-        $actual = $events->previousMonthWithEvents(2022, 12);
-        $this->assertEquals($expected, $actual->month());
-
-        $actual = $events->previousYearWithEvents(2010);
-        $this->assertNull($actual);
-    }
-
-    public function testUriForMonthWithNearestEvent()
-    {
-        $events = Events::init($this->path);
-
-        $expected = "/2022/12";
-        $actual = $events->nearestMonthWithEvents(2023, 6);
-        $this->assertEquals($expected, $actual->uri());
-
-        $expected = "/2022/05";
-        $actual = $events->nearestMonthWithEvents(2021, 6);
-        $this->assertEquals($expected, $actual->uri());
-    }
-
-    public function testUriForYearWithNearestEvent()
-    {
-        $events = Events::init($this->path);
-
-        $expected = 2022;
-        $actual = $events->nearestYearWithEvents(2020);
-        $this->assertEquals($expected, $actual->year());
-
-        $expected = 2022;
-        $actual =$events->nearestYearWithEvents(2023);
-        $this->assertEquals($expected, $actual->year());
-
-        $expected = "/2022";
-        $actual = $events->nearestYearWithEvents(2020);
-        $this->assertEquals($expected, $actual->uri());
-
-        $expected = "/2022";
-        $actual =$events->nearestYearWithEvents(2023);
-        $this->assertEquals($expected, $actual->uri());
+        AssertEquals::applyWith(
+            2022,
+            "string",
+            9.9,
+            1
+        )->unfoldUsing(
+            Events::fold($this->path->unfold())->previousMonthWithEvents(2023, 10)->year()
+        );
     }
 }

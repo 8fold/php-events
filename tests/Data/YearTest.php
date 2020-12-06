@@ -3,95 +3,116 @@
 namespace Eightfold\Events\Tests\Data;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
 use Eightfold\Shoop\Shoop;
 
-use Eightfold\Events\Data\Event;
-
 use Eightfold\Events\Data\Year;
+use Eightfold\Events\Data\Months;
+use Eightfold\Events\Data\Month;
 
+/**
+ * @group Year
+ */
 class YearTest extends TestCase
 {
     private $path = "";
 
     public function setUp(): void
     {
-        $this->path = Shoop::string(__DIR__)->divide("/")->dropLast()
-            ->plus("test-events", "events")->join("/");
+        $this->path = Shoop::this(__DIR__)->divide("/")->dropLast()
+            ->append(["test-events", "events"])->asString("/");
     }
 
-    public function testCanInitialize()
+    /**
+     * @test
+     */
+    public function root_and_parts()
     {
-        $actual = Year::init($this->path->plus("/". date("Y")));
-        $this->assertNotNull($actual);
+        AssertEquals::applyWith(
+            $this->path->unfold(),
+            "string",
+            1.19,
+            19 // 12
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2020)->root()
+        );
 
-        $event = Year::init($this->path->plus("/1999"));
-        $this->assertEquals(1999, $event->year());
+        AssertEquals::applyWith(
+            [
+                2020
+            ],
+            "array",
+            0.2, // 0.16, // 0.004,
+            9
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2020)->parts()
+        );
     }
 
-    public function testCanGetYear()
+    /**
+     * @test
+     */
+    public function year()
     {
-        $expected = date("Y");
-        $actual = Year::init($this->path->plus("/". date("Y")))->year();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            date("Y"),
+            "string",
+            0.36,
+            12
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), date("Y"))->year()
+        );
     }
 
-    public function testCanGetMonths()
+    /**
+     * @test
+     */
+    public function get_all_months()
     {
-        $expected = 2;
-        $actual = Year::init($this->path->plus("/2020"))->months()->count;
-        $this->assertEquals($expected, $actual);
-
-        $expected = 9;
-        $actual = Year::init($this->path->plus("/2020"))->events()->count;
-        $this->assertEquals($expected, $actual);
-
-        $expected = 5;
-        $actual = Year::init($this->path->plus("/2020"))->firstMonthWithEvents()
-            ->month();
-        $this->assertEquals($expected, $actual);
-
-        $expected = 12;
-        $actual = Year::init($this->path->plus("/2020"))->lastMonthWithEvents()
-            ->month();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            [
+                "i05" => Month::fold($this->path->unfold(), 2020, 5),
+                "i12" => Month::fold($this->path->unfold(), 2020, 12)
+            ],
+            "array",
+            3.15, // 3.14, // 2.9, // 2.79,
+            310
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2020)->content()
+        );
     }
 
-    public function testCanGetEvents()
+    /**
+     * @test
+     */
+    public function has_events()
     {
-        $expected = 9;
-        $actual = Year::init($this->path->plus("/2020"))->events()->count;
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            true,
+            "boolean",
+            10.43, // 6.27,
+            421
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2020)->hasEvents()
+        );
 
-        $actual = Year::init($this->path->plus("/2020"))->totalEvents();
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            false,
+            "boolean",
+            0.19, // 0.18,
+            1
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2021)->hasEvents()
+        );
 
-        $expected = true;
-        $actual = Year::init($this->path->plus("/2020"))->couldHaveEvents();
-        $this->assertTrue($actual);
-
-        $expected = false;
-        $actual = Year::init($this->path->plus("/2021"))->couldHaveEvents();
-        $this->assertFalse($actual);
-    }
-
-    public function testCanGetDataPath()
-    {
-        $expected = $this->path ."/2020/05";
-        $actual = Year::init($this->path->plus("/2020"))->dataPaths()->first;
-        $this->assertEquals($expected, $actual);
-
-        $actual = Year::init($this->path->plus("/2020"))->couldHaveEvents();
-        $this->assertTrue($actual);
-
-        $actual = Year::init($this->path->plus("/2021"))->couldHaveEvents();
-        $this->assertFalse($actual);
-    }
-
-    public function testCanGetUri()
-    {
-        $expected = "/2020";
-        $actual = Year::init($this->path->plus("/2020"))->uri();
-        $this->assertEquals($expected, $actual);
+        AssertEquals::applyWith(
+            false,
+            "boolean",
+            0.16, // 0.14,
+            1
+        )->unfoldUsing(
+            Year::fold($this->path->unfold(), 2021)->couldHaveEvents()
+        );
     }
 }

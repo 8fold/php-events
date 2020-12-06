@@ -20,38 +20,44 @@ $root = "things"; // URI roots
 
 $dataPath = __DIR__ ."/data"; // Where the events live
 
-$grid = Shoop::string($uri)->divide("/", false)->isEmpty(function($result, $parts) use ($root, $dataPath) {
-    $parts = $parts->reindex();
-    if ($result) {
-        return UIKit::p("404 equivalent: not child of '". $root ."'");
-    }
-    return $parts->count()->is(1, function($result, $count) use ($root, $dataPath, $parts) {
-        if ($result) {
-            $year  = Carbon::now()->year;
-            $month = Carbon::now()->month;
-            $uri = Events::init(__DIR__ ."/data")
-                ->nearestMonthWithEvents($year, $month)->uri();
-            return UIKit::div(
-                UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
-                UIKit::p("Redirect to: /". $root . $uri)
-            );
-        }
-        return $count->is(2, function($result, $count) use ($root, $dataPath, $parts) {
-            if ($result) {
-                $year = $parts->last()->int;
-                return Grid::forYear($dataPath ."/{$year}")->uriPrefix("/{$root}");
+$grid = Shoop::this($uri)->divide("/", false);
+if ($grid->efIsEmpty()) {
+    $grid = UIKit::p("404 equivalent: not child of '". $root ."'");
 
-            }
-            return $count->is(3, function($result, $count) use ($root, $dataPath, $parts) {
-                if ($result) {
-                    $year = $parts->get(1)->int;
-                    $month = $parts->get(2)->int;
-                    return Grid::forMonth("{$dataPath}/{$year}/{$month}")->uriPrefix("/{$root}");
-                }
-            });
-        });
-    });
-});
+} elseif ($grid->length()->is(1)->unfold()) {
+    $year  = Carbon::now()->year;
+    $month = Carbon::now()->month;
+    $uri = Events::fold(__DIR__ ."/data")
+        ->nearestMonthWithEvents($year, $month)->uri();
+    $grid = UIKit::div(
+        UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
+        UIKit::p("Redirect to: /". $root . $uri)
+    );
+
+} elseif ($grid->length()->is(2)->unfold()) {
+    die("year");
+
+} elseif ($grid->length()->is(3)->unfold()) {
+    $year = $grid->at(1)->efToInteger();
+    $month = $grid->at(2)->efToInteger();
+    $events = Events::fold(__DIR__ ."/data");
+    $month = $events->month($year, $month);
+    if (! $month) {
+        $month = $events->nearestMonthWithEvents($year, $month);
+        $grid = UIKit::div(
+            UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
+            UIKit::p("Redirect to: ". $month->uri())
+        );
+
+    } else {
+        $grid = Grid::forMonth($dataPath, $year, $month->month())->uriPrefix("/". $root)->unfold();
+
+    }
+
+} else {
+    die("URL too long");
+
+}
 
 $view = UIKit::webView(
             "8fold Events Example",

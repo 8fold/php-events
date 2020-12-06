@@ -2,21 +2,21 @@
 
 namespace Eightfold\Events\Data\Traits;
 
-use Eightfold\Shoop\{Shoop, ESString};
+use Eightfold\Shoop\Shoop;
 
 trait PathImp
 {
-    private $path = "";
+    // private $path = "";
 
-    private $events; // ESArray
+    // private $events = [];
 
-    public function path(): ESString
-    {
-        return Shoop::string($this->path);
-    }
+    // public function path()
+    // {
+    //     return Shoop::this($this->path);
+    // }
 
-    public function couldHaveEvents(): bool
-    {
-        return $this->dataPaths()->count()->isNotUnfolded(0);
-    }
+    // public function couldHaveEvents(): bool
+    // {
+    //     return ! Shoop::this($this->dataPaths())->efIsEmpty();
+    // }
 }

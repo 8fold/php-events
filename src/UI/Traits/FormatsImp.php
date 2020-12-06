@@ -4,14 +4,14 @@ namespace Eightfold\Events\UI\Traits;
 
 trait FormatsImp
 {
-    private $yearAbbrFormat = "Y";
-    private $yearTitleFormat = "Y";
+    protected $yearAbbrFormat = "Y";
+    protected $yearTitleFormat = "Y";
 
-    private $monthAbbrFormat = "M";
-    private $monthTitleFormat = "F Y";
+    protected $monthAbbrFormat = "M";
+    protected $monthTitleFormat = "F Y";
 
-    private $dayAbbrFormat = "j";
-    private $dayTitleFormat = "jS \\of F Y";
+    protected $dayAbbrFormat = "j";
+    protected $dayTitleFormat = "jS \\of F Y";
 
     public function yearFormats(
         string $abbrFormat = "Y",

@@ -3,6 +3,7 @@
 namespace Eightfold\Events\Tests\UI;
 
 use PHPUnit\Framework\TestCase;
+use Eightfold\Foldable\Tests\PerformantEqualsTestFilter as AssertEquals;
 
 use Eightfold\Shoop\Shoop;
 use Eightfold\Events\Events;
@@ -15,45 +16,71 @@ class GridYearTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Shoop::string(__DIR__)->divide("/")->dropLast()
-            ->plus("test-events", "events")->join("/");
+        $this->path = Shoop::this(__DIR__)->divide("/")->dropLast()
+            ->append(["test-events", "events"])->asString("/");
     }
 
 // -> forYear
-    public function testRenderHeader()
+    /**
+     * @test
+     */
+    public function render_header()
     {
-        $grid = GridForYear::forYear($this->path->plus("/2020"));
-
-        $expected = '<h2>2020</h2>';
-        $actual = $grid->header();
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<h2>2020</h2>',
+            "string",
+            11.29,
+            2163
+        )->unfoldUsing(
+            GridForYear::fold($this->path->unfold(), 2020)->header()
+        );
     }
 
-    public function testRenderNextAndPreviousLink()
+    /**
+     * @test
+     */
+    public function next_and_previous_link()
     {
-        $grid = GridForYear::forYear($this->path->plus("/2020"));
+        AssertEquals::applyWith(
+            '<span class="ef-grid-previous-year"></span>',
+            "string",
+            8.7,
+            590 // 589 // 588
+        )->unfoldUsing(
+            GridForYear::fold($this->path->unfold(), 2020)->previousLink()
+        );
 
-        $expected = '<span class="ef-grid-previous-year"></span>';
-        $actual = $grid->previousLink();
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<a class="ef-grid-previous-year" href="/events/2020" title="2020"><span>2020</span></a>',
+            "string",
+            14.45, // 12.78,
+            2955
+        )->unfoldUsing(
+            GridForYear::fold($this->path->unfold(), 2021)->previousLink()
+        );
 
-        $gridFuture = GridForYear::forYear($this->path->plus("/2021"));
-        $expected = '<a class="ef-grid-previous-year" href="/events/2020" title="2020"><span>2020</span></a>';
-        $actual = $gridFuture->previousLink();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>';
-        $actual = $grid->nextLink();
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
+            "string",
+            3.39, // 3.33, // 3.16,
+            1
+        )->unfoldUsing(
+            GridForYear::fold($this->path->unfold(), 2021)->nextLink()
+        );
     }
 
-    public function testGridItem()
+    /**
+     * @test
+     */
+    public function grid_item()
     {
-        $month = Month::init($this->path->plus("/2020/05"));
-
-        $expected = '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>';
-        $actual = GridForYear::forYear($this->path->plus("/2020"))
-            ->gridItem($month);
-        $this->assertEquals($expected, $actual->unfold());
+        AssertEquals::applyWith(
+            '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>4</span></a>',
+            "string",
+            21, // 19.31, // 19.23, // 18.49,
+            2973
+        )->unfoldUsing(
+            GridForYear::fold($this->path->unfold(), 2020)->gridItem(5)
+        );
     }
 }
