@@ -174,115 +174,23 @@ class Events extends Fold
         return $this->previousMonthWithEvents($year->year(), 13);
     }
 
-//     public function nearestMonthWithEvents(int $year, int $month): ?Month
-//     {
-//         $m = $this->month($year, $month);
-//         if ($m) {
-//             return $m;
-//         }
+    public function nearestMonthWithEvents(int $year, int $month): ?Month
+    {
+        $m = $this->month($year, $month);
+        if ($m and $m->hasEvents()) {
+            return $m;
+        }
 
-//         $m = $this->nextMonthWithEvents($year, $month);
-//         if ($m) {
-//             return $m;
-//         }
+        $m = $this->nextMonthWithEvents($year, $month);
+        if ($m) {
+            return $m;
+        }
 
-// var_dump("events");
-// die(var_dump(
-//     $m
-// ));
-//             $m = $this->previousMonthWithEvents($year, $month);
-//         if ($m !== null) {
-//             return $m;
-//         }
+        $m = $this->previousMonthWithEvents($year, $month);
+        if ($m) {
+            return $m;
+        }
 
-//         $y = $this->nearestYearWithEvents($year);
-//         if ($y === null) {
-//             return null;
-//         }
-
-//         if ($y->year() > $year) {
-//             return $this->year($y->year())->firstMonthWithEvents();
-//         }
-//         return $this->year($y->year())->lastMonthWithEvents();
-//     }
-    // public function events()
-    // {
-    //     // $directory = new DirectoryIterator($this->path());
-    //     // foreach ($directory as $info) {
-    //     //     if (! $info->isDot() and $info->isDir()) {
-
-    //     //     }
-    //     // }
-    // }
-
-    // public function year(int $year)
-    // {
-    //     $member = "i". $year;
-    //     return $this->years()->hasMember(
-    //         $member,
-    //         function($result, $years) use ($year, $member) {
-    //             if ($result->unfold()) {
-    //                 return $years->get($member);
-    //             }
-    //             return Year::init($this->path()->plus("/". $year));
-    //         });
-    // }
-
-    // public function years()
-    // {
-    //     if ($this->years->isEmpty) {
-    //         Shoop::string($this->path())->divide("/")->join("/")
-    //             ->pathContent()->each(function($path) {
-    //                 $year = Shoop::string($path)->divide("/")->last()->int;
-    //                 if ($year > 0) {
-    //                     $member = "i". $year;
-    //                     $instance = Year::init($this->path()->plus("/". $year));
-
-    //                     $this->years = $this->years->plus($instance, $member);
-    //                 }
-    //             });
-    //     }
-    //     return $this->years;
-    // }
-
-    // public function dataPaths()
-    // {
-    //     return Shoop::array([$this->path()]);
-    // }
-
-    // public function uri()
-    // {
-    //     return $this->path();
-    // }
-
-    // public function yearHasEvents(int $year)
-    // {
-    //     return $this->year($year)->hasEvents();
-    // }
-
-    // public function monthHasEvents(int $year, int $month): ESBool
-    // {
-    //     return $this->year($year)->month($month)->hasEvents();
-    // }
-
-    // public function dateHasEvents(int $year, int $month, int $day): ESBool
-    // {
-    //     return $this->year($year)->month($month)->day($day)->hasEvents();
-    // }
-
-
-    // public function nearestYearWithEvents(int $year): ?Year
-    // {
-    //     $y = $this->nextYearWithEvents($year);
-    //     if ($y === null) {
-    //         $y = $this->previousYearWithEvents($year);
-    //     }
-
-    //     if ($y !== null) {
-    //         return $y;
-    //     }
-    //     return $y;
-    // }
-
-
+        return null;
+    }
 }
