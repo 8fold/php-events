@@ -193,4 +193,24 @@ class Events extends Fold
 
         return null;
     }
+
+    public function nearestYearWithEvents(int $year): ?Year
+    {
+        $y = $this->year($year);
+        if ($y and $y->hasEvents()) {
+            return $y;
+        }
+
+        $y = $this->nextYearWithEvents($year);
+        if ($y) {
+            return $y;
+        }
+
+        $y = $this->previousYearWithEvents($year);
+        if ($y) {
+            return $y;
+        }
+
+        return null;
+    }
 }

@@ -35,22 +35,37 @@ if ($grid->efIsEmpty()) {
     );
 
 } elseif ($grid->length()->is(2)->unfold()) {
-    die("year");
-
-} elseif ($grid->length()->is(3)->unfold()) {
-    $year = $grid->at(1)->efToInteger();
-    $month = $grid->at(2)->efToInteger();
+    $year   = $grid->at(1)->efToInteger();
     $events = Events::fold(__DIR__ ."/data");
-    $month = $events->month($year, $month);
-    if (! $month) {
-        $month = $events->nearestMonthWithEvents($year, $month);
+
+    $y = $events->year($year);
+    if (! $y) {
+        $y = $events->nearestYearWithEvents($year);
         $grid = UIKit::div(
             UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
-            UIKit::p("Redirect to: ". $month->uri())
+            UIKit::p("Redirect to: ". $y->uri())
         );
 
     } else {
-        $grid = Grid::forMonth($dataPath, $year, $month->month())->uriPrefix("/". $root)->unfold();
+        $grid = Grid::forYear($dataPath, $y->year())->uriPrefix("/". $root);
+
+    }
+
+} elseif ($grid->length()->is(3)->unfold()) {
+    $year   = $grid->at(1)->efToInteger();
+    $month  = $grid->at(2)->efToInteger();
+    $events = Events::fold(__DIR__ ."/data");
+
+    $m = $events->month($year, $month);
+    if (! $m) {
+        $m = $events->nearestMonthWithEvents($year, $month);
+        $grid = UIKit::div(
+            UIKit::p("No view for root alone - presumes user will be redirected to closest month with event."),
+            UIKit::p("Redirect to: ". $m->uri())
+        );
+
+    } else {
+        $grid = Grid::forMonth($dataPath, $year, $m->month())->uriPrefix("/". $root);
 
     }
 

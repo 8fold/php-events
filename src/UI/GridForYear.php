@@ -21,6 +21,16 @@ class GridForYear extends GridAbstract
         $this->parts = [$year];
     }
 
+    public function carbon()
+    {
+        if ($this->carbon === null) {
+            $this->carbon = Carbon::now()
+                ->year($this->year(false))->month(1)->day(10)
+                ->startOfWeek(Carbon::MONDAY);
+        }
+        return $this->carbon;
+    }
+
     public function totalGridItems(): int
     {
         return Year::totalMonthsInYear();
@@ -32,13 +42,32 @@ class GridForYear extends GridAbstract
         return UIKit::h2($title);
     }
 
-    public function carbon()
+    public function previousLink()
     {
-        if ($this->carbon === null) {
-            $this->carbon = Carbon::now()
-                ->year($this->year(false));
+        $year = $this->events()->previousYearWithEvents($this->year());
+        $title = "";
+
+        if ($year) {
+            $format = $this->yearTitleFormat;
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
         }
-        return $this->carbon;
+
+        return $this->navLink($year, $title, "ef-grid-previous-year");
+    }
+
+    public function nextLink()
+    {
+        $year = $this->events()->nextYearWithEvents($this->year());
+        $title = "";
+
+        if ($year) {
+            $format = $this->yearTitleFormat;
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
+        }
+
+        return $this->navLink($year, $title, "ef-grid-next-year");
     }
 
     public function gridItem(int $itemNumber)
@@ -49,9 +78,7 @@ class GridForYear extends GridAbstract
         }
 
         $month = $this->events()->month($this->year(), $itemNumber);
-
-        // $date = $this->events()->date($this->year(), $this->month(), $itemNumber);
-        if (! $month->hasEvents()) {
+        if (! $month or ! $month->hasEvents()) {
             return $this->gridItemBlank($itemNumber);
         }
 
@@ -85,33 +112,52 @@ class GridForYear extends GridAbstract
             );
     }
 
-    public function previousLink()
+    public function gridItemBlank(int $itemNumber)
     {
-        $year = $this->events()->previousYearWithEvents($this->year());
-        $title = "";
+        $cc = $this->carbon()->copy()
+            ->year($this->year())->month($itemNumber);
 
-        if ($year) {
-            $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
-        }
+        $abbr = $cc->format($this->monthAbbrFormat);
+        $title = $cc->format($this->monthTitleFormat);
 
-        return $this->navLink($year, $title, "ef-grid-previous-year");
+        return UIKit::button(
+            UIKit::abbr($abbr)->attr("title {$title}")
+        )->attr(
+            "disabled disabled",
+            "aria-disabled true",
+            "role presentation"
+        );
     }
 
-    public function nextLink()
+    public function unfold(): string
     {
-        $year = $this->events()->nextYearWithEvents($this->year());
-        $title = "";
-
-        if ($year) {
-            $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
-        }
-
-        return $this->navLink($year, $title, "ef-grid-next-year");
+        $range = range(1, $this->totalGridItems());
+        $items = Shoop::this($range)->each(function($month) {
+            return $this->gridItem($month);
+        })->unfold();
+        return UIKit::div(
+            $this->header(),
+            $this->previousLink(),
+            $this->nextLink(),
+            ...$items
+        )->attr("class ef-events-grid ef-events-grid-year");
     }
+
+
+
+
+    // public function carbon()
+    // {
+    //     if ($this->carbon === null) {
+    //         $this->carbon = Carbon::now()
+    //             ->year($this->year(false));
+    //     }
+    //     return $this->carbon;
+    // }
+
+
+
+
 
     // use RenderImp, FormatsImp, PropertiesImp, NumbersImp;
 
@@ -147,12 +193,12 @@ class GridForYear extends GridAbstract
     //                 UIKit::p("No events found.")->attr("class ef-events-empty")
     //             ]);
     //     }
-    //     return UIKit::div(
-    //         $this->header(),
-    //         $this->previousLink(),
-    //         $this->nextLink(),
-    //         ...$render
-    //     )->attr("class ef-events-grid ef-events-grid-year");
+        // return UIKit::div(
+        //     $this->header(),
+        //     $this->previousLink(),
+        //     $this->nextLink(),
+        //     ...$render
+        // )->attr("class ef-events-grid ef-events-grid-year");
     // }
 
 
@@ -163,22 +209,7 @@ class GridForYear extends GridAbstract
 
 
 
-    // public function gridItemBlank($uriObject)
-    // {
-    //     $cc = $this->carbon()->copy()
-    //         ->year($uriObject->year())->month($uriObject->month());
 
-    //     $abbr = $cc->format($this->monthAbbrFormat);
-    //     $title = $cc->format($this->monthTitleFormat);
-
-    //     return UIKit::button(
-    //         UIKit::abbr($abbr)->attr("title {$title}")
-    //     )->attr(
-    //         "disabled disabled",
-    //         "aria-disabled true",
-    //         "role presentation"
-    //     );
-    // }
 
     // public function year(): int
     // {

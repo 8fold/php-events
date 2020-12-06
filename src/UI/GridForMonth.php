@@ -279,7 +279,7 @@ class GridForMonth extends GridAbstract
             })->efToArray();
     }
 
-    public function unfold()
+    public function unfold(): string
     {
         $totalGridItems = $this->totalGridItems();
         $startingBlanks = $this->totalStartGridBlanks(); // start blank grid items
