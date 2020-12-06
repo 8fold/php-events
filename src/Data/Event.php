@@ -36,11 +36,11 @@ class Event extends DataAbstract
             $this->month(),
             $this->date() ."_". $this->count() .".event"
         ])->efToString("/");
-        if (Shoop::this($path)->divide(".")->first()->endsWith("_1")->unfold() and
+        if (Shoop::this($path)->divide("/")->reversed()->first()->divide(".")->first()->endsWith("_1")->unfold() and
             Shoop::store($path)->isFile()->reversed()->unfold()
         ) {
-            $path = Shoop::this($path)->divide(".")->first()->dropLast(2)
-                ->append(".event")->unfold();
+            $path = Shoop::this($path)->divide("/")->reversed()->dropFirst()
+                ->prepend([$this->date() .".event"])->reversed()->efToString("/");
 
         }
         return $path;
