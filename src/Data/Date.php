@@ -49,8 +49,9 @@ class Date extends DataAbstract
                             ? 1
                             : $fileParts->last()->unfold();
 
-                        $k = "i". $fileParts->first()->unfold();
-                        $this->content[$k][] = Event::fold(
+                        // $k = "i". $fileParts->first()->unfold();
+                        // $this->content[$k][] = Event::fold(
+                        $this->content[] = Event::fold(
                             $this->root(),
                             $this->year(),
                             $this->month(false),

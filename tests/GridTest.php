@@ -24,15 +24,14 @@ class GridTest extends TestCase
 
     /**
      * @test
-     * @group current
      */
     public function testTotalGridItems()
     {
         AssertEquals::applyWith(
             12,
             "integer",
-            0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
-            25
+            0.91, // 0.88, // 0.85, // 0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
+            98 // 25
         )->unfoldUsing(
             Grid::forYear($this->path->unfold(), 2020)->totalGridItems()
         );
@@ -55,7 +54,6 @@ class GridTest extends TestCase
             Grid::forMonth($this->path->unfold(), 2020, 5)->daysInMonth()
         );
 
-
         AssertEquals::applyWith(
             0,
             "integer",
@@ -69,7 +67,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             2,
             "integer",
-            0.1, // 0.09,
+            0.15, // 0.11, // 0.1, // 0.09,
             1
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 4)->totalStartGridBlanks()
@@ -96,13 +94,24 @@ class GridTest extends TestCase
     }
 
 // -> forYear
-    public function testRenderYear()
+    /**
+     * @test
+     */
+    public function render_year()
     {
-        $grid = Grid::forYear($this->path->plus("/2020"));
+        AssertEquals::applyWith(
+            '<h2>2020</h2>',
+            "string",
+            10.8, // 10.42,
+            2167
+        )->unfoldUsing(
+            Grid::forYear($this->path->unfold(), 2020)->header()
+        );
+        // $grid = Grid::forYear($this->path->plus("/2020"));
 
-        $expected = '<h2>2020</h2>';
-        $actual = $grid->header();
-        $this->assertEquals($expected, $actual->unfold());
+        // $expected = '<h2>2020</h2>';
+        // $actual = $grid->header();
+        // $this->assertEquals($expected, $actual->unfold());
 
         // $expected = '<span class="ef-grid-previous-year"></span>';
         // $actual = $grid->previousLink();
@@ -134,38 +143,72 @@ class GridTest extends TestCase
     }
 
 // -> forMonth
-    public function testRenderMonth()
+    /**
+     * @test
+     */
+    public function render_month()
     {
-        $grid = Grid::forMonth($this->path->plus("/2020/05"));
-
-        $expected = '<h2>May 2020</h2>';
-        $actual = $grid->header();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = '<span class="ef-grid-previous-month"></span>';
-        $actual = $grid->previousLink();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $gridFuture = Grid::forMonth($this->path->plus("/2023/05"));
-        $expected = '<span class="ef-grid-next-month"></span>';
-        $actual = $gridFuture->nextLink();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $expected = '<a class="ef-grid-next-month" href="/events/2020/12" title="December 2020"><span>December 2020</span></a>';
-        $actual = $grid->nextLink();
-        $this->assertEquals($expected, $actual->unfold());
-
-        $events = Events::init($this->path);
-        $expected = '<button aria-disabled="true" disabled><abbr title="1st of February 2020">1</abbr></button>';
-        $actual = $grid->gridItem(
-            $events->year(2020)->month(2)->day(1)
+        AssertEquals::applyWith(
+            '<h2>May 2020</h2>',
+            "string",
+            22.58,
+            2214 // 2209 // 2199 // 2198 // 2197 // 2191 // 2189 // 2188 // 2187 // 2186 // 2185
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->header()
         );
-        $this->assertEquals($expected, $actual->unfold());
 
-        $expected = '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)" aria-expanded="false"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>';
-        $actual = $grid->gridItem(
-            $events->year(2020)->month(5)->day(22)
+        AssertEquals::applyWith(
+            '<span class="ef-grid-previous-month"></span>',
+            "string",
+            8.76,
+            739 // 738 // 734 // 733
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->previousLink()
         );
-        $this->assertEquals($expected, $actual->unfold());
+
+        AssertEquals::applyWith(
+            '<a class="ef-grid-previous-month" href="/events/2020/12" title="December 2020"><span>December 2020</span></a>',
+            "string",
+            9.02, // 8.81, // 7.39,
+            94 // 30 // 28
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2022, 5)->previousLink()
+        );
+
+        AssertEquals::applyWith(
+            '<span class="ef-grid-next-month"></span>',
+            "string",
+            1.73, // 1.48, // 1.09, // 1.08, // 1.06, // 0.99,
+            64
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2023, 5)->nextLink()
+        );
+
+        AssertEquals::applyWith(
+            '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
+            "string",
+            24.39, // 22.85, // 21.31,
+            2959 // 2958
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 12)->nextLink()
+        );
+
+        AssertEquals::applyWith(
+            '<button role="presentation" aria-disabled="true" disabled><abbr title="1st of February 2020">1</abbr></button>',
+            "string",
+            24.96, // 20.39,
+            2955
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 2)->gridItem(1)
+        );
+
+        AssertEquals::applyWith(
+            '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)" aria-expanded="false"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
+            "string",
+            25.5, // 24.31, // 23.61,
+            2994
+        )->unfoldUsing(
+            Grid::forMonth($this->path->unfold(), 2020, 5)->gridItem(22)
+        );
     }
 }

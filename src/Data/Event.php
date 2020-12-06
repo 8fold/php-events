@@ -53,6 +53,26 @@ class Event extends DataAbstract
             : "";
     }
 
+    public function title(): string
+    {
+        $content = Shoop::this($this->content());
+        if ($content->length()->is(0)->unfold()) {
+            return "";
+        }
+        $title = $content->divide("\n\n")->first()->unfold();
+        return trim($title);
+    }
+
+    public function body(): string
+    {
+        $content = Shoop::this($this->content());
+        if ($content->length()->is(0)->unfold()) {
+            return "";
+        }
+        $title = $content->divide("\n\n")->last()->unfold();
+        return trim($title);
+    }
+
     public function count(): int
     {
         return $this->parts[3];

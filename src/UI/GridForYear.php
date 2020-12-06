@@ -2,37 +2,117 @@
 
 namespace Eightfold\Events\UI;
 
-use Eightfold\Foldable\Fold;
-use Eightfold\Foldable\Foldable;
+use Eightfold\Events\UI\GridAbstract;
+// use Eightfold\Foldable\Fold;
+// use Eightfold\Foldable\Foldable;
+
+use Carbon\Carbon;
+
+use Eightfold\Markup\UIKit;
+use Eightfold\Shoop\Shoop;
 
 use Eightfold\Events\Data\Year;
 
-// use Carbon\Carbon;
-
-// use Eightfold\Markup\UIKit;
-// use Eightfold\Shoop\Shoop;
-
-// use Eightfold\Events\Events;
-// use Eightfold\Events\Data\Month;
-
-// use Eightfold\Events\UI\Interfaces\Render;
-// use Eightfold\Events\UI\Traits\RenderImp;
-
-// use Eightfold\Events\UI\Interfaces\Formats;
-// use Eightfold\Events\UI\Traits\FormatsImp;
-
-// use Eightfold\Events\UI\Interfaces\Properties;
-// use Eightfold\Events\UI\Traits\PropertiesImp;
-
-// use Eightfold\Events\UI\Interfaces\Numbers;
-// use Eightfold\Events\UI\Traits\NumbersImp;
-
-class GridForYear extends Fold
+class GridForYear extends GridAbstract
 {
-    public function totalGridItems()
+    public function __construct(string $root, int $year)
+    {
+        $this->root = $root;
+        $this->parts = [$year];
+    }
+
+    public function totalGridItems(): int
     {
         return Year::totalMonthsInYear();
     }
+
+    public function header()
+    {
+        $title = $this->carbon()->copy()->format($this->yearTitleFormat);
+        return UIKit::h2($title);
+    }
+
+    public function carbon()
+    {
+        if ($this->carbon === null) {
+            $this->carbon = Carbon::now()
+                ->year($this->year(false));
+        }
+        return $this->carbon;
+    }
+
+    public function gridItem(int $itemNumber)
+    {
+        $year = $this->events()->year($this->year());
+        if (! $year) {
+            return $this->gridItemBlank($itemNumber);
+        }
+
+        $month = $this->events()->month($this->year(), $itemNumber);
+
+        // $date = $this->events()->date($this->year(), $this->month(), $itemNumber);
+        if (! $month->hasEvents()) {
+            return $this->gridItemBlank($itemNumber);
+        }
+
+        $cc = $this->carbon()->copy()
+            ->year($month->year())
+            ->month($month->month());
+
+        $abbr   = $cc->format($this->monthAbbrFormat);
+        $title  = $cc->format($this->monthTitleFormat);
+        $total = strval($month->count());
+
+        return UIKit::a(
+            UIKit::abbr($abbr)
+                ->attr("title ". $title),
+            UIKit::span($total)
+        )->attr(
+            "href ". $this->prefix() . $month->uri()
+        );
+        $events = Shoop::this($date->content())->each(function($event) {
+            return UIKit::span($event->title());
+        })->unfold();
+
+        return UIKit::button(
+                UIKit::abbr($abbr)->attr("title ". $title),
+                ...$events
+            )->attr(
+                "id toggle-". $id,
+                "aria-expanded false",
+                "class calendar-date",
+                "onclick EFEventsModals.init(this, ". $id .")"
+            );
+    }
+
+    public function previousLink()
+    {
+        $year = $this->events()->previousYearWithEvents($this->year());
+        $title = "";
+
+        if ($year) {
+            $format = $this->yearTitleFormat;
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
+        }
+
+        return $this->navLink($year, $title, "ef-grid-previous-year");
+    }
+
+    public function nextLink()
+    {
+        $year = $this->events()->nextYearWithEvents($this->year());
+        $title = "";
+
+        if ($year) {
+            $format = $this->yearTitleFormat;
+            $title = $this->carbon()->copy()->year($year->year())
+                ->format($format);
+        }
+
+        return $this->navLink($year, $title, "ef-grid-next-year");
+    }
+
     // use RenderImp, FormatsImp, PropertiesImp, NumbersImp;
 
     // public function __construct(string $path)
@@ -42,7 +122,6 @@ class GridForYear extends Fold
 
     //     $this->path = $path;
     //     $this->year = Shoop::string($this->path)->divide("/")->last()->int;
-    //     $this->carbon = Carbon::now()->year($this->year);
     // }
 
     // public function unfold()
@@ -76,54 +155,13 @@ class GridForYear extends Fold
     //     )->attr("class ef-events-grid ef-events-grid-year");
     // }
 
-    // public function header()
-    // {
-    //     $title = $this->carbon()->copy()->format($this->yearTitleFormat);
-    //     return UIKit::h2($title);
-    // }
 
-    // public function previousLink()
-    // {
-    //     $year = $this->events()->previousYearWithEvents($this->year());
-    //     $title = "";
-    //     if ($year !== null) {
-    //         $format = $this->yearTitleFormat;
-    //         $title = $this->carbon()->copy()->year($year->year())
-    //             ->format($format);
-    //     }
 
-    //     return $this->navLink($year, $title, "ef-grid-previous-year");
-    // }
 
-    // public function nextLink()
-    // {
-    //     $year = $this->events()->nextYearWithEvents($this->year());
-    //     $title = "";
-    //     if ($year !== null) {
-    //         $format = $this->yearTitleFormat;
-    //         $title = $this->carbon()->copy()->year($year->year())
-    //             ->format($format);
-    //     }
-    //     return $this->navLink($year, $title, "ef-grid-next-year");
-    // }
 
-    // public function gridItem(Month $month)
-    // {
-    //     $year = $this->events()->year($this->year());
-    //     if ($month->hasEvents()->unfold()) {
-    //         $cc = $this->carbon()->copy()
-    //             ->year($year->year())->month($month->month());
-    //         $total = $month->totalEvents();
-    //         return UIKit::a(
-    //             UIKit::abbr($cc->format($this->monthAbbrFormat))
-    //                 ->attr("title ". $cc->format($this->monthTitleFormat)),
-    //             UIKit::span($total->unfold())
-    //         )->attr(
-    //             "href ". $this->prefix() . $month->uri()
-    //         );
-    //     }
-    //     return $this->gridItemBlank($month);
-    // }
+
+
+
 
     // public function gridItemBlank($uriObject)
     // {

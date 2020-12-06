@@ -94,4 +94,10 @@ class Year extends DataAbstract
         }
         return ! $this->isAfter($compare);
     }
+
+
+    public function uri()
+    {
+        return Shoop::this($this->path())->divide("/")->last()->prepend("/");
+    }
 }

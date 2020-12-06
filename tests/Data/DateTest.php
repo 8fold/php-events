@@ -31,8 +31,8 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             1999,
             "string",
-            0.62, // 0.46,
-            26 // 19
+            1.54, // 0.62, // 0.46,
+            27 // 26 // 19
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 1999, 1, 10)->year()
         );
@@ -40,7 +40,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             1,
             "string",
-            0.5, // 0.48, // 0.46, // 0.45, // 0.43,
+            0.53, // 0.5, // 0.48, // 0.46, // 0.45, // 0.43,
             30
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 1999, 1, 10)->month()
@@ -63,12 +63,10 @@ class DateTest extends TestCase
     {
         AssertEquals::applyWith(
             [
-                "i21" => [
-                    Event::fold($this->path->unfold(), 2020, 5, 21, 1)
-                ]
+                Event::fold($this->path->unfold(), 2020, 5, 21, 1)
             ],
             "array",
-            3.77, // 3.41, // 3.31,
+            10.65, // 3.77, // 3.41, // 3.31,
             327
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 2020, 5, 21)->content()
@@ -76,10 +74,8 @@ class DateTest extends TestCase
 
         AssertEquals::applyWith(
             [
-                "i22" => [
-                    Event::fold($this->path->unfold(), 2020, 5, 22, 1),
-                    Event::fold($this->path->unfold(), 2020, 5, 22, 2)
-                ]
+                Event::fold($this->path->unfold(), 2020, 5, 22, 1),
+                Event::fold($this->path->unfold(), 2020, 5, 22, 2)
             ],
             "array",
             3.55, // 3.54,
@@ -124,7 +120,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.77, // 0.67, // 0.63,
+            0.84, // 0.77, // 0.67, // 0.63,
             1
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 2020, 5, 23)->couldHaveEvents()

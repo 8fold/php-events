@@ -107,4 +107,10 @@ class Month extends DataAbstract
         }
         return ! $this->isAfter($compare);
     }
+
+    public function uri()
+    {
+        return Shoop::this($this->path())->divide("/")->last(2)->asString("/")
+            ->prepend("/");
+    }
 }

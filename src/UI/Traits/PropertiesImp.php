@@ -13,9 +13,9 @@ trait PropertiesImp
     private $year  = 0;
     private $month = 0;
 
-    private $events;
+    protected $events;
 
-    private $carbon;
+    protected $carbon;
 
     private $uriPrefix = "/events";
 

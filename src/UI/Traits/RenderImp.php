@@ -13,11 +13,12 @@ use Eightfold\Events\Data\Month;
 
 trait RenderImp
 {
-    private function navLink($uriObject, string $title, string $class)
+    public function navLink($uriObject, string $title, string $class)
     {
-        if ($uriObject === null) {
+        if (! $uriObject) {
             return UIKit::span()->attr("class {$class}");
         }
+
         return UIKit::a(
             UIKit::span($title)
         )->attr(

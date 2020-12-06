@@ -6,7 +6,7 @@ use Eightfold\Shoop\Shoop;
 
 trait PartsImp
 {
-    private $parts = [];
+    protected $parts = [];
 
     public function parts(bool $asString = true): array
     {
