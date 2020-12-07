@@ -69,7 +69,7 @@ class Event extends DataAbstract
         if ($content->length()->is(0)->unfold()) {
             return "";
         }
-        $title = $content->divide("\n\n")->last()->unfold();
+        $title = $content->divide("\n\n", false, 2)->last()->unfold();
         return trim($title);
     }
 
