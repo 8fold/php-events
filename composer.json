@@ -10,8 +10,8 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
-    "8fold/php-shoop-shelf": "~0.7.0",
+    "php": "^7.0|^8.0",
+    "8fold/php-shoop-shelf": "~0.8.3",
     "8fold/php-markup": "~0.5",
     "nesbot/carbon": "~2.36"
   },
