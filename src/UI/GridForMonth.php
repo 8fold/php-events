@@ -156,38 +156,6 @@ class GridForMonth extends GridAbstract
         );
     }
 
-    // public function startBlanks()
-    // {
-    //     $startBlanks = [""];
-    //     if ($this->totalStartGridBlanks() >= 1) {
-    //         $startBlanks = Shoop::int($this->totalStartGridBlanks())->asArray(1)
-    //             ->each(function($item) {
-    //                 return UIKit::button()->attr(
-    //                     "disabled disabled",
-    //                     "aria-disabled true",
-    //                     "role presentation"
-    //                 );
-    //             });
-    //     }
-    //     return $startBlanks;
-    // }
-
-    // public function endBlanks()
-    // {
-    //     $endBlanks = [""];
-    //     if ($this->totalEndGridBlanks() >= 1) {
-    //         $endBlanks = Shoop::int($this->totalEndGridBlanks())->asArray(1)
-    //             ->each(function($item) {
-    //                 return UIKit::button()->attr(
-    //                     "disabled disabled",
-    //                     "aria-disabled true",
-    //                     "role presentation"
-    //                 );
-    //             });
-    //     }
-    //     return $endBlanks;
-    // }
-
     public function bookEndBlank()
     {
         return UIKit::button()->attr(
@@ -196,39 +164,6 @@ class GridForMonth extends GridAbstract
             "role presentation"
         );
     }
-
-    // public function gridItems()
-    // {
-    //     $range = range(1, $this->totalDaysInMonth());
-    //     $eventItems = [];
-    //     return Shoop::this($range)->each(function($date) {
-    //         return $this->gridItem($date);
-    //     });
-    // }
-
-//     public function eventItems()
-//     {
-//         $range  = range(1, $this->totalDaysInMonth());
-//         $month = $this->events()->month($this->year(), $this->month());
-//         if (! $month->hasEvents()) {
-//             return [
-//                 UIKit::p("No events found.")
-//                     ->attr("class ef-events-empty")
-//             ];
-//         }
-//         $dates = $month->content();
-//         $eventItems = Shoop::this($dates)->each(function($date, $m, &$build) {
-//             $date = $date[0];
-//             if (! $date or ! $date->hasEvents()) {
-//                 return "";
-//             }
-//             $build[] = $this->eventsModalItem($date);
-//         });
-// die(var_dump(
-//     $eventItems->unfold()
-// ));
-//         return $eventItems->unfold();
-//     }
 
     private function eventsModalItem(Date $date)
     {
@@ -320,8 +255,10 @@ class GridForMonth extends GridAbstract
         })->drop(fn($e) => empty($e))->unfold();
 
         if (Shoop::this($eventItems)->efIsEmpty()) {
-            $eventItems = UIKit::p("No events found.")
-                ->attr("class ef-events-empty");
+            $eventItems = [
+                UIKit::p("No events found.")
+                    ->attr("class ef-events-empty")
+            ];
         }
 
         return UIKit::div(...Shoop::this([
