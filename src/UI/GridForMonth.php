@@ -254,6 +254,7 @@ class GridForMonth extends GridAbstract
                 }
         })->drop(fn($e) => empty($e))->unfold();
 
+// TODO: write test for lack of events fork
         if (Shoop::this($eventItems)->efIsEmpty()) {
             $eventItems = [
                 UIKit::p("No events found.")
