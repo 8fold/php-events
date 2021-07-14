@@ -77,7 +77,7 @@ class GridYearTest extends TestCase
         AssertEquals::applyWith(
             '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>4</span></a>',
             "string",
-            25.22, // 21, // 19.31, // 19.23, // 18.49,
+            29.73, // 25.22, // 21, // 19.31, // 19.23, // 18.49,
             2973
         )->unfoldUsing(
             GridForYear::fold($this->path->unfold(), 2020)->gridItem(5)

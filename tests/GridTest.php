@@ -30,7 +30,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             12,
             "integer",
-            1.63, // 1.31, // 1.12, // 1.1, // 0.91, // 0.88, // 0.85, // 0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
+            3.39, // 1.63, // 1.31, // 1.12, // 1.1, // 0.91, // 0.88, // 0.85, // 0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
             103 // 98 // 25
         )->unfoldUsing(
             Grid::forYear($this->path->unfold(), 2020)->totalGridItems()
@@ -48,7 +48,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             31,
             "integer",
-            0.72, // 0.49, // 0.41,
+            0.81, // 0.72, // 0.49, // 0.41,
             25
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->daysInMonth()
@@ -160,7 +160,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<span class="ef-grid-previous-month"></span>',
             "string",
-            9.17, // 8.76,
+            9.3, // 9.17, // 8.76,
             739 // 738 // 734 // 733
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->previousLink()

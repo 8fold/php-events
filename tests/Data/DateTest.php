@@ -40,7 +40,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             1,
             "string",
-            2.34, // 1.56, // 1.41, // 0.53, // 0.5, // 0.48, // 0.46, // 0.45, // 0.43,
+            2.51, // 2.34, // 1.56, // 1.41, // 0.53, // 0.5, // 0.48, // 0.46, // 0.45, // 0.43,
             33 // 30
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 1999, 1, 10)->month()
@@ -78,7 +78,7 @@ class DateTest extends TestCase
                 Event::fold($this->path->unfold(), 2020, 5, 22, 2)
             ],
             "array",
-            3.95, // 3.55, // 3.54,
+            4.56, // 3.95, // 3.55, // 3.54,
             327
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 2020, 5, 22)->content()
@@ -102,7 +102,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            4.1, // 3.06, // 1.64, // 1.28, // 1.12, // 1.11, // 0.94, // 0.78, // 0.75,
+            4.48, // 4.1, // 3.06, // 1.64, // 1.28, // 1.12, // 1.11, // 0.94, // 0.78, // 0.75,
             1
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 2020, 5, 22)->hasEvents()
