@@ -54,7 +54,7 @@ class GridMonthTest extends TestCase
         AssertEquals::applyWith(
             '<span class="ef-grid-next-month"></span>',
             "string",
-            7.03, // 6.56, // 5.13, // 2.52, // 1.99, // 1.82, // 1.51, // 1.48, // 1.47, // 1.12,
+            7.64, // 7.03, // 6.56, // 5.13, // 2.52, // 1.99, // 1.82, // 1.51, // 1.48, // 1.47, // 1.12,
             1
         )->unfoldUsing(
             GridForMonth::fold($this->path->unfold(), 2023, 5)->nextLink()
