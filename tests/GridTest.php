@@ -102,7 +102,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<h2>2020</h2>',
             "string",
-            10.8, // 10.42,
+            10.94, // 10.8, // 10.42,
             2167
         )->unfoldUsing(
             Grid::forYear($this->path->unfold(), 2020)->header()
@@ -187,7 +187,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
             "string",
-            32.18, // 24.39, // 22.85, // 21.31,
+            32.35, // 32.18, // 24.39, // 22.85, // 21.31,
             2959 // 2958
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 12)->nextLink()
