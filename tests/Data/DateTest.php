@@ -49,7 +49,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             10,
             "string",
-            0.02, // 0.01, // 0.005,
+            0.03, // 0.02, // 0.01, // 0.005,
             1
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 1999, 1, 10)->date()

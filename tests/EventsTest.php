@@ -87,7 +87,7 @@ class EventsTest extends TestCase
         AssertEquals::applyWith(
             12,
             "string",
-            13.73, // 10.31, // 8.67,
+            15.49, // 13.73, // 10.31, // 8.67,
             496
         )->unfoldUsing(
             Events::fold($this->path->unfold())->previousMonthWithEvents(2023, 1)->month()
