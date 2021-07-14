@@ -40,7 +40,7 @@ class YearsTest extends TestCase
         AssertEquals::applyWith(
             $this->path->unfold(),
             "string",
-            0.008, // 0.005, // 0.003,
+            0.02, // 0.008, // 0.005, // 0.003,
             1
         )->unfoldUsing(
             Years::fold($this->path->unfold())->unfold()
