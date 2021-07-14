@@ -81,7 +81,7 @@ class EventTest extends TestCase
         AssertEquals::applyWith(
             "Hello, Day?\n\nSomething\n",
             "string",
-            1.11, // 0.4, // 0.32,
+            1.53, // 1.11, // 0.4, // 0.32,
             1
         )->unfoldUsing(
             Event::fold($this->path->unfold(), 2020, 5, 22, 2)->content()
@@ -114,7 +114,7 @@ class EventTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            0.23, // 0.2, // 0.19, // 0.14,
+            0.64, // 0.23, // 0.2, // 0.19, // 0.14,
             1
         )->unfoldUsing(
             Event::fold($this->path->unfold(), 2020, 5, 22, 2)->hasEvents()
@@ -132,7 +132,7 @@ class EventTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.18, // 0.15, // 0.14, // 0.12, // 0.11,
+            0.33, // 0.18, // 0.15, // 0.14, // 0.12, // 0.11,
             1
         )->unfoldUsing(
             Event::fold($this->path->unfold(), 2020, 5, 23, 2)->couldHaveEvents()
