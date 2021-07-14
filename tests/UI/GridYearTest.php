@@ -62,7 +62,7 @@ class GridYearTest extends TestCase
         AssertEquals::applyWith(
             '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
             "string",
-            14.59, // 12.81, // 6.52, // 6.04, // 4.47, // 4.02, // 3.5, // 3.39, // 3.33, // 3.16,
+            16.71, // 14.59, // 12.81, // 6.52, // 6.04, // 4.47, // 4.02, // 3.5, // 3.39, // 3.33, // 3.16,
             1
         )->unfoldUsing(
             GridForYear::fold($this->path->unfold(), 2021)->nextLink()
