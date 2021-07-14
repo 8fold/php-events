@@ -102,7 +102,7 @@ class DateTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            4.48, // 4.1, // 3.06, // 1.64, // 1.28, // 1.12, // 1.11, // 0.94, // 0.78, // 0.75,
+            4.89, // 4.48, // 4.1, // 3.06, // 1.64, // 1.28, // 1.12, // 1.11, // 0.94, // 0.78, // 0.75,
             1
         )->unfoldUsing(
             Date::fold($this->path->unfold(), 2020, 5, 22)->hasEvents()
