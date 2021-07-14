@@ -113,7 +113,7 @@ class MonthTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            6.45, // 5.65, // 5.57, // 5.32,
+            6.55, // 6.45, // 5.65, // 5.57, // 5.32,
             414
         )->unfoldUsing(
             Month::fold($this->path->unfold(), 2022, 12)->hasEvents()
