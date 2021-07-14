@@ -3,7 +3,7 @@
 const gulp = require("gulp");
 const { series } = require('gulp');
 const minify = require("gulp-minify");
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 
 gulp.task("sass", function(done) {
   gulp.src(["src/Styles/*.scss"])

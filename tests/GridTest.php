@@ -30,8 +30,8 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             12,
             "integer",
-            0.91, // 0.88, // 0.85, // 0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
-            98 // 25
+            3.39, // 1.63, // 1.31, // 1.12, // 1.1, // 0.91, // 0.88, // 0.85, // 0.76, // 0.66, // 0.55, // 0.51, // 0.5, // 0.49,
+            103 // 98 // 25
         )->unfoldUsing(
             Grid::forYear($this->path->unfold(), 2020)->totalGridItems()
         );
@@ -48,7 +48,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             31,
             "integer",
-            0.49, // 0.41,
+            0.94, // 0.81, // 0.72, // 0.49, // 0.41,
             25
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->daysInMonth()
@@ -57,7 +57,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             0,
             "integer",
-            0.15, // 0.14,
+            1.13, // 0.68, // 0.32, // 0.15, // 0.14,
             1
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->totalEndGridBlanks()
@@ -67,7 +67,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             2,
             "integer",
-            0.15, // 0.11, // 0.1, // 0.09,
+            0.7, // 0.45, // 0.32, // 0.15, // 0.11, // 0.1, // 0.09,
             1
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 4)->totalStartGridBlanks()
@@ -76,7 +76,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             30,
             "integer",
-            0.14,
+            0.82, // 0.76, // 0.72, // 0.69, // 0.61, // 0.58, // 0.18, // 0.17, // 0.16, // 0.14,
             1
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 4)->daysInMonth()
@@ -86,7 +86,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             3,
             "integer",
-            0.14, // 0.12,
+            0.72, // 0.65, // 0.62, // 0.22, // 0.18, // 0.17, // 0.14, // 0.12,
             1
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 4)->totalEndGridBlanks()
@@ -102,7 +102,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<h2>2020</h2>',
             "string",
-            10.8, // 10.42,
+            10.94, // 10.8, // 10.42,
             2167
         )->unfoldUsing(
             Grid::forYear($this->path->unfold(), 2020)->header()
@@ -160,7 +160,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<span class="ef-grid-previous-month"></span>',
             "string",
-            8.76,
+            9.43, // 9.37, // 9.3, // 9.17, // 8.76,
             739 // 738 // 734 // 733
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->previousLink()
@@ -169,7 +169,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<a class="ef-grid-previous-month" href="/events/2020/12" title="December 2020"><span>December 2020</span></a>',
             "string",
-            9.02, // 8.81, // 7.39,
+            46.84, // 46.3, // 36.13, // 15.47, // 15.13, // 13.58, // 13.14, // 10.89, // 9.02, // 8.81, // 7.39,
             94 // 30 // 28
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2022, 5)->previousLink()
@@ -178,7 +178,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<span class="ef-grid-next-month"></span>',
             "string",
-            1.73, // 1.48, // 1.09, // 1.08, // 1.06, // 0.99,
+            6.61, // 5.61, // 5.55, // 4.88, // 4.23, // 3.48, // 3.17, // 2.09, // 1.73, // 1.48, // 1.09, // 1.08, // 1.06, // 0.99,
             64
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2023, 5)->nextLink()
@@ -187,7 +187,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
             "string",
-            24.39, // 22.85, // 21.31,
+            38.2, // 35.12, // 32.35, // 32.18, // 24.39, // 22.85, // 21.31,
             2959 // 2958
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 12)->nextLink()
@@ -205,7 +205,7 @@ class GridTest extends TestCase
         AssertEquals::applyWith(
             '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)" aria-expanded="false"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
             "string",
-            25.5, // 24.31, // 23.61,
+            44.9, // 41.2, // 35.55, // 35.44, // 35.36, // 35.11, // 25.5, // 24.31, // 23.61,
             2994
         )->unfoldUsing(
             Grid::forMonth($this->path->unfold(), 2020, 5)->gridItem(22)
