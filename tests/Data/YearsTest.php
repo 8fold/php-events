@@ -91,7 +91,7 @@ class YearsTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.33, // 0.31,
+            0.69, // 0.5, // 0.43, // 0.33, // 0.31,
             1
         )->unfoldUsing(
             Years::fold($this->path->unfold())->year(2021)
@@ -115,7 +115,7 @@ class YearsTest extends TestCase
         AssertEquals::applyWith(
             true,
             "boolean",
-            0.04, // 0.02,
+            0.16, // 0.06, // 0.04, // 0.02,
             1
         )->unfoldUsing(
             Years::fold($this->path->unfold())->couldHaveEvents()
