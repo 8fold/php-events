@@ -53,7 +53,7 @@ class GridYearTest extends TestCase
         AssertEquals::applyWith(
             '<a class="ef-grid-previous-year" href="/events/2020" title="2020"><span>2020</span></a>',
             "string",
-            15.64, // 14.45, // 12.78,
+            20.03, // 15.64, // 14.45, // 12.78,
             2955
         )->unfoldUsing(
             GridForYear::fold($this->path->unfold(), 2021)->previousLink()
@@ -77,7 +77,7 @@ class GridYearTest extends TestCase
         AssertEquals::applyWith(
             '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>4</span></a>',
             "string",
-            21, // 19.31, // 19.23, // 18.49,
+            25.22, // 21, // 19.31, // 19.23, // 18.49,
             2973
         )->unfoldUsing(
             GridForYear::fold($this->path->unfold(), 2020)->gridItem(5)
