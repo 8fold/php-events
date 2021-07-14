@@ -81,7 +81,7 @@ class GridMonthTest extends TestCase
         AssertEquals::applyWith(
             '<button id="toggle-20200522" class="calendar-date" onclick="EFEventsModals.init(this, 20200522)" aria-expanded="false"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
             "string",
-            35.55, // 35.28, // 35.22, // 35.09, // 15.72, // 15, // 13.53, // 12.68, // 9.63, // 8.03, // 7.79,
+            38.53, // 35.55, // 35.28, // 35.22, // 35.09, // 15.72, // 15, // 13.53, // 12.68, // 9.63, // 8.03, // 7.79,
             3
         )->unfoldUsing(
             GridForMonth::fold($this->path->unfold(), 2020, 5)->gridItem(22)

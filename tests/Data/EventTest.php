@@ -132,7 +132,7 @@ class EventTest extends TestCase
         AssertEquals::applyWith(
             false,
             "boolean",
-            0.67, // 0.65, // 0.33, // 0.18, // 0.15, // 0.14, // 0.12, // 0.11,
+            0.71, // 0.67, // 0.65, // 0.33, // 0.18, // 0.15, // 0.14, // 0.12, // 0.11,
             1
         )->unfoldUsing(
             Event::fold($this->path->unfold(), 2020, 5, 23, 2)->couldHaveEvents()
