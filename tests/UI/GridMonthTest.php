@@ -72,7 +72,7 @@ class GridMonthTest extends TestCase
         AssertEquals::applyWith(
             '<button role="presentation" aria-disabled="true" disabled><abbr title="1st of February 2020">1</abbr></button>',
             "string",
-            14.44, // 11.93, // 11.89, // 11.83, // 8.32, // 6.08, // 5.57, // 5.52, // 4.47, // 4.21, // 3.36, // 3.06,
+            14.63, // 14.44, // 11.93, // 11.89, // 11.83, // 8.32, // 6.08, // 5.57, // 5.52, // 4.47, // 4.21, // 3.36, // 3.06,
             19 // 18
         )->unfoldUsing(
             GridForMonth::fold($this->path->unfold(), 2020, 2)->gridItem(1)
