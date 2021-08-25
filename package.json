@@ -9,6 +9,7 @@
     "gulp-sass": "^5.0.0",
     "gulp4-run-sequence": "^1.0.1",
     "node-sass": "^6.0.1",
-    "glob-parent": ">=5.1.2"
+    "glob-parent": ">=5.1.2",
+    "tar": ">=6.1.2"
   }
 }
