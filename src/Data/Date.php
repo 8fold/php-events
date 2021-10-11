@@ -4,23 +4,11 @@ namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\Events\Data\Traits\PartsImp;
-use Eightfold\Events\Data\Traits\YearImp;
-use Eightfold\Events\Data\Traits\MonthImp;
-use Eightfold\Events\Data\Traits\DateImp;
-
-// use Carbon\Carbon;
-
-use Eightfold\ShoopShelf\Shoop;
-
-// use Eightfold\Events\Data\Interfaces\Day as DayInterface;
-// use Eightfold\Events\Data\Traits\DayImp;
-
-// use Eightfold\Events\Data\Event;
+use Eightfold\FileSystem\Item;
 
 class Date extends DataAbstract
 {
-    use PartsImp, YearImp, MonthImp, DateImp;
+    private array $content = [];
 
     public function __construct(string $root, int $year, int $month, int $date)
     {
@@ -28,46 +16,46 @@ class Date extends DataAbstract
         $this->parts = [$year, $month, $date];
     }
 
+    public function item(): Item
+    {
+        if ($this->item === null) {
+            $this->item = Item::create($this->root)->append(
+                $this->year(),
+                $this->month(),
+            );
+        }
+        return $this->item;
+    }
+
     public function path(): string
     {
-        return Shoop::this($this->root)->divide("/")->append([
-            $this->year(),
-            $this->month()
-        ])->efToString("/");
+        return $this->item()->thePath();
     }
 
     public function content()
     {
-        if (Shoop::this($this->content)->length()->efIsEmpty()) {
-            Shoop::store($this->path())->content()->each(function($v, $member, &$build) {
-                if (Shoop::this($v)->endsWith(".event")->unfold()) {
-                    $initial   = Shoop::this($v)->divide("/")->last();
-                    $fileName  = $initial->divide(".")->first();
-                    $fileParts = $fileName->divide("_");
-                    if ($fileParts->first()->startsWith($this->date())->unfold()) {
-                        $count = ($fileParts->length()->is(1)->unfold())
-                            ? 1
-                            : $fileParts->last()->unfold();
+        if (count($this->content) === 0) {
+            $c = $this->item()->content();
 
-                        // $k = "i". $fileParts->first()->unfold();
-                        // $this->content[$k][] = Event::fold(
-                        $this->content[] = Event::fold(
-                            $this->root(),
-                            $this->year(),
-                            $this->month(false),
-                            $this->date(false),
-                            $count
-                        );
-                    }
+            foreach ($c as $item) {
+                $path     = $item->thePath();
+                $p        = explode('/', $path);
+                $fileName = array_pop($p);
+                if (substr($path, -6) === '.event' and
+                    substr($fileName, 0, 2) === $this->date()
+                ) {
+                    $this->content[$path] =
+                        Event::fromItem($this->root(), $item);
+
                 }
-            });
+            }
         }
         return $this->content;
     }
 
     public function count(): int
     {
-        return Shoop::this($this->content())->count();
+        return count($this->content());
     }
 
     public function couldHaveEvents(): bool
@@ -77,6 +65,6 @@ class Date extends DataAbstract
 
     public function hasEvents(): bool
     {
-        return Shoop::this($this->content())->length()->isGreaterThan(0)->unfold();
+        return $this->count() > 0;
     }
 }

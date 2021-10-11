@@ -9,9 +9,9 @@ use Eightfold\Events\Data\Traits\RootImp;
 
 abstract class DataAbstract // extends Fold
 {
-    use RootImp;
+    protected $root;
 
-    // protected $content = [];
+    protected $item;
 
     static public function fold(...$args): DataAbstract
     {
@@ -32,4 +32,52 @@ abstract class DataAbstract // extends Fold
     abstract public function couldHaveEvents(): bool;
 
     abstract public function hasEvents(): bool;
+
+    public function root(): string
+    {
+        return $this->root;
+    }
+
+    /**
+     * possible traits
+     */
+    // year implementation
+    public function year(bool $asString = true)
+    {
+        if ($asString) {
+            return strval($this->parts[0]);
+        }
+        return $this->parts[0];
+    }
+
+    // month implementation
+    public function month(bool $asString = true)
+    {
+        if ($asString) {
+            $month = $this->month(false);
+            if ($month >= 10) {
+                return (string) $month;
+            }
+            return "0". $month;
+        }
+        return $this->parts[1];
+    }
+
+    public function daysInMonth(): int
+    {
+        $carbon = Carbon::now()->year($this->year())->month($this->month());
+        return $carbon->daysInMonth;
+    }
+
+    public function date(bool $asString = true)
+    {
+        if ($asString) {
+            $date = $this->date(false);
+            if ($date >= 10) {
+                return (string) $this->parts[2];
+            }
+            return "0". $this->parts[2];
+        }
+        return $this->parts[2];
+    }
 }

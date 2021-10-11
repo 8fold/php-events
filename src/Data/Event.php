@@ -6,33 +6,45 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
-// use Eightfold\ShoopShelf\Shoop;
-
-// use Eightfold\Events\Data\Traits\PartsImp;
-// use Eightfold\Events\Data\Traits\YearImp;
-// use Eightfold\Events\Data\Traits\MonthImp;
-// use Eightfold\Events\Data\Traits\DateImp;
-
 class Event extends DataAbstract
 {
-    // use PartsImp, YearImp, MonthImp, DateImp;
-
     private int $count;
 
-    private $item;
-
     private string $content = '';
+
+    public static function fromItem(string $rootPath, Item $item): Event
+    {
+        $p = $item->thePath();
+        $parts = explode('/', $p);
+
+        $fileName = array_pop($parts);
+        $fileName = str_replace('.event', '', $fileName);
+        $fParts   = explode('_', $fileName);
+        $date     = intval(array_shift($fParts));
+        $count    = 1;
+        if (count($fParts) > 0) {
+            $count = intval($fParts[0]);
+        }
+
+        $month = intval(array_pop($parts));
+
+        $year = intval(array_pop($parts));
+
+        return new Event($rootPath, $year, $month, $date, $count, $item);
+    }
 
     public function __construct(
         string $root,
         int $year,
         int $month,
         int $date,
-        int $count
+        int $count,
+        Item $item = null
     )
     {
-        $this->root = $root;
+        $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
+        $this->item  = $item;
     }
 
     public function item(): Item
@@ -118,48 +130,5 @@ class Event extends DataAbstract
     public function hasEvents(): bool
     {
         return $this->item()->isFile();
-    }
-
-    /**
-     * possible traits
-     */
-    // year implementation
-    public function year(bool $asString = true)
-    {
-        if ($asString) {
-            return strval($this->parts[0]);
-        }
-        return $this->parts[0];
-    }
-
-    // month implementation
-    public function month(bool $asString = true)
-    {
-        if ($asString) {
-            $month = $this->month(false);
-            if ($month >= 10) {
-                return (string) $month;
-            }
-            return "0". $month;
-        }
-        return $this->parts[1];
-    }
-
-    public function daysInMonth(): int
-    {
-        $carbon = Carbon::now()->year($this->year())->month($this->month());
-        return $carbon->daysInMonth;
-    }
-
-    public function date(bool $asString = true)
-    {
-        if ($asString) {
-            $date = $this->date(false);
-            if ($date >= 10) {
-                return (string) $this->parts[2];
-            }
-            return "0". $this->parts[2];
-        }
-        return $this->parts[2];
     }
 }

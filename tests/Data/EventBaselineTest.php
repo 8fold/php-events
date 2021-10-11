@@ -49,7 +49,7 @@ test('Event has content', function() {
     expect(
         Event::fold($this->path, 2020, 5, 23, 2)->content()
     )->toBeString()->toBeEmpty();
-})->group('focus');
+});
 
 test('Event can be separated by title and body', function() {
     expect(
@@ -59,7 +59,7 @@ test('Event can be separated by title and body', function() {
     expect(
         Event::fold($this->path, 2020, 5, 22, 2)->body()
     )->toBeString()->toBe('Something');
-})->group('focus');
+});
 
 test('Event can check for events', function() {
     // 2.72ms 92kb
