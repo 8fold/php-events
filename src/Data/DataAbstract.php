@@ -2,18 +2,18 @@
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Foldable\Fold;
-use Eightfold\Foldable\Foldable;
+// use Eightfold\Foldable\Fold;
+// use Eightfold\Foldable\Foldable;
 
 use Eightfold\Events\Data\Traits\RootImp;
 
-abstract class DataAbstract extends Fold
+abstract class DataAbstract // extends Fold
 {
     use RootImp;
 
-    protected $content = [];
+    // protected $content = [];
 
-    static public function fold(...$args): Foldable
+    static public function fold(...$args): DataAbstract
     {
         return new static(...$args);
     }
