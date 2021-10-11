@@ -6,8 +6,12 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
+use Eightfold\Events\Data\Traits\DateImp;
+
 class Event extends DataAbstract
 {
+    use DateImp;
+
     private int $count;
 
     private string $content = '';

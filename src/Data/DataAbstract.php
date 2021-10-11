@@ -2,12 +2,9 @@
 
 namespace Eightfold\Events\Data;
 
-// use Eightfold\Foldable\Fold;
-// use Eightfold\Foldable\Foldable;
+use Carbon\Carbon;
 
-use Eightfold\Events\Data\Traits\RootImp;
-
-abstract class DataAbstract // extends Fold
+abstract class DataAbstract
 {
     protected $root;
 
@@ -67,17 +64,5 @@ abstract class DataAbstract // extends Fold
     {
         $carbon = Carbon::now()->year($this->year())->month($this->month());
         return $carbon->daysInMonth;
-    }
-
-    public function date(bool $asString = true)
-    {
-        if ($asString) {
-            $date = $this->date(false);
-            if ($date >= 10) {
-                return (string) $this->parts[2];
-            }
-            return "0". $this->parts[2];
-        }
-        return $this->parts[2];
     }
 }

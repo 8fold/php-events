@@ -6,14 +6,42 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
+use Eightfold\Events\Data\Traits\DateImp;
+
 class Date extends DataAbstract
 {
+    use DateImp;
+
     private array $content = [];
 
-    public function __construct(string $root, int $year, int $month, int $date)
+    public static function fromItem(string $rootPath, Item $item): Date
     {
+        $p = $item->thePath();
+        $parts = explode('/', $p);
+
+        $fileName = array_pop($parts);
+        $fileName = str_replace('.event', '', $fileName);
+        $fParts   = explode('_', $fileName);
+        $date     = intval(array_shift($fParts));
+
+        $month = intval(array_pop($parts));
+
+        $year = intval(array_pop($parts));
+
+        // Item doesn't need date
+        return new Date($rootPath, $year, $month, $date, $item->up());
+    }
+
+    public function __construct(
+        string $root,
+        int $year,
+        int $month,
+        int $date,
+        Item $item = null
+    ) {
         $this->root = $root;
         $this->parts = [$year, $month, $date];
+        $this->item  = $item;
     }
 
     public function item(): Item

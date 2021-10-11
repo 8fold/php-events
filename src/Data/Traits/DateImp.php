@@ -9,10 +9,11 @@ trait DateImp
     public function date(bool $asString = true)
     {
         if ($asString) {
-            if ($this->parts[2] < 10) {
-                return "0". $this->parts[2];
+            $date = $this->date(false);
+            if ($date >= 10) {
+                return (string) $this->parts[2];
             }
-            return (string) $this->parts[2];
+            return "0". $this->parts[2];
         }
         return $this->parts[2];
     }
