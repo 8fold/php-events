@@ -28,7 +28,7 @@ class Date extends DataAbstract
 
         $year = intval(array_pop($parts));
 
-        // Item doesn't need date
+        // Item doesn't need date; go up one
         return new Date($rootPath, $year, $month, $date, $item->up());
     }
 

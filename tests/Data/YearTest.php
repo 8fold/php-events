@@ -11,6 +11,8 @@ use Eightfold\Events\Data\Year;
 use Eightfold\Events\Data\Months;
 use Eightfold\Events\Data\Month;
 
+use Eightfold\FileSystem\Item;
+
 /**
  * @group Year
  */
@@ -20,71 +22,13 @@ class YearTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Shoop::this(__DIR__)->divide("/")->dropLast()
-            ->append(["test-events", "events"])->asString("/");
+        $this->path = Item::create(__DIR__)
+            ->up()->append('test-events', 'events')->thePath();
     }
 
     /**
      * @test
-     */
-    public function root_and_parts()
-    {
-        AssertEquals::applyWith(
-            $this->path->unfold(),
-            "string",
-            1.19,
-            19 // 12
-        )->unfoldUsing(
-            Year::fold($this->path->unfold(), 2020)->root()
-        );
-
-        AssertEquals::applyWith(
-            [
-                2020
-            ],
-            "array",
-            0.2, // 0.16, // 0.004,
-            9
-        )->unfoldUsing(
-            Year::fold($this->path->unfold(), 2020)->parts()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function year()
-    {
-        AssertEquals::applyWith(
-            date("Y"),
-            "string",
-            0.36,
-            12
-        )->unfoldUsing(
-            Year::fold($this->path->unfold(), date("Y"))->year()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function get_all_months()
-    {
-        AssertEquals::applyWith(
-            [
-                "i05" => Month::fold($this->path->unfold(), 2020, 5),
-                "i12" => Month::fold($this->path->unfold(), 2020, 12)
-            ],
-            "array",
-            3.15, // 3.14, // 2.9, // 2.79,
-            310
-        )->unfoldUsing(
-            Year::fold($this->path->unfold(), 2020)->content()
-        );
-    }
-
-    /**
-     * @test
+     * @group old-focus
      */
     public function has_events()
     {

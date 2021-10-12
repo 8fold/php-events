@@ -4,16 +4,13 @@ namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\ShoopShelf\Shoop;
-
-use Eightfold\Events\Data\Traits\PartsImp;
-use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\FileSystem\Item;
 
 class Year extends DataAbstract
 {
-    use PartsImp, YearImp;
+    private array $content = [];
 
-    static public function totalMonthsInYear(): int
+    public static function totalMonthsInYear(): int
     {
         return 12;
     }
@@ -24,49 +21,60 @@ class Year extends DataAbstract
         $this->parts = [$year];
     }
 
+    public function item(): Item
+    {
+        if ($this->item === null) {
+            $this->item = Item::create($this->root)->append($this->year());
+        }
+        return $this->item;
+    }
+
     public function path(): string
     {
-        return Shoop::this($this->root())->divide("/")->append($this->parts())
-            ->efToString("/");
+        return $this->item()->thePath();
     }
 
     public function content()
     {
-        if (Shoop::this($this->content)->length()->efIsEmpty()) {
-            Shoop::store($this->path())->content()->each(function($v, $member, &$build) {
-                $m = Shoop::this($v)->divide("/")->last();
-                $k = $m->prepend("i")->unfold();
+        if (count($this->content) === 0) {
+            $c = $this->item()->content();
 
-                $month = Month::fold($this->root(), $this->year(), $m->efToInteger());
+            foreach ($c as $item) {
+                $parts = explode('/', $item->thePath());
+                $month = array_pop($parts);
+                $key   = 'i' . $month;
+                if (! isset($this->content[$key])) {
+                    $item = Item::create($this->path() .'/'. $month);
+                    $this->content[$key] = Month::fromItem($this->root(), $item);
 
-                $this->content[$k] = $month;
-            });
+                }
+            }
         }
         return $this->content;
     }
 
     public function count(): int
-    {}
+    {
+        return count($this->content());
+    }
 
     public function couldHaveEvents(): bool
     {
-        return $this->hasEvents();
+        return $this->count() > 0;
     }
 
     public function hasEvents(): bool
     {
-        $hasEvents = false;
-        Shoop::this($this->content())->each(
-            function($x, $y, $z, &$break) use (&$hasEvents) {
-                if ($hasEvents or $x->hasEvents()) {
-                    $break = true;
-                    $hasEvents = true;
+        foreach ($this->content() as $month) {
+            if ($month->hasEvents()) {
+                return true;
 
-                }
-        });
-        return $hasEvents;
+            }
+        }
+        return false;
     }
 
+// TODO: Test??
     public function monthsInYear(): int
     {
         return static::totalMonthsInYear();

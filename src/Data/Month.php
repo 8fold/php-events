@@ -5,21 +5,29 @@ namespace Eightfold\Events\Data;
 use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
-// use Eightfold\ShoopShelf\Shoop;
-
-// use Eightfold\Events\Data\Traits\RootImp;
-// use Eightfold\Events\Data\Traits\PartsImp;
-// use Eightfold\Events\Data\Traits\YearImp;
-// use Eightfold\Events\Data\Traits\MonthImp;
 
 class Month extends DataAbstract
 {
-    // use PartsImp, YearImp, MonthImp;
-
     private array $content = [];
 
-    public function __construct(string $root, int $year, int $month)
+    public static function fromItem(string $rootPath, Item $item): Month
     {
+        $p = $item->thePath();
+        $parts = explode('/', $p);
+
+        $month = intval(array_pop($parts));
+
+        $year = intval(array_pop($parts));
+
+        return new Month($rootPath, $year, $month, $item);
+    }
+
+    public function __construct(
+        string $root,
+        int $year,
+        int $month,
+        Item $item = null
+    ) {
         $this->root = $root;
         $this->parts = [$year, $month];
     }
