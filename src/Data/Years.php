@@ -2,15 +2,11 @@
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Events\Data\DataAbstract;
-
-// use Eightfold\ShoopShelf\Shoop;
-
 use Eightfold\Events\Data\Year;
 
 use Eightfold\FileSystem\Item;
 
-class Years //extends DataAbstract
+class Years
 {
     private $item;
 

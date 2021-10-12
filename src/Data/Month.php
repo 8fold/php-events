@@ -6,8 +6,18 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
-class Month extends DataAbstract
+use Eightfold\Events\Data\Interfaces\Month as MonthInterface;
+
+use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\Events\Data\Traits\MonthImp;
+
+class Month implements MonthInterface
 {
+    use YearImp;
+    use MonthImp;
+
+    private $item;
+
     private array $content = [];
 
     public static function fromItem(string $rootPath, Item $item): Month
@@ -20,6 +30,11 @@ class Month extends DataAbstract
         $year = intval(array_pop($parts));
 
         return new Month($rootPath, $year, $month, $item);
+    }
+
+    static public function fold(...$args): Month
+    {
+        return new Month(...$args);
     }
 
     public function __construct(
@@ -62,7 +77,7 @@ class Month extends DataAbstract
                     $key  = 'i' . $date;
                     if (! isset($this->content[$key])) {
                         $item = Item::create($this->path() .'/'. $date);
-                        $this->content[$key] = Date::fromItem($this->root(), $item);
+                        $this->content[$key] = Date::fromItem($this->root, $item);
 
                     }
                 }

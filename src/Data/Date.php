@@ -6,11 +6,19 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
+use Eightfold\Events\Data\Interfaces\Day as DateInterface;
+
+use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\Events\Data\Traits\MonthImp;
 use Eightfold\Events\Data\Traits\DateImp;
 
-class Date extends DataAbstract
+class Date implements DateInterface
 {
+    use YearImp;
+    use MonthImp;
     use DateImp;
+
+    private $item;
 
     private array $content = [];
 
@@ -30,6 +38,11 @@ class Date extends DataAbstract
 
         // Item doesn't need date; go up one
         return new Date($rootPath, $year, $month, $date, $item->up());
+    }
+
+    public static function fold(...$args): Date
+    {
+        return new Date(...$args);
     }
 
     public function __construct(
@@ -73,7 +86,7 @@ class Date extends DataAbstract
                     substr($fileName, 0, 2) === $this->date()
                 ) {
                     $this->content[$path] =
-                        Event::fromItem($this->root(), $item);
+                        Event::fromItem($this->root, $item);
 
                 }
             }

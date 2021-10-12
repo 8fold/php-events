@@ -25,7 +25,7 @@ test('Years can get single year', function() {
     expect(
         Years::fold($this->path)->year(2021)
     )->toBeFalse();
-});
+})->group('data', 'years');
 
 test('Years has content', function() {
     $this->assertEquals(
@@ -47,4 +47,4 @@ test('Years has content', function() {
     expect(
         Years::fold($this->path)->hasEvents()
     )->toBeTrue();
-});
+})->group('data', 'years');

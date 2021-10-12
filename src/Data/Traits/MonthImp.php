@@ -12,8 +12,8 @@ trait MonthImp
     {
         if ($asString) {
             $month = $this->month(false);
-            if (Shoop::this($month)->isGreaterThanOrEqualTo(10)->unfold()) {
-                return strval($month);
+            if ($month >= 10) {
+                return (string) $month;
             }
             return "0". $month;
         }

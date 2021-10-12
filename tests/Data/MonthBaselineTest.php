@@ -26,7 +26,7 @@ test('Month has details', function() {
     expect(
         Month::fold($this->path, 2020, 5)->daysInMonth()
     )->toBeInt()->toBe(31);
-});
+})->group('data', 'month');
 
 test('Month has content', function() {
     // 10.6ms 396kb
@@ -46,6 +46,6 @@ test('Month has content', function() {
 
     // 1.26ms 1
     expect(
-        Month::fold($this->path->unfold(), 2020, 10)->couldHaveEvents()
+        Month::fold($this->path, 2020, 10)->couldHaveEvents()
     )->toBeFalse();
-});
+})->group('data', 'month');

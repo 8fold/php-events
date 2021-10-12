@@ -26,7 +26,7 @@ test('Event has event details', function() {
     expect($event->date())->toBeString()->toBe('22');
 
     expect($event->date(false))->toBeInt()->toBe(22);
-});
+})->group('data', 'event');
 
 test('Event has content', function() {
     // 9.66ms 319kb
@@ -49,7 +49,7 @@ test('Event has content', function() {
     expect(
         Event::fold($this->path, 2020, 5, 23, 2)->content()
     )->toBeString()->toBeEmpty();
-});
+})->group('data', 'event');
 
 test('Event can be separated by title and body', function() {
     expect(
@@ -59,7 +59,7 @@ test('Event can be separated by title and body', function() {
     expect(
         Event::fold($this->path, 2020, 5, 22, 2)->body()
     )->toBeString()->toBe('Something');
-});
+})->group('data', 'event');
 
 test('Event can check for events', function() {
     // 2.72ms 92kb
@@ -68,10 +68,10 @@ test('Event can check for events', function() {
     )->toBeTrue();
 
     expect(
-        Event::fold($this->path->unfold(), 2020, 5, 22, 2)->hasEvents()
+        Event::fold($this->path, 2020, 5, 22, 2)->hasEvents()
     )->toBeTrue();
 
     expect(
-        Event::fold($this->path->unfold(), 2020, 5, 23, 2)->hasEvents()
+        Event::fold($this->path, 2020, 5, 23, 2)->hasEvents()
     )->toBeFalse();
-});
+})->group('data', 'event');

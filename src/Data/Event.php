@@ -2,19 +2,27 @@
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Events\Data\DataAbstract;
-
 use Eightfold\FileSystem\Item;
 
+use Eightfold\Events\Data\Interfaces\Event as EventInterface;
+
+use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\Events\Data\Traits\MonthImp;
 use Eightfold\Events\Data\Traits\DateImp;
 
-class Event extends DataAbstract
+class Event implements EventInterface
 {
+    use YearImp;
+    use MonthImp;
     use DateImp;
+
+    private $item;
 
     private int $count;
 
     private string $content = '';
+
+    private array $parts = [];
 
     public static function fromItem(string $rootPath, Item $item): Event
     {
@@ -35,6 +43,11 @@ class Event extends DataAbstract
         $year = intval(array_pop($parts));
 
         return new Event($rootPath, $year, $month, $date, $count, $item);
+    }
+
+    static public function fold(...$args): Event
+    {
+        return new Event(...$args);
     }
 
     public function __construct(

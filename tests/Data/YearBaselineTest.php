@@ -18,7 +18,7 @@ test('Year has details', function() {
     expect($year->year())->toBeString()->toBe('2020');
 
     expect($year->year(false))->toBeInt()->toBe(2020);
-});
+})->group('data', 'year');
 
 test('Year has content', function() {
     $this->assertEquals(
@@ -44,4 +44,4 @@ test('Year has content', function() {
     expect(
         Year::fold($this->path, 2021)->hasEvents()
     )->toBeFalse();
-});
+})->group('data', 'year');

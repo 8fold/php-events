@@ -6,13 +6,26 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
-class Year extends DataAbstract
+use Eightfold\Events\Data\Interfaces\Year as YearInterface;
+
+use Eightfold\Events\Data\Traits\YearImp;
+
+class Year implements YearInterface
 {
+    use YearImp;
+
+    private $item;
+
     private array $content = [];
 
     public static function totalMonthsInYear(): int
     {
         return 12;
+    }
+
+    public static function fold(...$args): Year
+    {
+        return new Year(...$args);
     }
 
     public function __construct(string $root, int $year)
@@ -45,7 +58,7 @@ class Year extends DataAbstract
                 $key   = 'i' . $month;
                 if (! isset($this->content[$key])) {
                     $item = Item::create($this->path() .'/'. $month);
-                    $this->content[$key] = Month::fromItem($this->root(), $item);
+                    $this->content[$key] = Month::fromItem($this->root, $item);
 
                 }
             }

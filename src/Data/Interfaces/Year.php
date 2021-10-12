@@ -8,5 +8,5 @@ interface Year extends Path
 {
     public function year();
 
-    public function monthString(int $month = 0);
+    // public function monthString(int $month = 0);
 }

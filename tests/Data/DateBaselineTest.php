@@ -27,7 +27,7 @@ test('Date has details', function() {
     expect($date->date())->toBeString()->toBe('10');
 
     expect($date->date(false))->toBeInt()->toBe(10);
-});
+})->group('data', 'date');
 
 test('Date has content', function() {
     // 15.43ms 521kb
@@ -77,4 +77,4 @@ test('Date has content', function() {
     expect(
         Date::fold($this->path, 2020, 5, 23)->hasEvents()
     )->toBeFalse();
-});
+})->group('data', 'date');

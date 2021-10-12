@@ -6,5 +6,5 @@ use Eightfold\Events\Data\Interfaces\Month;
 
 interface Day extends Month
 {
-    public function day();
+    public function date(bool $asString = true);
 }
