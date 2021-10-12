@@ -4,11 +4,13 @@ namespace Eightfold\Events\Data\Traits;
 
 trait YearImp
 {
-    public function year(bool $asString = true)
+    public function year(): int
     {
-        if ($asString) {
-            return strval($this->parts[0]);
-        }
         return $this->parts[0];
+    }
+
+    public function yearString(): string
+    {
+        return strval($this->year());
     }
 }

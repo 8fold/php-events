@@ -18,9 +18,22 @@ class Date implements DateInterface
     use MonthImp;
     use DateImp;
 
+    private string $root;
+
+    /**
+     * @var Item|null
+     */
     private $item;
 
+    /**
+     * @var array<Event>
+     */
     private array $content = [];
+
+    /**
+     * @var array<int>
+     */
+    private array $parts = [];
 
     public static function fromItem(string $rootPath, Item $item): Date
     {
@@ -40,6 +53,9 @@ class Date implements DateInterface
         return new Date($rootPath, $year, $month, $date, $item->up());
     }
 
+    /**
+     * @param mixed $args [description]
+     */
     public static function fold(...$args): Date
     {
         return new Date(...$args);
@@ -61,8 +77,8 @@ class Date implements DateInterface
     {
         if ($this->item === null) {
             $this->item = Item::create($this->root)->append(
-                $this->year(),
-                $this->month(),
+                $this->yearString(),
+                $this->monthString(),
             );
         }
         return $this->item;
@@ -73,21 +89,26 @@ class Date implements DateInterface
         return $this->item()->thePath();
     }
 
+    /**
+     * @return array<Event>
+     */
     public function content()
     {
         if (count($this->content) === 0) {
             $c = $this->item()->content();
+            if (is_array($c)) {
+                foreach ($c as $item) {
+                    $path     = $item->thePath();
+                    $p        = explode('/', $path);
+                    $fileName = array_pop($p);
+                    if (
+                        substr($path, -6) === '.event' and
+                        substr($fileName, 0, 2) === $this->dateString()
+                    ) {
+                        $this->content[$path] =
+                            Event::fromItem($this->root, $item);
 
-            foreach ($c as $item) {
-                $path     = $item->thePath();
-                $p        = explode('/', $path);
-                $fileName = array_pop($p);
-                if (substr($path, -6) === '.event' and
-                    substr($fileName, 0, 2) === $this->date()
-                ) {
-                    $this->content[$path] =
-                        Event::fromItem($this->root, $item);
-
+                    }
                 }
             }
         }

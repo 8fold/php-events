@@ -27,7 +27,12 @@ use Eightfold\Events\UI\Traits\PropertiesImp;
 
 abstract class GridAbstract extends Fold
 {
-    use RootImp, PartsImp, YearImp, FormatsImp, RenderImp, PropertiesImp;
+    use RootImp;
+    use PartsImp;
+    use YearImp;
+    use FormatsImp;
+    use RenderImp;
+    use PropertiesImp;
 
     abstract public function carbon();
 

@@ -6,15 +6,17 @@ use Eightfold\Events\Data\Traits\YearImp;
 
 trait DateImp
 {
-    public function date(bool $asString = true)
+    public function date(): int
     {
-        if ($asString) {
-            $date = $this->date(false);
-            if ($date >= 10) {
-                return (string) $this->parts[2];
-            }
-            return "0". $this->parts[2];
-        }
         return $this->parts[2];
+    }
+
+    public function dateString(): string
+    {
+        $d = $this->date();
+        if ($d < 10) {
+            return '0' . $d;
+        }
+        return strval($d);
     }
 }

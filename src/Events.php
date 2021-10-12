@@ -26,7 +26,7 @@ class Events extends Fold
 
     public function year(int $year)
     {
-        $year  = "i". $year;
+        $year  = 'i' . $year;
         $years = Shoop::this($this->years()->content());
 
         if ($years->efIsEmpty() or $years->hasAt($year)->reversed()->unfold()) {
@@ -44,9 +44,9 @@ class Events extends Fold
         }
 
         if ($month < 10) {
-            $month = "0". $month;
+            $month = '0' . $month;
         }
-        $month = "i". $month;
+        $month = 'i' . $month;
 
         $months = $this->year($year)->content();
         if (Shoop::this($months)->hasAt($month)->reversed()->unfold()) {
@@ -63,9 +63,9 @@ class Events extends Fold
         }
 
         if ($date < 10) {
-            $date = "0". $date;
+            $date = '0' . $date;
         }
-        $date = "i". $date;
+        $date = 'i' . $date;
 
         $dates = $this->month($year, $month)->content();
         if (Shoop::this($dates)->hasAt($date)->reversed()->unfold()) {
@@ -78,7 +78,9 @@ class Events extends Fold
     public function nextYearWithEvents(int $baseYear = 0)
     {
         // TODO: Unfoldable needs a way to discern whether to unfold recursively
-        $years = Shoop::this($this->years()->content())->retain(function($year) use ($baseYear) {
+        $years = Shoop::this(
+            $this->years()->content()
+        )->retain(function ($year) use ($baseYear) {
             return ($year->isAfter($baseYear) and $year->hasEvents());
         });
 
@@ -92,7 +94,9 @@ class Events extends Fold
 
     public function previousYearWithEvents(int $year = 0)
     {
-        $years = Shoop::this($this->years()->content())->reversed()->retain(function($y) use ($year) {
+        $years = Shoop::this(
+            $this->years()->content()
+        )->reversed()->retain(function ($y) use ($year) {
             return ($y->isBefore($year) and $y->hasEvents());
         });
 
@@ -106,7 +110,7 @@ class Events extends Fold
 
     public function nextMonthWithEvents(int $year, int $month)
     {
-        $year  = "i". $year;
+        $year  = 'i' . $year;
         $years = Shoop::this($this->years()->content());
 
         if ($years->efIsEmpty()) {
@@ -117,7 +121,9 @@ class Events extends Fold
             $years = $years->unfold();
             $year  = $years[$year];
 
-            $months = Shoop::this($year->content())->retain(function($m) use ($month) {
+            $months = Shoop::this(
+                $year->content()
+            )->retain(function ($m) use ($month) {
                 return ($m->isAfter($month) and $m->hasEvents());
             });
 
@@ -142,7 +148,7 @@ class Events extends Fold
 
     public function previousMonthWithEvents(int $year, int $month)
     {
-        $year  = "i". $year;
+        $year  = 'i' . $year;
         $years = Shoop::this($this->years()->content());
 
         if ($years->efIsEmpty()) {
@@ -153,7 +159,9 @@ class Events extends Fold
             $years = $years->unfold();
             $year  = $years[$year];
 
-            $months = Shoop::this($year->content())->reversed()->retain(function($m) use ($month) {
+            $months = Shoop::this(
+                $year->content()
+            )->reversed()->retain(function ($m) use ($month) {
                 return ($m->isBefore($month) and $m->hasEvents());
             });
 

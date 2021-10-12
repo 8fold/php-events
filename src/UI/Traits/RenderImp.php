@@ -16,15 +16,15 @@ trait RenderImp
     public function navLink($uriObject, string $title, string $class)
     {
         if (! $uriObject) {
-            return UIKit::span()->attr("class {$class}");
+            return UIKit::span()->attr('class {$class}');
         }
 
         return UIKit::a(
             UIKit::span($title)
         )->attr(
-            "class {$class}",
-            "title {$title}",
-            "href ". $this->prefix() . $uriObject->uri()
+            'class {$class}',
+            'title {$title}',
+            'href ' . $this->prefix() . $uriObject->uri()
         );
     }
 }

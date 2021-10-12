@@ -9,20 +9,18 @@ use Eightfold\Events\UI\GridForMonth;
 
 class Grid
 {
-    static public function forYear(
+    public static function forYear(
         string $root,
         int $year
-    )
-    {
+    ) {
         return GridForYear::fold($root, $year);
     }
 
-    static public function forMonth(
+    public static function forMonth(
         string $root,
         int $year,
         int $month
-    )
-    {
+    ) {
         return GridForMonth::fold($root, $year, $month);
     }
 }

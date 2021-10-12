@@ -16,12 +16,20 @@ class Event implements EventInterface
     use MonthImp;
     use DateImp;
 
+    private string $root;
+
+    /**
+     * @var Item|null
+     */
     private $item;
 
     private int $count;
 
     private string $content = '';
 
+    /**
+     * @var array<int>
+     */
     private array $parts = [];
 
     public static function fromItem(string $rootPath, Item $item): Event
@@ -45,7 +53,10 @@ class Event implements EventInterface
         return new Event($rootPath, $year, $month, $date, $count, $item);
     }
 
-    static public function fold(...$args): Event
+    /**
+     * @param mixed $args [description]
+     */
+    public static function fold(...$args): Event
     {
         return new Event(...$args);
     }
@@ -57,8 +68,7 @@ class Event implements EventInterface
         int $date,
         int $count,
         Item $item = null
-    )
-    {
+    ) {
         $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
         $this->item  = $item;
@@ -68,16 +78,16 @@ class Event implements EventInterface
     {
         if ($this->item === null) {
             $this->item = Item::create($this->root)->append(
-                $this->year(),
-                $this->month(),
-                $this->date() . '_' . $this->count() . '.event'
+                $this->yearString(),
+                $this->monthString(),
+                $this->dateString() . '_' . $this->count() . '.event'
             );
 
             if ($this->count() === 1 and ! $this->item->isFile()) {
                 $check = Item::create($this->root)->append(
-                    $this->year(),
-                    $this->month(),
-                    $this->date() . '.event'
+                    $this->yearString(),
+                    $this->monthString(),
+                    $this->dateString() . '.event'
                 );
 
                 if ($check->isFile()) {
@@ -97,8 +107,11 @@ class Event implements EventInterface
     public function content(): string
     {
         if (strlen($this->content) === 0 and $this->hasEvents()) {
-            $this->content = $this->item()->content();
+            $c = $this->item()->content();
+            if (is_string($c)) {
+                $this->content = $c;
 
+            }
         }
         return $this->content;
     }
@@ -113,6 +126,10 @@ class Event implements EventInterface
 
         $parts = $this->contentParts();
         $title = array_shift($parts);
+        if ($title === null) {
+            return '';
+
+        }
         return trim($title);
     }
 
@@ -126,9 +143,16 @@ class Event implements EventInterface
 
         $parts = $this->contentParts();
         $body  = array_pop($parts);
+        if ($body === null) {
+            return '';
+
+        }
         return trim($body);
     }
 
+    /**
+     * @return array<string> [description]
+     */
     private function contentParts(): array
     {
         return explode("\n\n", $this->content(), 2);

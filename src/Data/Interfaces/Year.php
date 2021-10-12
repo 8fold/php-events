@@ -6,7 +6,7 @@ use Eightfold\Events\Data\Interfaces\Path;
 
 interface Year extends Path
 {
-    public function year();
+    public function year(): int;
 
-    // public function monthString(int $month = 0);
+    public function yearString(): string;
 }
