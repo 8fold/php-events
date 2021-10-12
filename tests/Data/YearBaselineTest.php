@@ -18,7 +18,7 @@ test('Year has details', function() {
     expect($year->year())->toBeString()->toBe('2020');
 
     expect($year->year(false))->toBeInt()->toBe(2020);
-})->group('focus');
+});
 
 test('Year has content', function() {
     $this->assertEquals(
