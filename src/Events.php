@@ -87,13 +87,13 @@ class Events // extends Fold
         if ($date < 10) {
             $date = '0' . $date;
         }
-        $date = 'i' . $date;
+        $dateKey = 'i' . $date;
 
         $dates = $this->month($year, $month)->content();
-        if (Shoop::this($dates)->hasAt($date)->reversed()->unfold()) {
+        if (! array_key_exists($dateKey, $dates)) {
             return false;
         }
-        return $dates[$date][0];
+        return $dates[$dateKey];
     }
 
     public function nextYearWithEvents(int $baseYear)
@@ -184,7 +184,7 @@ class Events // extends Fold
             }
 
             if (count($months) === 0) {
-                $previousYear = $this->previousYearWithEvents($year->year());
+                $previousYear = $this->previousYearWithEvents($y->year());
                 if ($previousYear) {
                     return $this->previousYearWithEvents($previousYear->year(), 13);
                 }

@@ -1,23 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\UI;
 
-use Eightfold\Events\UI\GridAbstract;
+// use Eightfold\Events\UI\GridAbstract;
 
 use Carbon\Carbon;
 
-use Eightfold\Markup\UIKit;
-use Eightfold\ShoopShelf\Shoop;
+use Eightfold\HTMLBuilder\Element as HtmlElement;
 
-use Eightfold\Events\Data\Traits\MonthImp;
+use Eightfold\Events\Events;
+
+// use Eightfold\Markup\UIKit;
+// use Eightfold\ShoopShelf\Shoop;
+
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Render as RenderImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Month as MonthImp;
 
 use Eightfold\Events\Data\Date;
 
-class GridForMonth extends GridAbstract
+class GridForMonth // extends GridAbstract
 {
+    use RootImp;
+    use RenderImp;
+    use PartsImp;
+    use YearImp;
     use MonthImp;
 
+    private $events;
+
+    private $carbon;
+
     private $weeksToDisplay = 6;
+
+    private $monthAbbrFormat = "M";
+    private $monthTitleFormat = "F Y";
+
+    private $dayAbbrFormat = "j";
+    private $dayTitleFormat = "jS \\of F Y";
+
+    public static function fold(
+        string $root,
+        int $year,
+        int $month,
+        string $uriPrefix = '/events'
+    ): GridForMonth {
+        return new GridForMonth($root, $year, $month);
+    }
 
     public function __construct(string $root, int $year, int $month)
     {
@@ -28,6 +61,14 @@ class GridForMonth extends GridAbstract
         if ($endBlanks >= 7) {
             $this->weeksToDisplay -= 1;
         }
+    }
+
+    public function events()
+    {
+        if ($this->events === null) {
+            $this->events = Events::fold($this->root());
+        }
+        return $this->events;
     }
 
     public function carbon()
@@ -67,7 +108,7 @@ class GridForMonth extends GridAbstract
     public function header()
     {
         $title = $this->carbon()->copy()->format($this->monthTitleFormat);
-        return UIKit::h2($title);
+        return HtmlElement::h2($title);
     }
 
     public function previousLink()
@@ -115,22 +156,23 @@ class GridForMonth extends GridAbstract
             ->month($date->month())
             ->day($date->date());
 
-        $id     = $cc->format("Y") . $cc->format("m") . $cc->format("d");
+        $id     = $cc->format("Y") . $cc->format('m') . $cc->format('d');
         $abbr   = $cc->format("j");
         $title  = $cc->format($this->dayTitleFormat);
 
-        $events = Shoop::this($date->content())->each(function($event) {
-            return UIKit::span($event->title());
-        })->unfold();
+        $events = [];
+        foreach ($date->content() as $event) {
+            $events[] = HtmlElement::span($event->title());
+        }
 
-        return UIKit::button(
-                UIKit::abbr($abbr)->attr("title ". $title),
+        return HtmlElement::button(
+                HtmlElement::abbr($abbr)->props('title ' . $title),
                 ...$events
-            )->attr(
-                "id toggle-". $id,
-                "aria-expanded false",
-                "class calendar-date",
-                "onclick EFEventsModals.init(this, ". $id .")"
+            )->props(
+                'id toggle-' . $id,
+                'aria-expanded false',
+                'class calendar-date',
+                'onclick EFEventsModals.init(this, ' . $id . ')'
             );
     }
 
@@ -147,9 +189,9 @@ class GridForMonth extends GridAbstract
         $abbr = $cc->format($this->dayAbbrFormat);
         $title = $cc->format($this->dayTitleFormat);
 
-        return UIKit::button(
-            UIKit::abbr($abbr)->attr("title ". $title)
-        )->attr(
+        return HtmlElement::button(
+            HtmlElement::abbr($abbr)->props("title ". $title)
+        )->props(
             "disabled disabled",
             "aria-disabled true",
             "role presentation"
@@ -158,33 +200,34 @@ class GridForMonth extends GridAbstract
 
     public function bookEndBlank()
     {
-        return UIKit::button()->attr(
-            "disabled disabled",
-            "aria-disabled true",
-            "role presentation"
+        return HtmlElement::button()->props(
+            'disabled disabled',
+            'aria-disabled true',
+            'role presentation'
         );
     }
 
     private function eventsModalItem(Date $date)
     {
         if (! $date->hasEvents()) {
-            return [""];
+            return [''];
         }
-        $eventParts = Shoop::this($date->content())->each(function($event, $m, &$build) {
+
+        $eventParts = [];
+        foreach ($date->content() as $event) {
             $title = $event->title();
             $body  = $event->body();
-            if (Shoop::this($body)->isEmpty()->reversed()->unfold()) {
-                $build[] = UIKit::h4($title);
-                $build[] = UIKit::markdown($body);
+            if (! empty($body)) {
+                $eventParts[] = HtmlElement::h4($title);
+                $eventParts[] = HtmlElement::markdown($body);
             }
-            return "";
-        })->drop(fn($v) => empty($v))->append([
-            UIKit::button(
-                UIKit::span("close")
-            )->attr(
-                "onclick EFEventsModals.closeAll()"
-            )
-        ])->unfold();
+            $eventParts[] = '';
+        }
+
+        $filtered = array_filter($eventParts);
+        $filtered[] = HtmlElement::button(
+            HtmlElement::span('close')
+        )->props('onclick EFEventsModals.closeAll()');
 
         $year  = $date->year();
         $month = $date->month();
@@ -192,26 +235,31 @@ class GridForMonth extends GridAbstract
         $id = "id {$year}{$month}{$day}";
         $heading = Carbon::now()->year($year)->month($month)->day($day)
             ->format($this->dayTitleFormat);
-        return UIKit::div(
-            UIKit::h3($heading),
+        return HtmlElement::div(
+            HtmlElement::h3($heading),
             ...$eventParts
-        )->attr($id, "role dialog");
+        )->props($id, 'role dialog');
     }
 
     public function dayTitles()
     {
-        return Shoop::this([
-                "Mon" => "Monday",
-                "Tue" => "Tuesday",
-                "Wed" => "Wednesday",
-                "Thu" => "Thursday",
-                "Fri" => "Friday",
-                "Sat" => "Saturday",
-                "Sun" => "Sunday"
-            ])->each(function($long, $short) {
-                return UIKit::abbr($short)
-                    ->attr("title {$long}", "class ef-weekday-heading");
-            })->efToArray();
+        $abbr = [
+            'Mon' => 'Monday',
+            'Tue' => 'Tuesday',
+            'Wed' => 'Wednesday',
+            'Thu' => 'Thursday',
+            'Fri' => 'Friday',
+            'Sat' => 'Saturday',
+            'Sun' => 'Sunday'
+        ];
+
+        $b = [];
+        foreach ($abbr as $short => $long) {
+            $b[] = HtmlElement::abbr($short)
+                ->props("title {$long}", 'class ef-weekday-heading');
+        }
+
+        return $b;
     }
 
     public function unfold(): string
@@ -222,57 +270,46 @@ class GridForMonth extends GridAbstract
 
         $eventItems = [];
         $gridItems = range(1, $totalGridItems);
-        $gridItems = Shoop::this($gridItems)->each(
-            function($itemNumber) use (
-                $totalGridItems,
-                $startingBlanks,
-                $endingBlanks,
-                &$eventItems
-            ) {
-                if ($itemNumber <= $startingBlanks) {
-                    return $this->bookEndBlank();
+        $gItems = [];
+        foreach ($gridItems as $itemNumber) {
+            if ($itemNumber <= $startingBlanks) {
+                $gItems[] = $this->bookEndBlank();
 
-                } elseif ($itemNumber > ($totalGridItems - $endingBlanks)) {
-                    return $this->bookEndBlank();
+            } elseif ($itemNumber > ($totalGridItems - $endingBlanks)) {
+                $gItems[] = $this->bookEndBlank();
 
-                } else {
-                    $i = $itemNumber - $startingBlanks;
-                    $date = $this->events()->date(
-                        $this->year(),
-                        $this->month(),
-                        $i
-                    );
+            } else {
+                $i = $itemNumber - $startingBlanks;
+                $date = $this->events()->date(
+                    $this->year(),
+                    $this->month(),
+                    $i
+                );
 
-                    if ($date) {
-                        $eventItems[] = $this->eventsModalItem($date);
-                    }
-
-                    // blank date grid items
-                    // event date grid items
-                    return $this->gridItem($i);
-
+                if ($date) {
+                    $eventItems[] = $this->eventsModalItem($date);
                 }
-        })->drop(fn($e) => empty($e))->unfold();
 
-// TODO: write test for lack of events fork
-        if (Shoop::this($eventItems)->efIsEmpty()) {
-            $eventItems = [
-                UIKit::p("No events found.")
-                    ->attr("class ef-events-empty")
-            ];
+                // blank date grid items
+                // event date grid items
+                $gItems[] = $this->gridItem($i);
+
+            }
         }
 
-        return UIKit::div(...Shoop::this([
+        $filtered = array_filter($gItems);
+
+        return HtmlElement::div(
                 $this->header(),
                 $this->previousLink(),
                 $this->nextLink(),
-                UIKit::div(...$eventItems)->attr(
-                    "id ef-events-modals",
-                    "onclick EFEventsModals.closeAll()",
-                    "aria-hidden true"
-                )
-            ])->append($this->dayTitles())
-            ->append($gridItems)
-        )->attr("class ef-events-grid ef-events-grid-month", "aria-live assertive");
+                HtmlElement::div(...$eventItems)->props(
+                    'id ef-events-modals',
+                    'onclick EFEventsModals.closeAll()',
+                    'aria-hidden true'
+                ),
+                ...array_merge($this->dayTitles(), $gItems)
+            )->props('class ef-events-grid ef-events-grid-month', 'aria-live assertive')
+        ->build();
     }
 }
