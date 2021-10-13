@@ -29,7 +29,7 @@ test('Year grid is speedy', function() {
     $elapsed = $end - $start;
     $ms      = $elapsed/1e+6;
 
-    expect($ms)->toBeLessThan(2.75); // previous 1835.7ms
+    expect($ms)->toBeLessThan(4.5); // previous 1835.7ms
 })->group('ui', 'year');
 
 test('Year grid is small', function() {
