@@ -1,40 +1,60 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events;
 
-use Eightfold\Foldable\Fold;
+// use Eightfold\Foldable\Fold;
 
-use Carbon\Carbon;
+// use Carbon\Carbon;
 
-use Eightfold\ShoopShelf\Shoop;
+// use Eightfold\ShoopShelf\Shoop;
+use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Years;
-use Eightfold\Events\Data\Year;
-use Eightfold\Events\Data\Month;
+// use Eightfold\Events\Data\Year;
+// use Eightfold\Events\Data\Month;
 
-class Events extends Fold
+use Eightfold\Events\Implementations\Root as RootImp;
+
+class Events // extends Fold
 {
-    private $years = [];
+    use RootImp;
+
+    private $years;
+
+    public static function fold(string $root): Events
+    {
+        return new Events($root);
+    }
+
+    public function __construct(string $root)
+    {
+        $this->root = $root;
+    }
 
     public function years(): Years
     {
-        if (Shoop::this($this->years)->efIsEmpty()) {
-            $this->years = Years::fold($this->main);
+        if ($this->years === null) {
+            $this->years = Years::fold($this->root());
         }
         return $this->years;
     }
 
     public function year(int $year)
     {
-        $year  = 'i' . $year;
-        $years = Shoop::this($this->years()->content());
-
-        if ($years->efIsEmpty() or $years->hasAt($year)->reversed()->unfold()) {
+        if ($this->years()->count() === 0) {
             return false;
         }
 
-        $years = $years->unfold();
-        return  $years[$year];
+        $years = $this->years()->content();
+        $yearKey = 'i' . $year;
+
+        if (! array_key_exists($yearKey, $years)) {
+            return false;
+        }
+
+        return  $years[$yearKey];
     }
 
     public function month(int $year, int $month)
@@ -46,16 +66,18 @@ class Events extends Fold
         if ($month < 10) {
             $month = '0' . $month;
         }
-        $month = 'i' . $month;
+        $monthKey = 'i' . $month;
 
         $months = $this->year($year)->content();
-        if (Shoop::this($months)->hasAt($month)->reversed()->unfold()) {
+        if (! array_key_exists($monthKey, $months)) {
             return false;
         }
-
-        return $months[$month];
+        return $months[$monthKey];
     }
 
+    /**
+     * @deprecated No replacement
+     */
     public function date(int $year, int $month, int $date)
     {
         if (! $this->month($year, $month)) {
@@ -71,117 +93,117 @@ class Events extends Fold
         if (Shoop::this($dates)->hasAt($date)->reversed()->unfold()) {
             return false;
         }
-
         return $dates[$date][0];
     }
 
-    public function nextYearWithEvents(int $baseYear = 0)
+    public function nextYearWithEvents(int $baseYear)
     {
-        // TODO: Unfoldable needs a way to discern whether to unfold recursively
-        $years = Shoop::this(
-            $this->years()->content()
-        )->retain(function ($year) use ($baseYear) {
-            return ($year->isAfter($baseYear) and $year->hasEvents());
-        });
+        $years = [];
+        foreach ($this->years()->content() as $year) {
+            if ($year->isAfter($baseYear) and $year->hasEvents()) {
+                $years[] = $year;
+            }
+        }
 
-        if ($years->length()->efIsEmpty()) {
+        if (count($years) === 0) {
             return false;
         }
 
-        $years = $years->unfold();
         return $years[0];
     }
 
-    public function previousYearWithEvents(int $year = 0)
+    public function previousYearWithEvents(int $baseYear = 0)
     {
-        $years = Shoop::this(
-            $this->years()->content()
-        )->reversed()->retain(function ($y) use ($year) {
-            return ($y->isBefore($year) and $y->hasEvents());
-        });
+        $years = $this->years()->content();
+        $years = array_reverse($years);
 
-        if ($years->efIsEmpty()) {
-            return false;
+        $y = [];
+        foreach ($years as $year) {
+            if ($year->isBefore($baseYear) and $year->hasEvents()) {
+                $y[] = $year;
+            }
         }
 
-        $years = $years->unfold();
-        return $years[0];
+        if (count($y) === 0) {
+            return false;
+        }
+        return $y[0];
     }
 
     public function nextMonthWithEvents(int $year, int $month)
     {
-        $year  = 'i' . $year;
-        $years = Shoop::this($this->years()->content());
+        $years = $this->years();
 
-        if ($years->efIsEmpty()) {
+        if ($years->count() === 0) {
             return false;
         }
 
-        if ($years->hasAt($year)->unfold()) {
-            $years = $years->unfold();
-            $year  = $years[$year];
+        if ($years->year($year)) {
+            $y = $years->year($year);
 
-            $months = Shoop::this(
-                $year->content()
-            )->retain(function ($m) use ($month) {
-                return ($m->isAfter($month) and $m->hasEvents());
-            });
+            $months = [];
+            foreach ($y->content() as $m) {
+                if ($m->isAfter($month) and $m->hasEvents()) {
+                    $months[] = $m;
+                }
+            }
 
-            if ($months->efIsEmpty()) {
-                $nextYear = $this->nextYearWithEvents($year->year());
+            if (count($months) === 0) {
+                $nextYear = $this->nextYearWithEvents($y->year());
                 if ($nextYear) {
                     return $this->nextMonthWithEvents($nextYear->year(), 0);
                 }
                 return false;
             }
-            $months = $months->unfold();
             return $months[0];
         }
 
-        $year = Shoop::this($year)->dropFirst()->unfold();
-        $y    = $this->nextYearWithEvents($year);
-        if (! $y or $y->year() <= $year) {
-            return false;
+        $y = $this->nextYearWithEvents($year);
+        if ($y) {
+            return $this->nextMonthWithEvents($y->year(), 0);
         }
-        return $this->nextMonthWithEvents($y->year(), 0);
+        return false;
     }
 
     public function previousMonthWithEvents(int $year, int $month)
     {
-        $year  = 'i' . $year;
-        $years = Shoop::this($this->years()->content());
+        $years = $this->years();
 
-        if ($years->efIsEmpty()) {
+        if ($years->count() === 0) {
             return false;
         }
 
-        if ($years->hasAt($year)->unfold()) {
-            $years = $years->unfold();
-            $year  = $years[$year];
+        if ($years->year($year)) {
+            $y = $years->year($year);
 
-            $months = Shoop::this(
-                $year->content()
-            )->reversed()->retain(function ($m) use ($month) {
-                return ($m->isBefore($month) and $m->hasEvents());
-            });
+            $months = [];
+            foreach ($y->content() as $m) {
+                if ($m->isBefore($month) and $m->hasEvents()) {
+                    $months[] = $m;
+                }
+            }
 
-            if ($months->efIsEmpty()) {
+            if (count($months) === 0) {
                 $previousYear = $this->previousYearWithEvents($year->year());
                 if ($previousYear) {
-                    return $this->previousMonthWithEvents($previousYear->year(), 13);
+                    return $this->previousYearWithEvents($previousYear->year(), 13);
                 }
                 return false;
             }
 
-            $months = $months->unfold();
+            $months = array_reverse($months);
             return $months[0];
         }
 
-        $years = $years->reversed()->unfold();
+        $years = $years->content();
+        $years = array_reverse($years);
         $year  = array_shift($years);
         return $this->previousMonthWithEvents($year->year(), 13);
     }
 
+    /**
+     * @deprecated No replacement
+     */
     public function nearestMonthWithEvents(int $year, int $month): ?Month
     {
         $m = $this->month($year, $month);
@@ -202,6 +224,9 @@ class Events extends Fold
         return null;
     }
 
+    /**
+     * @deprecated No replacement
+     */
     public function nearestYearWithEvents(int $year): ?Year
     {
         $y = $this->year($year);

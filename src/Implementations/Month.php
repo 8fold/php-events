@@ -1,12 +1,12 @@
 <?php
 
-namespace Eightfold\Events\Data\Traits;
+declare(strict_types=1);
+
+namespace Eightfold\Events\Implementations;
 
 use Carbon\Carbon;
 
-use Eightfold\ShoopShelf\Shoop;
-
-trait MonthImp
+trait Month
 {
     public function month(): int
     {

@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
-use Eightfold\Events\Data\Interfaces\Month as MonthInterface;
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Month as MonthImp;
 
-use Eightfold\Events\Data\Traits\YearImp;
-use Eightfold\Events\Data\Traits\MonthImp;
-
-class Month implements MonthInterface
+class Month
 {
+    use RootImp;
+    use PartsImp;
     use YearImp;
     use MonthImp;
-
-    private string $root;
 
     /**
      * @var Item|null
@@ -27,11 +29,6 @@ class Month implements MonthInterface
      * @var array<Date>
      */
     private array $content = [];
-
-    /**
-     * @var array<int>
-     */
-    private array $parts = [];
 
     public static function fromItem(string $rootPath, Item $item): Month
     {
@@ -127,33 +124,31 @@ class Month implements MonthInterface
         return false;
     }
 
-// TODO: Test??
-    // public function is(int $compare): bool
-    // {
-    //     return (Shoop::this($this->month(false))->is($compare)->unfold())
-    //         ? true
-    //         : false;
-    // }
+    public function isSameAs(int $compare): bool
+    {
+        return $this->month() === $compare;
+    }
 
-    // public function isAfter(int $compare): bool
-    // {
-    //     if ($this->is($compare)) {
-    //         return false;
-    //     }
-    //     return Shoop::this($this->month(false))->isGreaterThan($compare)->unfold();
-    // }
+    public function isAfter(int $compare): bool
+    {
+        if ($this->isSameAs($compare)) {
+            return false;
+        }
+        return $this->month() > $compare;
+    }
 
-    // public function isBefore(int $compare)
-    // {
-    //     if ($this->is($compare)) {
-    //         return false;
-    //     }
-    //     return ! $this->isAfter($compare);
-    // }
+    public function isBefore(int $compare): bool
+    {
+        if ($this->isSameAs($compare)) {
+            return false;
+        }
+        return $this->month() < $compare;
+    }
 
-    // public function uri()
-    // {
-    //     return Shoop::this($this->path())->divide("/")->last(2)->asString("/")
-    //         ->prepend("/");
-    // }
+    public function uri()
+    {
+        $parts = explode('/', $this->path());
+        $parts = array_slice($parts, -2);
+        return '/' . implode('/', $parts);
+    }
 }

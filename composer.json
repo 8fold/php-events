@@ -12,7 +12,8 @@
   "require": {
     "php": "^7.4||^8.0",
     "nesbot/carbon": "^2.53",
-    "8fold/php-filesystem": "^0.5.0"
+    "8fold/php-filesystem": "^0.5.0",
+    "8fold/php-html-builder": "^0.5.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6",

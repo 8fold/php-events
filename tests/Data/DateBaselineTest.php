@@ -14,19 +14,19 @@ test('Date has details', function() {
     $date = Date::fold($this->path, 1999, 1, 10);
 
     // 3.14ms 29kb
-    expect($date->year())->toBeString()->toBe('1999');
+    expect($date->yearString())->toBeString()->toBe('1999');
 
-    expect($date->year(false))->toBeInt()->toBe(1999);
+    expect($date->year())->toBeInt()->toBe(1999);
 
     // 2.51ms 33kb
-    expect($date->month())->toBeString()->toBe('01');
+    expect($date->monthString())->toBeString()->toBe('01');
 
-    expect($date->month(false))->toBeInt()->toBe(1);
+    expect($date->month())->toBeInt()->toBe(1);
 
     // 0.03ms 1kb
-    expect($date->date())->toBeString()->toBe('10');
+    expect($date->dateString())->toBeString()->toBe('10');
 
-    expect($date->date(false))->toBeInt()->toBe(10);
+    expect($date->date())->toBeInt()->toBe(10);
 })->group('data', 'date');
 
 test('Date has content', function() {

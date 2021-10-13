@@ -1,8 +1,10 @@
 <?php
 
-namespace Eightfold\Events\Data\Traits;
+declare(strict_types=1);
 
-trait YearImp
+namespace Eightfold\Events\Implementations;
+
+trait Year
 {
     public function year(): int
     {

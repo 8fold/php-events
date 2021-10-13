@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b2b9ab0beade63755c8ad4860f220b0",
+    "content-hash": "0129bccee09d5fb7f412370312f1a7c1",
     "packages": [
         {
             "name": "8fold/php-filesystem",
@@ -62,6 +62,119 @@
                 }
             ],
             "time": "2021-10-11T14:48:32+00:00"
+        },
+        {
+            "name": "8fold/php-html-builder",
+            "version": "0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/8fold/php-html-builder.git",
+                "reference": "6ed999954be9a304edd49ba77a570b400eb77567"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/8fold/php-html-builder/zipball/6ed999954be9a304edd49ba77a570b400eb77567",
+                "reference": "6ed999954be9a304edd49ba77a570b400eb77567",
+                "shasum": ""
+            },
+            "require": {
+                "8fold/php-xml-builder": "^0.6",
+                "php": "^7.4||^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.20",
+                "phpstan/phpstan": "^0.12",
+                "psr/log": "^1.0.1",
+                "squizlabs/php_codesniffer": "^3.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Eightfold\\HTMLBuilder\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Bruce",
+                    "email": "josh@8fold.pro"
+                }
+            ],
+            "description": "A library for building HTML document and element strings.",
+            "support": {
+                "issues": "https://github.com/8fold/php-html-builder/issues",
+                "source": "https://github.com/8fold/php-html-builder/tree/0.5.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/8fold",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/joshbruce",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-10-09T02:02:30+00:00"
+        },
+        {
+            "name": "8fold/php-xml-builder",
+            "version": "0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/8fold/php-xml-builder.git",
+                "reference": "26b50c2b628e45b00a27e4286791f9953e5760c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/8fold/php-xml-builder/zipball/26b50c2b628e45b00a27e4286791f9953e5760c1",
+                "reference": "26b50c2b628e45b00a27e4286791f9953e5760c1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4||^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.20",
+                "phpstan/phpstan": "^0.12",
+                "psr/log": "^1.0.1",
+                "squizlabs/php_codesniffer": "^3.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Eightfold\\XMLBuilder\\": "./src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josh Bruce",
+                    "email": "josh@8fold.pro"
+                }
+            ],
+            "description": "A library for building XML document and element strings.",
+            "support": {
+                "issues": "https://github.com/8fold/php-xml-builder/issues",
+                "source": "https://github.com/8fold/php-xml-builder/tree/0.6.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/8fold",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/joshbruce",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-10-09T01:55:37+00:00"
         },
         {
             "name": "league/flysystem",

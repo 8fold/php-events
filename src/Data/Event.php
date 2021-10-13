@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Data;
 
 use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Interfaces\Event as EventInterface;
 
-use Eightfold\Events\Data\Traits\YearImp;
-use Eightfold\Events\Data\Traits\MonthImp;
-use Eightfold\Events\Data\Traits\DateImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Month as MonthImp;
+use Eightfold\Events\Implementations\Date as DateImp;
 
-class Event implements EventInterface
+class Event
 {
     use YearImp;
     use MonthImp;

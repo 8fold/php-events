@@ -10,16 +10,42 @@ beforeEach(function() {
         ->up()->append('test-events', 'events')->thePath();
 });
 
+test('Month can answer before or after', function() {
+    expect(
+        Month::fold($this->path, 2020, 7)->isAfter(7)
+    )->toBeFalse();
+
+    expect(
+        Month::fold($this->path, 2020, 7)->isAfter(6)
+    )->toBeTrue();
+
+    expect(
+        Month::fold($this->path, 2020, 7)->isAfter(8)
+    )->toBeFalse();
+
+    expect(
+        Month::fold($this->path, 2020, 7)->isBefore(7)
+    )->toBeFalse();
+
+    expect(
+        Month::fold($this->path, 2020, 7)->isBefore(6)
+    )->toBeFalse();
+
+    expect(
+        Month::fold($this->path, 2020, 7)->isBefore(8)
+    )->toBeTrue();
+})->group('data', 'month');
+
 test('Month has details', function() {
     $month = Month::fold($this->path, 1999, 1);
 
     // 3.14ms 29kb
-    expect($month->year())->toBeString()->toBe('1999');
+    expect($month->yearString())->toBeString()->toBe('1999');
 
-    expect($month->year(false))->toBeInt()->toBe(1999);
+    expect($month->year())->toBeInt()->toBe(1999);
 
     // 2.51ms 33kb
-    expect($month->month())->toBeString()->toBe('01');
+    expect($month->monthString())->toBeString()->toBe('01');
 
     expect($month->month(false))->toBeInt()->toBe(1);
 

@@ -2,13 +2,16 @@
 
 namespace Eightfold\Events\Data;
 
+use Eightfold\FileSystem\Item;
+
 use Eightfold\Events\Data\Year;
 
-use Eightfold\FileSystem\Item;
+use Eightfold\Events\Implementations\Root as RootImp;
+
 
 class Years
 {
-    private string $root;
+    use RootImp;
 
     /**
      * @var Item
@@ -36,11 +39,6 @@ class Years
     public function path(): string
     {
         return $this->root();
-    }
-
-    public function root(): string
-    {
-        return $this->root;
     }
 
     public function item(): Item

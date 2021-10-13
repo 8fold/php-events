@@ -13,19 +13,19 @@ test('Event has event details', function() {
     $event = Event::fold($this->path, 2020, 5, 22, 2);
 
     // 0.59ms 27kb
-    expect($event->year())->toBeString()->toBe('2020');
+    expect($event->yearString())->toBeString()->toBe('2020');
 
-    expect($event->year(false))->toBeInt()->toBe(2020);
+    expect($event->year())->toBeInt()->toBe(2020);
 
     // 0.51ms 30kb
-    expect($event->month())->toBeString()->toBe('05');
+    expect($event->monthString())->toBeString()->toBe('05');
 
-    expect($event->month(false))->toBeInt()->toBe(5);
+    expect($event->month())->toBeInt()->toBe(5);
 
     // 0.008ms 1kb
-    expect($event->date())->toBeString()->toBe('22');
+    expect($event->dateString())->toBeString()->toBe('22');
 
-    expect($event->date(false))->toBeInt()->toBe(22);
+    expect($event->date())->toBeInt()->toBe(22);
 })->group('data', 'event');
 
 test('Event has content', function() {

@@ -1,40 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
 
-use Eightfold\Events\Data\Interfaces\Year as YearInterface;
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
+use Eightfold\Events\Implementations\Year as YearImp;
 
-use Eightfold\Events\Data\Traits\YearImp;
-
-class Year implements YearInterface
+class Year
 {
+    use RootImp;
+    use PartsImp;
+    use ItemImp;
     use YearImp;
-
-    private string $root;
-
-    /**
-     * @var Item
-     */
-    private $item;
 
     /**
      * @var array<Month>
      */
     private array $content = [];
 
-    /**
-     * @var array<int>
-     */
-    private array $parts = [];
-
-    public static function totalMonthsInYear(): int
-    {
-        return 12;
-    }
+    // public static function totalMonthsInYear(): int
+    // {
+    //     return 12;
+    // }
 
     public static function fold(string $root, int $year): Year
     {
@@ -47,7 +41,7 @@ class Year implements YearInterface
         $this->parts = [$year];
     }
 
-    public function item(): Item
+    private function item(): Item
     {
         if ($this->item === null) {
             $this->item = Item::create($this->root)->append($this->yearString());
@@ -55,7 +49,7 @@ class Year implements YearInterface
         return $this->item;
     }
 
-    public function path(): string
+    private function path(): string
     {
         return $this->item()->thePath();
     }
@@ -104,38 +98,44 @@ class Year implements YearInterface
         return false;
     }
 
+    private function isSameAs(int $compare): bool
+    {
+        return $this->year() === $compare;
+    }
+
+    public function isAfter(int $compare): bool
+    {
+        if ($this->isSameAs($compare)) {
+            return false;
+        }
+        return $this->year() > $compare;
+    }
+
+
+    public function isBefore(int $compare)
+    {
+        if ($this->isSameAs($compare)) {
+            return false;
+        }
+        return ! $this->isAfter($compare);
+    }
+
+    public function uri()
+    {
+        $parts = explode('/', $this->path());
+        return '/' . array_pop($parts);
+    }
 // TODO: Test??
     // public function monthsInYear(): int
     // {
     //     return static::totalMonthsInYear();
     // }
 
-    // public function is(int $compare): bool
-    // {
-    //     return (Shoop::this($this->year(false))->is($compare)->unfold())
-    //         ? true
-    //         : false;
-    // }
-
-    // public function isAfter(int $compare): bool
-    // {
-    //     if ($this->is($compare)) {
-    //         return false;
-    //     }
-    //     return Shoop::this($this->year(false))->isGreaterThan($compare)->unfold();
-    // }
-
-    // public function isBefore(int $compare)
-    // {
-    //     if ($this->is($compare)) {
-    //         return false;
-    //     }
-    //     return ! $this->isAfter($compare);
-    // }
 
 
-    // public function uri()
-    // {
-    //     return Shoop::this($this->path())->divide("/")->last()->prepend("/");
-    // }
+
+
+
+
+
 }

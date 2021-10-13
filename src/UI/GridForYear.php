@@ -1,31 +1,67 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\UI;
 
-use Eightfold\Events\UI\GridAbstract;
+use Eightfold\HTMLBuilder\Element as HtmlElement;
+
+// use Eightfold\Events\UI\GridAbstract;
 // use Eightfold\Foldable\Fold;
 // use Eightfold\Foldable\Foldable;
 
 use Carbon\Carbon;
 
-use Eightfold\Markup\UIKit;
-use Eightfold\Shoop\Shoop;
+// use Eightfold\Markup\UIKit;
+// use Eightfold\Shoop\Shoop;
 
-use Eightfold\Events\Data\Year;
+// use Eightfold\Events\Data\Year;
 
-class GridForYear extends GridAbstract
+use Eightfold\Events\Events;
+
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Render as RenderImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+
+class GridForYear // extends GridAbstract
 {
-    public function __construct(string $root, int $year)
-    {
+    use RootImp;
+    use RenderImp;
+    use YearImp;
+
+    private $carbon;
+
+    private $events;
+
+    private $yearTitleFormat = "Y";
+
+    private $monthAbbrFormat = "M";
+
+    protected $monthTitleFormat = "F Y";
+
+    public static function fold(
+        string $root,
+        int $year,
+        string $uriPrefix = '/events'
+    ): GridForYear {
+        return new GridForYear($root, $year);
+    }
+
+    public function __construct(
+        string $root,
+        int $year,
+        string $uriPrefix = '/events'
+    ) {
         $this->root = $root;
         $this->parts = [$year];
+        $this->uriPrefix = $uriPrefix;
     }
 
     public function carbon()
     {
         if ($this->carbon === null) {
             $this->carbon = Carbon::now()
-                ->year($this->year(false))->month(1)->day(10)
+                ->year($this->year())->month(1)->day(10)
                 ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
@@ -36,16 +72,24 @@ class GridForYear extends GridAbstract
         return Year::totalMonthsInYear();
     }
 
+    public function events()
+    {
+        if ($this->events === null) {
+            $this->events = Events::fold($this->root());
+        }
+        return $this->events;
+    }
+
     public function header()
     {
         $title = $this->carbon()->copy()->format($this->yearTitleFormat);
-        return UIKit::h2($title);
+        return HtmlElement::h2($title);
     }
 
     public function previousLink()
     {
         $year = $this->events()->previousYearWithEvents($this->year());
-        $title = "";
+        $title = '';
 
         if ($year) {
             $format = $this->yearTitleFormat;
@@ -90,26 +134,13 @@ class GridForYear extends GridAbstract
         $title  = $cc->format($this->monthTitleFormat);
         $total = strval($month->count());
 
-        return UIKit::a(
-            UIKit::abbr($abbr)
-                ->attr("title ". $title),
-            UIKit::span($total)
-        )->attr(
-            "href ". $this->prefix() . $month->uri()
+        return HtmlElement::a(
+            HtmlElement::abbr($abbr)
+                ->props("title ". $title),
+            HtmlElement::span($total)
+        )->props(
+            "href ". $this->uriPrefix() . $month->uri()
         );
-        $events = Shoop::this($date->content())->each(function($event) {
-            return UIKit::span($event->title());
-        })->unfold();
-
-        return UIKit::button(
-                UIKit::abbr($abbr)->attr("title ". $title),
-                ...$events
-            )->attr(
-                "id toggle-". $id,
-                "aria-expanded false",
-                "class calendar-date",
-                "onclick EFEventsModals.init(this, ". $id .")"
-            );
     }
 
     public function gridItemBlank(int $itemNumber)

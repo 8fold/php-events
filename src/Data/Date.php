@@ -1,24 +1,24 @@
 <?php
 
-namespace Eightfold\Events\Data;
+declare(strict_types=1);
 
-use Eightfold\Events\Data\DataAbstract;
+namespace Eightfold\Events\Data;
 
 use Eightfold\FileSystem\Item;
 
-use Eightfold\Events\Data\Interfaces\Day as DateInterface;
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Month as MonthImp;
+use Eightfold\Events\Implementations\Date as DateImp;
 
-use Eightfold\Events\Data\Traits\YearImp;
-use Eightfold\Events\Data\Traits\MonthImp;
-use Eightfold\Events\Data\Traits\DateImp;
-
-class Date implements DateInterface
+class Date
 {
+    use RootImp;
+    use PartsImp;
     use YearImp;
     use MonthImp;
     use DateImp;
-
-    private string $root;
 
     /**
      * @var Item|null
@@ -29,11 +29,6 @@ class Date implements DateInterface
      * @var array<Event>
      */
     private array $content = [];
-
-    /**
-     * @var array<int>
-     */
-    private array $parts = [];
 
     public static function fromItem(string $rootPath, Item $item): Date
     {

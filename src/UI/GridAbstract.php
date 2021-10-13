@@ -25,7 +25,7 @@ use Eightfold\Events\UI\Traits\PropertiesImp;
 // use Eightfold\Events\UI\Interfaces\NumbersForMonth;
 // use Eightfold\Events\UI\Traits\NumbersForMonthImp;
 
-abstract class GridAbstract extends Fold
+abstract class GridAbstract // extends Fold
 {
     use RootImp;
     use PartsImp;

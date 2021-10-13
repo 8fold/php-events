@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\UI\Traits;
 
 use Carbon\Carbon;
@@ -47,11 +49,5 @@ trait PropertiesImp
     public function isMonth(): bool
     {
         return ! $this->isYear();
-    }
-
-    public function uriPrefix(string $prefix = "/events")
-    {
-        $this->uriPrefix = $prefix;
-        return $this;
     }
 }

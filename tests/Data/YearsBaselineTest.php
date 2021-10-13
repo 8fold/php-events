@@ -3,6 +3,7 @@
 use Eightfold\Events\Data\Years;
 
 use Eightfold\FileSystem\Item;
+
 use Eightfold\Events\Data\Year;
 
 beforeEach(function() {
@@ -25,7 +26,7 @@ test('Years can get single year', function() {
     expect(
         Years::fold($this->path)->year(2021)
     )->toBeFalse();
-})->group('data', 'years');
+})->group('data', 'years', 'focus');
 
 test('Years has content', function() {
     $this->assertEquals(
