@@ -9,7 +9,7 @@ use Eightfold\FileSystem\Item as FileSystemItem;
 trait Item
 {
     /**
-     * @var Item
+     * @var FileSystemItem
      */
     private $item;
 

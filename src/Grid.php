@@ -12,7 +12,7 @@ class Grid
     public static function forYear(
         string $root,
         int $year
-    ) {
+    ): GridForYear {
         return GridForYear::fold($root, $year);
     }
 
@@ -20,7 +20,7 @@ class Grid
         string $root,
         int $year,
         int $month
-    ) {
+    ): GridForMonth {
         return GridForMonth::fold($root, $year, $month);
     }
 }

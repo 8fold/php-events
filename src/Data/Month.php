@@ -145,7 +145,7 @@ class Month
         return $this->month() < $compare;
     }
 
-    public function uri()
+    public function uri(): string
     {
         $parts = explode('/', $this->path());
         $parts = array_slice($parts, -2);

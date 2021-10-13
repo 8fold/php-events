@@ -111,8 +111,7 @@ class Year
         return $this->year() > $compare;
     }
 
-
-    public function isBefore(int $compare)
+    public function isBefore(int $compare): bool
     {
         if ($this->isSameAs($compare)) {
             return false;
@@ -120,22 +119,9 @@ class Year
         return ! $this->isAfter($compare);
     }
 
-    public function uri()
+    public function uri(): string
     {
         $parts = explode('/', $this->path());
         return '/' . array_pop($parts);
     }
-// TODO: Test??
-    // public function monthsInYear(): int
-    // {
-    //     return static::totalMonthsInYear();
-    // }
-
-
-
-
-
-
-
-
 }

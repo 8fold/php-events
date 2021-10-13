@@ -6,6 +6,9 @@ namespace Eightfold\Events\Implementations;
 
 trait Root
 {
+    /**
+     * @var string
+     */
     private $root;
 
     private function root(): string

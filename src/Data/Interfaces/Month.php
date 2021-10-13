@@ -6,5 +6,5 @@ use Eightfold\Events\Data\Interfaces\Year;
 
 interface Month extends Year
 {
-    public function month();
+    // public function month();
 }

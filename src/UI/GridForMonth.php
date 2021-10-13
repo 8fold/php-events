@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\UI;
 
-// use Eightfold\Events\UI\GridAbstract;
-
 use Carbon\Carbon;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 use Eightfold\Events\Events;
 
-// use Eightfold\Markup\UIKit;
-// use Eightfold\ShoopShelf\Shoop;
-
 use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Events as EventsImp;
+use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -23,25 +20,23 @@ use Eightfold\Events\Implementations\Month as MonthImp;
 
 use Eightfold\Events\Data\Date;
 
-class GridForMonth // extends GridAbstract
+class GridForMonth
 {
     use RootImp;
+    use EventsImp;
+    use CarbonImp;
     use RenderImp;
     use PartsImp;
     use YearImp;
     use MonthImp;
 
-    private $events;
+    private int $weeksToDisplay = 6;
 
-    private $carbon;
+    private string $monthAbbrFormat = 'M';
+    private string $monthTitleFormat = 'F Y';
 
-    private $weeksToDisplay = 6;
-
-    private $monthAbbrFormat = "M";
-    private $monthTitleFormat = "F Y";
-
-    private $dayAbbrFormat = "j";
-    private $dayTitleFormat = "jS \\of F Y";
+    private string $dayAbbrFormat = 'j';
+    private string $dayTitleFormat = 'jS \\of F Y';
 
     public static function fold(
         string $root,
@@ -63,19 +58,11 @@ class GridForMonth // extends GridAbstract
         }
     }
 
-    public function events()
-    {
-        if ($this->events === null) {
-            $this->events = Events::fold($this->root());
-        }
-        return $this->events;
-    }
-
-    public function carbon()
+    public function carbon(): Carbon
     {
         if ($this->carbon === null) {
             $this->carbon = Carbon::now()
-                ->year($this->year(false))->month($this->month(false))->day(10)
+                ->year($this->year())->month($this->month())->day(10)
                 ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
@@ -99,47 +86,47 @@ class GridForMonth // extends GridAbstract
         return 7 * $this->weeksToDisplay;
     }
 
-    public function totalDaysInMonth()
+    public function totalDaysInMonth(): int
     {
         return $this->carbon()->daysInMonth;
     }
 
 // -> rendering
-    public function header()
+    public function header(): HtmlElement
     {
         $title = $this->carbon()->copy()->format($this->monthTitleFormat);
         return HtmlElement::h2($title);
     }
 
-    public function previousLink()
+    public function previousLink(): HtmlElement
     {
         $month = $this->events()
             ->previousMonthWithEvents($this->year(), $this->month());
         $title = '';
 
-        if ($month) {
+        if (is_object($month)) {
             $format = $this->monthTitleFormat;
             $title = $this->carbon()->copy()
                 ->year($month->year())->month($month->month())->format($format);
         }
-        return $this->navLink($month, $title, "ef-grid-previous-month");
+        return $this->navLink($month, $title, 'ef-grid-previous-month');
     }
 
-    public function nextLink()
+    public function nextLink(): HtmlElement
     {
         $month = $this->events()
             ->nextMonthWithEvents($this->year(), $this->month());
-        $title = "";
+        $title = '';
 
-        if ($month) {
+        if (is_object($month)) {
             $format = $this->monthTitleFormat;
             $title = $this->carbon()->copy()
                 ->year($month->year())->month($month->month())->format($format);
         }
-        return $this->navLink($month, $title, "ef-grid-next-month");
+        return $this->navLink($month, $title, 'ef-grid-next-month');
     }
 
-    public function gridItem(int $itemNumber)
+    public function gridItem(int $itemNumber): HtmlElement
     {
         $month = $this->events()->month($this->year(), $this->month());
         if (! $month) {
@@ -147,7 +134,7 @@ class GridForMonth // extends GridAbstract
         }
 
         $date = $this->events()->date($this->year(), $this->month(), $itemNumber);
-        if (! $date or ! $date->hasEvents()) {
+        if (! is_object($date) or (is_object($date) and ! $date->hasEvents())) {
             return $this->gridItemBlank($itemNumber);
         }
 
@@ -156,8 +143,8 @@ class GridForMonth // extends GridAbstract
             ->month($date->month())
             ->day($date->date());
 
-        $id     = $cc->format("Y") . $cc->format('m') . $cc->format('d');
-        $abbr   = $cc->format("j");
+        $id     = $cc->format('Y') . $cc->format('m') . $cc->format('d');
+        $abbr   = $cc->format('j');
         $title  = $cc->format($this->dayTitleFormat);
 
         $events = [];
@@ -166,17 +153,17 @@ class GridForMonth // extends GridAbstract
         }
 
         return HtmlElement::button(
-                HtmlElement::abbr($abbr)->props('title ' . $title),
-                ...$events
-            )->props(
-                'id toggle-' . $id,
-                'aria-expanded false',
-                'class calendar-date',
-                'onclick EFEventsModals.init(this, ' . $id . ')'
-            );
+            HtmlElement::abbr($abbr)->props('title ' . $title),
+            ...$events
+        )->props(
+            'id toggle-' . $id,
+            'aria-expanded false',
+            'class calendar-date',
+            'onclick EFEventsModals.init(this, ' . $id . ')'
+        );
     }
 
-    public function gridItemBlank(int $itemNumber)
+    public function gridItemBlank(int $itemNumber): HtmlElement
     {
         $cc = $this->carbon()->copy()->year(
             $this->year()
@@ -190,15 +177,15 @@ class GridForMonth // extends GridAbstract
         $title = $cc->format($this->dayTitleFormat);
 
         return HtmlElement::button(
-            HtmlElement::abbr($abbr)->props("title ". $title)
+            HtmlElement::abbr($abbr)->props('title ' . $title)
         )->props(
-            "disabled disabled",
-            "aria-disabled true",
-            "role presentation"
+            'disabled disabled',
+            'aria-disabled true',
+            'role presentation'
         );
     }
 
-    public function bookEndBlank()
+    public function bookEndBlank(): HtmlElement
     {
         return HtmlElement::button()->props(
             'disabled disabled',
@@ -207,41 +194,49 @@ class GridForMonth // extends GridAbstract
         );
     }
 
-    private function eventsModalItem(Date $date)
+    /**
+     * @param Date|bool|boolean $date
+     * @return HtmlElement|string       [description]
+     */
+    private function eventsModalItem($date)
     {
-        if (! $date->hasEvents()) {
-            return [''];
-        }
-
-        $eventParts = [];
-        foreach ($date->content() as $event) {
-            $title = $event->title();
-            $body  = $event->body();
-            if (! empty($body)) {
-                $eventParts[] = HtmlElement::h4($title);
-                $eventParts[] = HtmlElement::markdown($body);
+        if (is_object($date)) {
+            $eventParts = [];
+            foreach ($date->content() as $event) {
+                $title = $event->title();
+                $body  = $event->body();
+                if (! empty($body)) {
+                    $eventParts[] = HtmlElement::h4($title);
+                    $eventParts[] = HtmlElement::markdown($body);
+                }
+                $eventParts[] = '';
             }
-            $eventParts[] = '';
+
+            $filtered   = array_filter($eventParts);
+            $filtered[] = HtmlElement::button(
+                HtmlElement::span('close')
+            )->props('onclick EFEventsModals.closeAll()');
+
+            $year  = $date->year();
+            $month = $date->month();
+            $day   = $date->date();
+            $id    = "id {$year}{$month}{$day}";
+
+            $heading = Carbon::now()->year($year)->month($month)->day($day)
+                ->format($this->dayTitleFormat);
+
+            return HtmlElement::div(
+                HtmlElement::h3($heading),
+                ...$eventParts
+            )->props($id, 'role dialog');
         }
-
-        $filtered = array_filter($eventParts);
-        $filtered[] = HtmlElement::button(
-            HtmlElement::span('close')
-        )->props('onclick EFEventsModals.closeAll()');
-
-        $year  = $date->year();
-        $month = $date->month();
-        $day   = $date->date();
-        $id = "id {$year}{$month}{$day}";
-        $heading = Carbon::now()->year($year)->month($month)->day($day)
-            ->format($this->dayTitleFormat);
-        return HtmlElement::div(
-            HtmlElement::h3($heading),
-            ...$eventParts
-        )->props($id, 'role dialog');
+        return '';
     }
 
-    public function dayTitles()
+    /**
+     * @return array<HtmlElement> [description]
+     */
+    public function dayTitles(): array
     {
         $abbr = [
             'Mon' => 'Monday',
@@ -300,16 +295,16 @@ class GridForMonth // extends GridAbstract
         $filtered = array_filter($gItems);
 
         return HtmlElement::div(
-                $this->header(),
-                $this->previousLink(),
-                $this->nextLink(),
-                HtmlElement::div(...$eventItems)->props(
-                    'id ef-events-modals',
-                    'onclick EFEventsModals.closeAll()',
-                    'aria-hidden true'
-                ),
-                ...array_merge($this->dayTitles(), $gItems)
-            )->props('class ef-events-grid ef-events-grid-month', 'aria-live assertive')
+            $this->header(),
+            $this->previousLink(),
+            $this->nextLink(),
+            HtmlElement::div(...$eventItems)->props(
+                'id ef-events-modals',
+                'onclick EFEventsModals.closeAll()',
+                'aria-hidden true'
+            ),
+            ...array_merge($this->dayTitles(), $gItems)
+        )->props('class ef-events-grid ef-events-grid-month', 'aria-live assertive')
         ->build();
     }
 }
