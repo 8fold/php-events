@@ -1,21 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\ShoopShelf\Shoop;
+use Eightfold\FileSystem\Item;
 
-use Eightfold\Events\Data\Traits\PartsImp;
-use Eightfold\Events\Data\Traits\YearImp;
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
+use Eightfold\Events\Implementations\Year as YearImp;
 
-class Year extends DataAbstract
+class Year
 {
-    use PartsImp, YearImp;
+    use RootImp;
+    use PartsImp;
+    use ItemImp;
+    use YearImp;
 
-    static public function totalMonthsInYear(): int
+    /**
+     * @var array<Month>
+     */
+    private array $content = [];
+
+    public static function totalMonthsInYear(): int
     {
         return 12;
+    }
+
+    public static function fold(string $root, int $year): Year
+    {
+        return new Year($root, $year);
     }
 
     public function __construct(string $root, int $year)
@@ -24,80 +41,87 @@ class Year extends DataAbstract
         $this->parts = [$year];
     }
 
-    public function path(): string
+    private function item(): Item
     {
-        return Shoop::this($this->root())->divide("/")->append($this->parts())
-            ->efToString("/");
+        if ($this->item === null) {
+            $this->item = Item::create($this->root)->append($this->yearString());
+        }
+        return $this->item;
     }
 
+    private function path(): string
+    {
+        return $this->item()->thePath();
+    }
+
+    /**
+     * @return array<Month> [description]
+     */
     public function content()
     {
-        if (Shoop::this($this->content)->length()->efIsEmpty()) {
-            Shoop::store($this->path())->content()->each(function($v, $member, &$build) {
-                $m = Shoop::this($v)->divide("/")->last();
-                $k = $m->prepend("i")->unfold();
+        if (count($this->content) === 0) {
+            $c = $this->item()->content();
+            if (is_array($c)) {
+                foreach ($c as $item) {
+                    $parts = explode('/', $item->thePath());
+                    $month = array_pop($parts);
+                    $key   = 'i' . $month;
+                    if (! isset($this->content[$key])) {
+                        $item = Item::create($this->path() . '/' . $month);
+                        $this->content[$key] = Month::fromItem($this->root, $item);
 
-                $month = Month::fold($this->root(), $this->year(), $m->efToInteger());
-
-                $this->content[$k] = $month;
-            });
+                    }
+                }
+            }
         }
         return $this->content;
     }
 
     public function count(): int
-    {}
+    {
+        return count($this->content());
+    }
 
     public function couldHaveEvents(): bool
     {
-        return $this->hasEvents();
+        return $this->count() > 0;
     }
 
     public function hasEvents(): bool
     {
-        $hasEvents = false;
-        Shoop::this($this->content())->each(
-            function($x, $y, $z, &$break) use (&$hasEvents) {
-                if ($hasEvents or $x->hasEvents()) {
-                    $break = true;
-                    $hasEvents = true;
+        foreach ($this->content() as $month) {
+            if ($month->hasEvents()) {
+                return true;
 
-                }
-        });
-        return $hasEvents;
+            }
+        }
+        return false;
     }
 
-    public function monthsInYear(): int
+    private function isSameAs(int $compare): bool
     {
-        return static::totalMonthsInYear();
-    }
-
-    public function is(int $compare): bool
-    {
-        return (Shoop::this($this->year(false))->is($compare)->unfold())
-            ? true
-            : false;
+        return $this->year() === $compare;
     }
 
     public function isAfter(int $compare): bool
     {
-        if ($this->is($compare)) {
+        if ($this->isSameAs($compare)) {
             return false;
         }
-        return Shoop::this($this->year(false))->isGreaterThan($compare)->unfold();
+        return $this->year() > $compare;
     }
 
-    public function isBefore(int $compare)
+    public function isBefore(int $compare): bool
     {
-        if ($this->is($compare)) {
+        if ($this->isSameAs($compare)) {
             return false;
         }
         return ! $this->isAfter($compare);
     }
 
-
-    public function uri()
+    public function uri(): string
     {
-        return Shoop::this($this->path())->divide("/")->last()->prepend("/");
+        $parts = explode('/', $this->path());
+        return '/' . array_pop($parts);
     }
 }

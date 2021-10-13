@@ -1,116 +1,154 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Data;
 
 use Eightfold\Events\Data\DataAbstract;
 
-use Eightfold\ShoopShelf\Shoop;
+use Eightfold\FileSystem\Item;
 
-// use Eightfold\Events\Data\Traits\RootImp;
-use Eightfold\Events\Data\Traits\PartsImp;
-use Eightfold\Events\Data\Traits\YearImp;
-use Eightfold\Events\Data\Traits\MonthImp;
+use Eightfold\Events\Implementations\Root as RootImp;
+use Eightfold\Events\Implementations\Parts as PartsImp;
+use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Month as MonthImp;
 
-class Month extends DataAbstract
+class Month
 {
-    use PartsImp, YearImp, MonthImp;
+    use RootImp;
+    use PartsImp;
+    use YearImp;
+    use MonthImp;
 
-    public function __construct(string $root, int $year, int $month)
+    /**
+     * @var Item|null
+     */
+    private $item;
+
+    /**
+     * @var array<Date>
+     */
+    private array $content = [];
+
+    public static function fromItem(string $rootPath, Item $item): Month
     {
-        $this->root = $root;
+        $p = $item->thePath();
+        $parts = explode('/', $p);
+
+        $month = intval(array_pop($parts));
+
+        $year = intval(array_pop($parts));
+
+        return new Month($rootPath, $year, $month, $item);
+    }
+
+    /**
+     * @param mixed $args [description]
+     */
+    public static function fold(...$args): Month
+    {
+        return new Month(...$args);
+    }
+
+    public function __construct(
+        string $root,
+        int $year,
+        int $month,
+        Item $item = null
+    ) {
+        $this->root  = $root;
         $this->parts = [$year, $month];
+        $this->item  = $item;
+    }
+
+    public function item(): Item
+    {
+        if ($this->item === null) {
+            $this->item = Item::create($this->root)->append(
+                $this->yearString(),
+                $this->monthString(),
+            );
+        }
+        return $this->item;
     }
 
     public function path(): string
     {
-        return Shoop::this($this->root)->divide("/")->append([
-            $this->year(),
-            $this->month()
-        ])->efToString("/");
+        return $this->item()->thePath();
     }
 
+    /**
+     * @return array<Date>
+     */
     public function content()
     {
-        if (Shoop::this($this->content)->length()->efIsEmpty()) {
-            Shoop::store($this->path())->content()->each(function($v, $member, &$build) {
-                if (Shoop::this($v)->endsWith(".event")->unfold()) {
-                    $date = Shoop::this($v)->divide("/")->last()
-                        ->divide(".")->first()
-                        ->divide("_")->first();
-                    $d = $date->prepend("i")->unfold();
-                    if (Shoop::this($this->content)->hasAt($d)->reversed()->unfold()) {
-                        $this->content[$d][] = Date::fold(
-                            $this->root(),
-                            $this->year(),
-                            $this->month(),
-                            $date->unfold()
-                        );
+        if (count($this->content) === 0) {
+            $c = $this->item()->content();
+            if (is_array($c)) {
+                foreach ($c as $item) {
+                    $path     = $item->thePath();
+                    $p        = explode('/', $path);
+                    $fileName = array_pop($p);
+                    if (substr($path, -6) === '.event') {
+                        $date = substr($fileName, 0, 2);
+                        $key  = 'i' . $date;
+                        if (! isset($this->content[$key])) {
+                            $item = Item::create($this->path() . '/' . $date);
+                            $this->content[$key] = Date::fromItem($this->root, $item);
+
+                        }
                     }
                 }
-            });
+            }
         }
         return $this->content;
     }
 
     public function count(): int
     {
-        return Shoop::this($this->content())->count();
+        return count($this->content());
     }
 
     public function couldHaveEvents(): bool
     {
-        return Shoop::this($this->count())->isGreaterThan(0)->unfold();
+        return $this->count() > 0;
     }
 
     public function hasEvents(): bool
     {
-        $hasEvents = false;
-        Shoop::this($this->content())->each(
-            function($x, $y, $z, &$break) use (&$hasEvents) {
-                if ($hasEvents) {
-                    $break = true;
-                    $hasEvents = true;
-
-                } else {
-                    $results = Shoop::this($x)->each(
-                        function($date, $m, $n, &$break) use (&$hasEvents) {
-                            if ($date->hasEvents()) {
-                                $break = true;
-                                $hasEvents = true;
-
-                            }
-                    });
-                }
-        });
-        return $hasEvents;
+        foreach ($this->content() as $date) {
+            if ($date->hasEvents()) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public function is(int $compare): bool
+    public function isSameAs(int $compare): bool
     {
-        return (Shoop::this($this->month(false))->is($compare)->unfold())
-            ? true
-            : false;
+        return $this->month() === $compare;
     }
 
     public function isAfter(int $compare): bool
     {
-        if ($this->is($compare)) {
+        if ($this->isSameAs($compare)) {
             return false;
         }
-        return Shoop::this($this->month(false))->isGreaterThan($compare)->unfold();
+        return $this->month() > $compare;
     }
 
-    public function isBefore(int $compare)
+    public function isBefore(int $compare): bool
     {
-        if ($this->is($compare)) {
+        if ($this->isSameAs($compare)) {
             return false;
         }
-        return ! $this->isAfter($compare);
+        return $this->month() < $compare;
     }
 
-    public function uri()
+    public function uri(): string
     {
-        return Shoop::this($this->path())->divide("/")->last(2)->asString("/")
-            ->prepend("/");
+        $parts = explode('/', $this->path());
+        $parts = array_slice($parts, -2);
+        return '/' . implode('/', $parts);
     }
 }
