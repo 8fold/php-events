@@ -11,6 +11,20 @@ beforeEach(function() {
         ->up()->append('test-events', 'events')->thePath();
 });
 
+test('Month can go to next or previous year for next or previous link, respectively', function() {
+    expect(
+        GridForMonth::fold($this->path, 2020, 12)->nextLink()->build()
+    )->toBe(
+        '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>'
+    );
+
+    expect(
+        GridForMonth::fold($this->path, 2022, 5)->previousLink()->build()
+    )->toBe(
+        '<a class="ef-grid-previous-month" href="/events/2020/12" title="December 2020"><span>December 2020</span></a>'
+    );
+})->group('ui', 'month');
+
 test('Month grid has next and previous links', function() {
     expect(
         GridForMonth::fold($this->path, 2020, 5)->previousLink()->build()

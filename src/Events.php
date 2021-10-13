@@ -148,9 +148,11 @@ class Events // extends Fold
                 }
             }
 
+            // Check if a following year has events.
             if (count($months) === 0) {
                 $nextYear = $this->nextYearWithEvents($y->year());
                 if ($nextYear) {
+                    // Return a month from a follow-on year.
                     return $this->nextMonthWithEvents($nextYear->year(), 0);
                 }
                 return false;
@@ -183,10 +185,12 @@ class Events // extends Fold
                 }
             }
 
+            // Check if there is a previous year with events.
             if (count($months) === 0) {
                 $previousYear = $this->previousYearWithEvents($y->year());
                 if ($previousYear) {
-                    return $this->previousYearWithEvents($previousYear->year(), 13);
+                    // Return a month from a previous year.
+                    return $this->previousMonthWithEvents($previousYear->year(), 13);
                 }
                 return false;
             }

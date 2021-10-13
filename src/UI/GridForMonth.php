@@ -115,7 +115,7 @@ class GridForMonth // extends GridAbstract
     {
         $month = $this->events()
             ->previousMonthWithEvents($this->year(), $this->month());
-        $title = "";
+        $title = '';
 
         if ($month) {
             $format = $this->monthTitleFormat;

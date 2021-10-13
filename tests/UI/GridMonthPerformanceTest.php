@@ -29,7 +29,7 @@ test('Month grid is speedy', function() {
     $elapsed = $end - $start;
     $ms      = $elapsed/1e+6;
 
-    expect($ms)->toBeLessThan(4.7);
+    expect($ms)->toBeLessThan(5); // previous 1835.7ms
 })->group('ui', 'month', 'focus');
 
 test('Month grid is small', function() {
@@ -48,5 +48,5 @@ test('Month grid is small', function() {
     $used = $end - $start;
     $kb   = round($used/1024.2);
 
-    expect($kb)->toBeLessThan(9);
+    expect($kb)->toBeLessThan(9); // previous 4165kb
 })->group('ui', 'month');

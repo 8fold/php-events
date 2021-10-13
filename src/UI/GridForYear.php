@@ -15,7 +15,7 @@ use Carbon\Carbon;
 // use Eightfold\Markup\UIKit;
 // use Eightfold\Shoop\Shoop;
 
-// use Eightfold\Events\Data\Year;
+use Eightfold\Events\Data\Year;
 
 use Eightfold\Events\Events;
 

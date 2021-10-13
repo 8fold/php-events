@@ -25,10 +25,10 @@ class Year
      */
     private array $content = [];
 
-    // public static function totalMonthsInYear(): int
-    // {
-    //     return 12;
-    // }
+    public static function totalMonthsInYear(): int
+    {
+        return 12;
+    }
 
     public static function fold(string $root, int $year): Year
     {
