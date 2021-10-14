@@ -1,6 +1,8 @@
-# 8fold Events
+# 8fold Events for PHP
 
-8fold Events displays grid-view that mimics a calendar for years and months.
+Events displays a grid-view that mimics a calendar for years and months.
+
+Events is designed to respond as quickly and directly as possible to a single request.
 
 ## Install
 
@@ -10,62 +12,69 @@ composer require 8fold/php-events
 
 ## Usage
 
-We have divided 8fold Events between content and user interface.
+We have divided 8fold Events between content (Data) and user interface (UI).
 
-If you would like to develop your own user interface, you can get the required information and content by using the `Events` class.
+This means you can develope your own UI and access the data using the provided flat-file objects to query and retrieve the data; using the `Events` class.
 
-If you would like to use the provided user interface, you can get the views for years and months by using the `Grid` class.
+You can also use the grid-based UI via the `Grid` class and provide your own CSS and JavaScript.
+
+Or, you can use the CSS and JavaScript provided in the `dist` folder. The implmentations used to generate both are avaialble in the `sass` and `javascript` folders, respectively.
+
+### Content only
 
 ```php
-// Content only
-Events::init("/path/to/content-root");
-
-// Year with default URL prefix
-Grid::forYear("/path/to/content-root/year")
-	->render();
-
-// Year with custom URL prefix
-Grid::forYear("/path/to/content-root/year")
-	->uriPrefix("/uri/path/for/links")->render();
-
-// Month with default URL prefix
-Grid::forMonth("/path/to/content-root/year/month")
-	->render();
+Events::fold("/path/to/content-root");
 ```
 
-The `render` method returns a compiled HTML string using [8fold Markup](https://github.com/8fold/php-markup) and [8fold Shoop](https://github.com/8fold/php-shoop); therefore, the surrounding elements are up to you.
+For optimal performance, start with the `Events` class, which acts as a container for cached instances representing files. These files are [lazy-loaded](https://en.wikipedia.org/wiki/Lazy_loading).
 
-We also provide styling and a javascript file for interactivity in the `dist` folder of the project.
+### UI (with content)
+
+You can display a month (common) or year view.
+
+The `unfold` method queries and renders the content.
+
+For the month view:
+
+```php
+Grid::forMonth("/events/{year}/{month}")->unfold();
+```
+
+Or, for the year view:
+
+```php
+Grid::forYear("/events/{year}")->unfold();
+```
+
+For the base route or page (`/events`), we recommend you redirect your users to either a month or year view. The `Events` class has convenience methods to find the next or previous month or year with events; alternatively, and the fastest method, would be to redirect the use to the current month for the current year or just the current year.
+
+The month view will provide a link to the next and previous months with events, regardless of year. The year view, will display each month with the number of events during that month; the view will also provide links to the next or previous years with events along.
 
 ## Content folder structure
 
 8fold Events depends on a specific folder structure for the data side. The root folder can be anywhere you want, as long as PHP can reach that folder:
 
-```
-- /root
-  - /[year]
-    - /[month]
-      [day].event
-      [day]_[count].event
+```bash
+.
+└── root/
+    └── {year}/
+        └── {two-digit month}/
+            ├── {two-digit day}.event
+            └── {two-digit day}_{1-n}.event
 ```
 
 Production example:
 
+```bash
+.
+└── root/
+    └── 2020/
+        └── 01/
+            ├── 01.event
+            ├── 02.event
+            ├── 02_2.event
+            ├── 03_1.event
+            └── 03_2.event
 ```
-- /root
-	- /2020
-		- /01
-			01.event
-			02.event
-			02_2.event
-			03_1.event
-			03_2.event
-```
 
-Each event for a `day` is a separate low-level file.
-
-Each event name begins with the two-digit `day`.
-
-When there are multiple events on a `day`, the `day` should be suffixed by the `order` the event is in the `day`; the `day` and `order` should be separated by an underscore (`_`).
-
-When there are multiple events on a `day`, the first event can optionally be suffixed with `1`.
+Each day is represented by one or more `.event` files, which are plain-text, markdown files. For days with more than one event, you can add a suffix to the file name starting with an underscore and the order in which they should appear in the modal popover; having a suffix of `_1` is optional.

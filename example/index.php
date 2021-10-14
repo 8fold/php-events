@@ -52,7 +52,7 @@ if (count($grid) === 0) {
         );
 
     } else {
-        $grid = Grid::forYear($dataPath, $y->year())->uriPrefix('/'. $root);
+        $grid = Grid::forYear($dataPath, $y->year())->unfold();
 
     }
 
