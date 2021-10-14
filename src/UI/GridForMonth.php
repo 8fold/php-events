@@ -7,6 +7,7 @@ namespace Eightfold\Events\UI;
 use Carbon\Carbon;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
+use Eightfold\Markdown\Markdown;
 
 use Eightfold\Events\Events;
 
@@ -207,7 +208,7 @@ class GridForMonth
                 $body  = $event->body();
                 if (! empty($body)) {
                     $eventParts[] = HtmlElement::h4($title);
-                    $eventParts[] = HtmlElement::markdown($body);
+                    $eventParts[] = Markdown::create($body)->minified();
                 }
                 $eventParts[] = '';
             }
@@ -227,7 +228,7 @@ class GridForMonth
 
             return HtmlElement::div(
                 HtmlElement::h3($heading),
-                ...$eventParts
+                ...$filtered
             )->props($id, 'role dialog');
         }
         return '';
