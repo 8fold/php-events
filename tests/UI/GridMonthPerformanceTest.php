@@ -29,7 +29,7 @@ test('Month grid is speedy', function() {
     $elapsed = $end - $start;
     $ms      = $elapsed/1e+6;
 
-    expect($ms)->toBeLessThan(20); // pre-commonmark 13ms previous 1835.7ms
+    expect($ms)->toBeLessThan(23); // pre-commonmark 13ms previous 1835.7ms
 })->group('ui', 'month', 'focus');
 
 test('Month grid is small', function() {
@@ -48,5 +48,5 @@ test('Month grid is small', function() {
     $used = $end - $start;
     $kb   = round($used/1024.2);
 
-    expect($kb)->toBeLessThan(222); // pre-commonmark 9kb previous 4165kb
+    expect($kb)->toBeLessThan(223); // pre-commonmark 9kb previous 4165kb
 })->group('ui', 'month');
