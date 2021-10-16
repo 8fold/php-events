@@ -31,7 +31,7 @@ test('Year grid has next and previous links', function() {
     );
 
     expect(
-        '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>4</span></a>'
+        '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>'
     )->toBe(
         GridForYear::fold($this->path, 2020)->gridItem(5)->build()
     );

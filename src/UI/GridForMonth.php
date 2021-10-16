@@ -221,7 +221,8 @@ class GridForMonth
             $year  = $date->year();
             $month = $date->month();
             $day   = $date->date();
-            $id    = "id {$year}{$month}{$day}";
+
+            $id    = "id {$date->yearString()}{$date->monthString()}{$date->dateString()}";
 
             $heading = Carbon::now()->year($year)->month($month)->day($day)
                 ->format($this->dayTitleFormat);

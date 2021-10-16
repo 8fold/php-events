@@ -45,7 +45,11 @@ if (count($grid) === 0) {
 
     $y = $events->year($year);
     if (! $y) {
-        $y = $events->nearestYearWithEvents($year);
+        $y = $events->nextYearWithEvents($year);
+        if (! $y) {
+            $y = $events->previousYearWithEvents($year);
+        }
+
         $grid = Element::div(
             Element::p('No view for root alone - presumes user will be redirected to closest month with event.'),
             Element::p('Redirect to: '. $y->uri())

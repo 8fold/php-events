@@ -58,7 +58,7 @@ test('Month has content', function() {
     // 10.6ms 396kb
     expect(
         Month::fold($this->path, 2020, 5)->count()
-    )->toBeInt()->toBe(4);
+    )->toBeInt()->toBe(5);
 
     // 13.75ms 415kb
     expect(
