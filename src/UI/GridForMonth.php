@@ -208,7 +208,8 @@ class GridForMonth
                 $body  = $event->body();
                 if (! empty($body)) {
                     $eventParts[] = HtmlElement::h4($title);
-                    $eventParts[] = Markdown::create($body)->minified();
+                    $eventParts[] = Markdown::create()
+                        ->minified()->convert($body);
                 }
                 $eventParts[] = '';
             }
@@ -222,7 +223,11 @@ class GridForMonth
             $month = $date->month();
             $day   = $date->date();
 
-            $id    = "id {$date->yearString()}{$date->monthString()}{$date->dateString()}";
+            $yearString = $date->yearString();
+            $monthString = $date->monthString();
+            $dateString  = $date->dateString();
+
+            $id    = "id {$yearString}{$monthString}{$dateString}";
 
             $heading = Carbon::now()->year($year)->month($month)->day($day)
                 ->format($this->dayTitleFormat);
