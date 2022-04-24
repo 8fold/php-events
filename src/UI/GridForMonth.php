@@ -136,8 +136,12 @@ class GridForMonth
 
         if (is_object($month)) {
             $format = $this->monthTitleFormat;
-            $title = $this->carbon()->copy()
-                ->year($month->year())->month($month->month())->format($format);
+            $cc = clone $this->carbon();
+            $cc->setDate($month->year(), $month->month(), 1);
+            $title = $cc->format($format);
+
+            // $title = $this->carbon()->copy()
+            //     ->year($month->year())->month($month->month())->format($format);
         }
         return $this->navLink($month, $title, 'ef-grid-next-month');
     }
@@ -154,10 +158,12 @@ class GridForMonth
             return $this->gridItemBlank($itemNumber);
         }
 
-        $cc = $this->carbon()->copy()
-            ->year($date->year())
-            ->month($date->month())
-            ->day($date->date());
+        $cc = clone $this->carbon();
+        $cc->setDate($date->year(), $date->month(), $date->date());
+        // $cc = $this->carbon()->copy()
+        //     ->year($date->year())
+        //     ->month($date->month())
+        //     ->day($date->date());
 
         $id     = $cc->format('Y') . $cc->format('m') . $cc->format('d');
         $abbr   = $cc->format('j');
@@ -239,8 +245,10 @@ class GridForMonth
 
             $id    = "id {$yearString}{$monthString}{$dateString}";
 
-            $heading = Carbon::now()->year($year)->month($month)->day($day)
+            $heading = (new DateTime())->setDate($year, $month, $day)
                 ->format($this->dayTitleFormat);
+             // Carbon::now()->year($year)->month($month)->day($day)
+             //    ->format($this->dayTitleFormat);
 
             return HtmlElement::div(
                 HtmlElement::h3($heading),
