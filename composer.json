@@ -18,9 +18,8 @@
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6",
-    "phpstan/phpstan": "^0.12",
-    "pestphp/pest": "^1.20",
-    "psr/log": "^1.0.1"
+    "phpstan/phpstan": "^1.5",
+    "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-4": {
@@ -44,7 +43,6 @@
     "production": ["@style", "@stan", "@test"],
     "style": "./vendor/bin/phpcs --standard=phpcs.xml -p ./src",
     "stan": "./vendor/bin/phpstan analyze",
-    "test": "./vendor/bin/pest",
-    "phpunit": "./vendor/bin/phpunit"
+    "test": "./vendor/bin/phpunit"
   }
 }
