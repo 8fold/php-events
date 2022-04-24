@@ -8,15 +8,12 @@ use Eightfold\HTMLBuilder\Element as HtmlElement;
 
 use DateTime;
 
-// use Carbon\Carbon;
-
 use Eightfold\Events\Data\Year;
 
 use Eightfold\Events\Events;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Events as EventsImp;
-// use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -25,7 +22,6 @@ class GridForYear
 {
     use RootImp;
     use EventsImp;
-    // use CarbonImp;
     use PartsImp;
     use RenderImp;
     use YearImp;
@@ -64,9 +60,6 @@ class GridForYear
                 1,
                 10
             );
-            // $this->carbon = Carbon::now()
-            //     ->year($this->year())->month(1)->day(10)
-            //     ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
     }
@@ -79,8 +72,8 @@ class GridForYear
     public function header(): HtmlElement
     {
         $cc = clone $this->carbon();
+
         $title = $cc->format($this->yearTitleFormat);
-        // $title = $this->carbon()->copy()->format($this->yearTitleFormat);
         return HtmlElement::h2($title);
     }
 
@@ -94,9 +87,8 @@ class GridForYear
 
             $cc = clone $this->carbon();
             $cc->setDate($year->year(), 6, 10);
+
             $title = $cc->format($format);
-            // $title = $this->carbon()->copy()->year($year->year())
-            //     ->format($format);
         }
 
         return $this->navLink($year, $title, 'ef-grid-previous-year');
@@ -112,9 +104,8 @@ class GridForYear
 
             $cc = clone $this->carbon();
             $cc->setDate($year->year(), 6, 1);
+
             $title = $cc->format($format);
-            // $title = $this->carbon()->copy()->year($year->year())
-            //     ->format($format);
         }
 
         return $this->navLink($year, $title, 'ef-grid-next-year');
@@ -134,9 +125,6 @@ class GridForYear
 
         $cc = clone $this->carbon();
         $cc->setDate($month->year(), $month->month(), 1);
-        // $cc = $this->carbon()->copy()
-        //     ->year($month->year())
-        //     ->month($month->month());
 
         $abbr   = $cc->format($this->monthAbbrFormat);
         $title  = $cc->format($this->monthTitleFormat);
@@ -155,8 +143,6 @@ class GridForYear
     {
         $cc = clone $this->carbon();
         $cc->setDate($this->year(), $itemNumber, 1);
-        // $cc = $this->carbon()->copy()
-        //     ->year($this->year())->month($itemNumber);
 
         $abbr = $cc->format($this->monthAbbrFormat);
         $title = $cc->format($this->monthTitleFormat);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\UI;
 
-// use Carbon\Carbon;
 use DateTime;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
@@ -14,7 +13,6 @@ use Eightfold\Events\Events;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Events as EventsImp;
-// use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -26,7 +24,6 @@ class GridForMonth
 {
     use RootImp;
     use EventsImp;
-    // use CarbonImp;
     use RenderImp;
     use PartsImp;
     use YearImp;
@@ -70,9 +67,6 @@ class GridForMonth
                 $this->month(),
                 10
             );
-            // $this->carbon = Carbon::now()
-            //     ->year($this->year())->month($this->month())->day(10)
-            //     ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
     }
@@ -82,8 +76,6 @@ class GridForMonth
         $carbon = clone $this->carbon();
         $carbon = $carbon->modify('first day of this month');
         return intval($carbon->format('N')) - 1;
-        // die(var_dump($carbon->format('N')));
-        // return $this->carbon()->copy()->startOfMonth()->dayOfWeek - 1;
     }
 
     public function totalEndGridBlanks(): int
@@ -136,12 +128,11 @@ class GridForMonth
 
         if (is_object($month)) {
             $format = $this->monthTitleFormat;
+
             $cc = clone $this->carbon();
             $cc->setDate($month->year(), $month->month(), 1);
-            $title = $cc->format($format);
 
-            // $title = $this->carbon()->copy()
-            //     ->year($month->year())->month($month->month())->format($format);
+            $title = $cc->format($format);
         }
         return $this->navLink($month, $title, 'ef-grid-next-month');
     }
@@ -160,10 +151,6 @@ class GridForMonth
 
         $cc = clone $this->carbon();
         $cc->setDate($date->year(), $date->month(), $date->date());
-        // $cc = $this->carbon()->copy()
-        //     ->year($date->year())
-        //     ->month($date->month())
-        //     ->day($date->date());
 
         $id     = $cc->format('Y') . $cc->format('m') . $cc->format('d');
         $abbr   = $cc->format('j');
@@ -247,8 +234,6 @@ class GridForMonth
 
             $heading = (new DateTime())->setDate($year, $month, $day)
                 ->format($this->dayTitleFormat);
-             // Carbon::now()->year($year)->month($month)->day($day)
-             //    ->format($this->dayTitleFormat);
 
             return HtmlElement::div(
                 HtmlElement::h3($heading),
