@@ -44,7 +44,7 @@ class GridMonthPerformanceTest extends TestCase
         $elapsed = $end - $start;
         $ms      = $elapsed/1e+6;
 
-        $this->assertLessThan(43, $ms); // pre-commonmark 13ms previous 1835.7ms
+        $this->assertLessThan(44, $ms); // pre-commonmark 13ms previous 1835.7ms
     }
 
     /**
