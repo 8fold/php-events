@@ -33,7 +33,7 @@ class GridForMonth
 
     private int $weeksToDisplay = 6;
 
-    private string $monthAbbrFormat = 'M';
+    // private string $monthAbbrFormat = 'M';
     private string $monthTitleFormat = 'F Y';
 
     private string $dayAbbrFormat = 'j';
