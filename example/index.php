@@ -6,8 +6,6 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Carbon\Carbon;
-
 use Eightfold\HTMLBuilder\Element;
 use Eightfold\HTMLBuilder\Document;
 
@@ -25,8 +23,8 @@ if (count($grid) === 0) {
     $grid = Element::p('404 equivalent: not child of "' . $root . '"');
 
 } elseif (count($grid) === 1) {
-    $year  = Carbon::now()->year;
-    $month = Carbon::now()->month;
+    $year  = date('Y');
+    $month = date('n');
     $monthTarget = Events::fold($dataPath)
         ->nextMonthWithEvents($year, $month);
     if ($month < 10) {

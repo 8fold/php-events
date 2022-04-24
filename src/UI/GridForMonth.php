@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\UI;
 
-use Carbon\Carbon;
+// use Carbon\Carbon;
+use DateTime;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
 use Eightfold\Markdown\Markdown;
@@ -13,7 +14,7 @@ use Eightfold\Events\Events;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Events as EventsImp;
-use Eightfold\Events\Implementations\Carbon as CarbonImp;
+// use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -25,11 +26,13 @@ class GridForMonth
 {
     use RootImp;
     use EventsImp;
-    use CarbonImp;
+    // use CarbonImp;
     use RenderImp;
     use PartsImp;
     use YearImp;
     use MonthImp;
+
+    private $carbon;
 
     private int $weeksToDisplay = 6;
 
@@ -59,19 +62,28 @@ class GridForMonth
         }
     }
 
-    public function carbon(): Carbon
+    public function carbon(): DateTime
     {
         if ($this->carbon === null) {
-            $this->carbon = Carbon::now()
-                ->year($this->year())->month($this->month())->day(10)
-                ->startOfWeek(Carbon::MONDAY);
+            $this->carbon = (new DateTime())->setDate(
+                $this->year(),
+                $this->month(),
+                10
+            );
+            // $this->carbon = Carbon::now()
+            //     ->year($this->year())->month($this->month())->day(10)
+            //     ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
     }
 
     public function totalStartGridBlanks(): int
     {
-        return $this->carbon()->copy()->startOfMonth()->dayOfWeek - 1;
+        $carbon = clone $this->carbon();
+        $carbon = $carbon->modify('first day of this month');
+        return intval($carbon->format('N'));
+        // die(var_dump($carbon->format('N')));
+        // return $this->carbon()->copy()->startOfMonth()->dayOfWeek - 1;
     }
 
     public function totalEndGridBlanks(): int
@@ -95,7 +107,8 @@ class GridForMonth
 // -> rendering
     public function header(): HtmlElement
     {
-        $title = $this->carbon()->copy()->format($this->monthTitleFormat);
+        $cc = clone $this->carbon();
+        $title = $cc->format($this->monthTitleFormat);
         return HtmlElement::h2($title);
     }
 
@@ -107,8 +120,10 @@ class GridForMonth
 
         if (is_object($month)) {
             $format = $this->monthTitleFormat;
-            $title = $this->carbon()->copy()
-                ->year($month->year())->month($month->month())->format($format);
+
+            $cc = clone $this->carbon();
+            $title = $cc->setDate($month->year(), $month->month(), 1)
+                ->format($format);
         }
         return $this->navLink($month, $title, 'ef-grid-previous-month');
     }
@@ -166,13 +181,8 @@ class GridForMonth
 
     public function gridItemBlank(int $itemNumber): HtmlElement
     {
-        $cc = $this->carbon()->copy()->year(
-            $this->year()
-        )->month(
-            $this->month()
-        )->day(
-            $itemNumber
-        );
+        $cc = clone $this->carbon();
+        $cc = $cc->setDate($this->year(), $this->month(), $itemNumber);
 
         $abbr = $cc->format($this->dayAbbrFormat);
         $title = $cc->format($this->dayTitleFormat);

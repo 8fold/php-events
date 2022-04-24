@@ -6,7 +6,9 @@ namespace Eightfold\Events\UI;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
 
-use Carbon\Carbon;
+use DateTime;
+
+// use Carbon\Carbon;
 
 use Eightfold\Events\Data\Year;
 
@@ -14,7 +16,7 @@ use Eightfold\Events\Events;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Events as EventsImp;
-use Eightfold\Events\Implementations\Carbon as CarbonImp;
+// use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -23,10 +25,12 @@ class GridForYear
 {
     use RootImp;
     use EventsImp;
-    use CarbonImp;
+    // use CarbonImp;
     use PartsImp;
     use RenderImp;
     use YearImp;
+
+    private $carbon;
 
     private string $yearTitleFormat = 'Y';
 
@@ -52,12 +56,17 @@ class GridForYear
         $this->uriPrefix = $uriPrefix;
     }
 
-    public function carbon(): Carbon
+    public function carbon(): DateTime
     {
         if ($this->carbon === null) {
-            $this->carbon = Carbon::now()
-                ->year($this->year())->month(1)->day(10)
-                ->startOfWeek(Carbon::MONDAY);
+            $this->carbon = (new DateTime())->setDate(
+                $this->year(),
+                1,
+                10
+            );
+            // $this->carbon = Carbon::now()
+            //     ->year($this->year())->month(1)->day(10)
+            //     ->startOfWeek(Carbon::MONDAY);
         }
         return $this->carbon;
     }
@@ -80,6 +89,9 @@ class GridForYear
 
         if (is_object($year)) {
             $format = $this->yearTitleFormat;
+
+            $carbon = clone $this->carbon();
+            die(var_dump($carbon));
             $title = $this->carbon()->copy()->year($year->year())
                 ->format($format);
         }
