@@ -29,10 +29,14 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "Eightfold\\Events\\Tests\\": "./tests/"
     }
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   },
   "prefer-stable": true,
   "scripts": {
@@ -40,6 +44,7 @@
     "production": ["@style", "@stan", "@test"],
     "style": "./vendor/bin/phpcs --standard=phpcs.xml -p ./src",
     "stan": "./vendor/bin/phpstan analyze",
-    "test": "./vendor/bin/pest"
+    "test": "./vendor/bin/pest",
+    "phpunit": "./vendor/bin/phpunit"
   }
 }
