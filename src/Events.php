@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Events;
 
-// use Eightfold\Foldable\Fold;
-
-// use Carbon\Carbon;
-
-// use Eightfold\ShoopShelf\Shoop;
 use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Years;
@@ -232,50 +227,4 @@ class Events // extends Fold
         }
         return false;
     }
-
-    /**
-     * @deprecated No replacement
-     */
-    // public function nearestMonthWithEvents(int $year, int $month): ?Month
-    // {
-    //     $m = $this->month($year, $month);
-    //     if ($m and $m->hasEvents()) {
-    //         return $m;
-    //     }
-
-    //     $m = $this->nextMonthWithEvents($year, $month);
-    //     if ($m) {
-    //         return $m;
-    //     }
-
-    //     $m = $this->previousMonthWithEvents($year, $month);
-    //     if ($m) {
-    //         return $m;
-    //     }
-
-    //     return null;
-    // }
-
-    /**
-     * @deprecated No replacement
-     */
-    // public function nearestYearWithEvents(int $year): ?Year
-    // {
-    //     $y = $this->year($year);
-    //     if ($y and $y->hasEvents()) {
-    //         return $y;
-    //     }
-
-    //     $y = $this->nextYearWithEvents($year);
-    //     if ($y) {
-    //         return $y;
-    //     }
-
-    //     $y = $this->previousYearWithEvents($year);
-    //     if ($y) {
-    //         return $y;
-    //     }
-
-    //     return null;
-    // }
 }
