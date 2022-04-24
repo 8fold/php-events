@@ -78,7 +78,9 @@ class GridForYear
 
     public function header(): HtmlElement
     {
-        $title = $this->carbon()->copy()->format($this->yearTitleFormat);
+        $cc = clone $this->carbon();
+        $title = $cc->format($this->yearTitleFormat);
+        // $title = $this->carbon()->copy()->format($this->yearTitleFormat);
         return HtmlElement::h2($title);
     }
 
@@ -90,10 +92,11 @@ class GridForYear
         if (is_object($year)) {
             $format = $this->yearTitleFormat;
 
-            $carbon = clone $this->carbon();
-            die(var_dump($carbon));
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
+            $cc = clone $this->carbon();
+            $cc->setDate($year->year(), 6, 10);
+            $title = $cc->format($format);
+            // $title = $this->carbon()->copy()->year($year->year())
+            //     ->format($format);
         }
 
         return $this->navLink($year, $title, 'ef-grid-previous-year');
@@ -106,8 +109,12 @@ class GridForYear
 
         if (is_object($year)) {
             $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
+
+            $cc = clone $this->carbon();
+            $cc->setDate($year->year(), 6, 1);
+            $title = $cc->format($format);
+            // $title = $this->carbon()->copy()->year($year->year())
+            //     ->format($format);
         }
 
         return $this->navLink($year, $title, 'ef-grid-next-year');
@@ -125,9 +132,11 @@ class GridForYear
             return $this->gridItemBlank($itemNumber);
         }
 
-        $cc = $this->carbon()->copy()
-            ->year($month->year())
-            ->month($month->month());
+        $cc = clone $this->carbon();
+        $cc->setDate($month->year(), $month->month(), 1);
+        // $cc = $this->carbon()->copy()
+        //     ->year($month->year())
+        //     ->month($month->month());
 
         $abbr   = $cc->format($this->monthAbbrFormat);
         $title  = $cc->format($this->monthTitleFormat);
@@ -144,8 +153,10 @@ class GridForYear
 
     public function gridItemBlank(int $itemNumber): HtmlElement
     {
-        $cc = $this->carbon()->copy()
-            ->year($this->year())->month($itemNumber);
+        $cc = clone $this->carbon();
+        $cc->setDate($this->year(), $itemNumber, 1);
+        // $cc = $this->carbon()->copy()
+        //     ->year($this->year())->month($itemNumber);
 
         $abbr = $cc->format($this->monthAbbrFormat);
         $title = $cc->format($this->monthTitleFormat);

@@ -81,7 +81,7 @@ class GridForMonth
     {
         $carbon = clone $this->carbon();
         $carbon = $carbon->modify('first day of this month');
-        return intval($carbon->format('N'));
+        return intval($carbon->format('N')) - 1;
         // die(var_dump($carbon->format('N')));
         // return $this->carbon()->copy()->startOfMonth()->dayOfWeek - 1;
     }
