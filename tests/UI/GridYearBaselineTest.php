@@ -16,7 +16,8 @@ class GridYearBaselineTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Item::create(__DIR__)->append('test-events', 'events')
+        $this->path = Item::create(__DIR__)->up()
+            ->append('test-events', 'events')
             ->thePath();
     }
 
@@ -33,23 +34,20 @@ class GridYearBaselineTest extends TestCase
             GridForYear::fold($this->path, 2020)->previousLink()->build()
         );
 
-        // TODO: assertion is broken
-        // $this->assertEquals(
-        //     '<a class="ef-grid-previous-year" href="/events/2020" title="2020"><span>2020</span></a>',
-        //     GridForYear::fold($this->path, 2021)->previousLink()->build()
-        // );
+        $this->assertEquals(
+            '<a class="ef-grid-previous-year" href="/events/2020" title="2020"><span>2020</span></a>',
+            GridForYear::fold($this->path, 2021)->previousLink()->build()
+        );
 
-        // TODO: assertion is broken
-        // $this->assertEquals(
-        //     '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
-        //     GridForYear::fold($this->path, 2021)->nextLink()->build()
-        // );
+        $this->assertEquals(
+            '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
+            GridForYear::fold($this->path, 2021)->nextLink()->build()
+        );
 
-        // TODO: assertion is broken
-        // $this->assertEquals(
-        //     '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>',
-        //     GridForYear::fold($this->path, 2020)->gridItem(5)->build()
-        // );
+        $this->assertEquals(
+            '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>',
+            GridForYear::fold($this->path, 2020)->gridItem(5)->build()
+        );
     }
 
     /**

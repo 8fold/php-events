@@ -16,13 +16,13 @@ class GridMonthBaselineTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Item::create(__DIR__)->append('test-events', 'events')
+        $this->path = Item::create(__DIR__)->up()
+            ->append('test-events', 'events')
             ->thePath();
     }
 
     /**
-     * @test!
-     * @todo:
+     * @test
      *
      * @group ui
      * @group month
@@ -58,22 +58,20 @@ class GridMonthBaselineTest extends TestCase
             GridForMonth::fold($this->path, 2023, 5)->nextLink()->build()
         );
 
-        // TODO: assertion fails
-        // $this->assertEquals(
-        //     '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
-        //     GridForMonth::fold($this->path, 2020, 12)->nextLink()->build()
-        // );
+        $this->assertEquals(
+            '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
+            GridForMonth::fold($this->path, 2020, 12)->nextLink()->build()
+        );
 
         $this->assertEquals(
             '<button role="presentation" aria-disabled="true" disabled><abbr title="1st of February 2020">1</abbr></button>',
             GridForMonth::fold($this->path, 2020, 2)->gridItem(1)->build()
         );
 
-        // TODO: assertion fails
-        // $this->assertEquals(
-        //     '<button id="toggle-20200522" class="calendar-date" aria-expanded="false" onclick="EFEventsModals.init(this, 20200522)"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
-        //     GridForMonth::fold($this->path, 2020, 5)->gridItem(22)->build()
-        // );
+        $this->assertEquals(
+            '<button id="toggle-20200522" class="calendar-date" aria-expanded="false" onclick="EFEventsModals.init(this, 20200522)"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
+            GridForMonth::fold($this->path, 2020, 5)->gridItem(22)->build()
+        );
     }
 
     /**

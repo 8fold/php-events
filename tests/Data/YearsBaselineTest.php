@@ -18,7 +18,8 @@ class YearsBaselineTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Item::create(__DIR__)->append('test-events', 'events')
+        $this->path = Item::create(__DIR__)->up()
+            ->append('test-events', 'events')
             ->thePath();
     }
 
