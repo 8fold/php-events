@@ -35,30 +35,30 @@ class Date
     /**
      * @todo: should be able to deprecate this constructor
      */
-    public static function fromItem(string $rootPath, SplFileInfo $item): Date
-    {
-        $p = $item->getPath();
-        $parts = explode('/', $p);
-
-        $fileName = array_pop($parts);
-        $fileName = str_replace('.event', '', $fileName);
-        $fParts   = explode('_', $fileName);
-        $date     = intval(array_shift($fParts));
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        return new Date($rootPath, $year, $month, $date, $parent);
-    }
+//     public static function fromItem(string $rootPath, SplFileInfo $item): Date
+//     {
+//         $p = $item->getPath();
+//         $parts = explode('/', $p);
+//
+//         $fileName = array_pop($parts);
+//         $fileName = str_replace('.event', '', $fileName);
+//         $fParts   = explode('_', $fileName);
+//         $date     = intval(array_shift($fParts));
+//
+//         $month = intval(array_pop($parts));
+//
+//         $year = intval(array_pop($parts));
+//
+//         return new Date($rootPath, $year, $month, $date, $parent);
+//     }
 
     /**
      * @param mixed $args [description]
      */
-    public static function fold(...$args): Date
-    {
-        return new Date(...$args);
-    }
+    // public static function fold(...$args): Date
+    // {
+    //     return new Date(...$args);
+    // }
 
     public function __construct(
         string $root,
