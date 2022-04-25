@@ -73,18 +73,18 @@ class YearBaselineTest extends TestCase
         $this->assertEquals(
             Year::fold($this->path, 2020)->content(),
             [
-                "i05" => Month::fold(
+                "i05" => new Month(
                     $this->path,
                     2020,
                     5,
-                    new SplFileInfo($this->path . '/2020/05')
+                    // new SplFileInfo($this->path . '/2020/05')
                     // Item::create($this->path . '/2020/05')
                 ),
-                "i12" => Month::fold(
+                "i12" => new Month(
                     $this->path,
                     2020,
                     12,
-                    new SplFileInfo($this->path . '/2020/12')
+                    // new SplFileInfo($this->path . '/2020/12')
                     // Item::create($this->path . '/2020/12')
                 )
             ]

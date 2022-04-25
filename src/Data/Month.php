@@ -59,11 +59,11 @@ class Month
         string $root,
         int $year,
         int $month,
-        SplFileInfo $item = null
+        // SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month];
-        $this->item  = $item;
+        // $this->item  = $item;
     }
 
     public function item(): SplFileInfo
@@ -149,8 +149,6 @@ class Month
 
     public function uri(): string
     {
-        $parts = explode('/', $this->path());
-        $parts = array_slice($parts, -2);
-        return '/' . implode('/', $parts);
+        return str_replace($this->root, '', $this->path());
     }
 }

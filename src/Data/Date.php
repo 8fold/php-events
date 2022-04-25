@@ -67,11 +67,11 @@ class Date
         int $year,
         int $month,
         int $date,
-        SplFileInfo $item = null
+        // SplFileInfo $item = null
     ) {
         $this->root = $root;
         $this->parts = [$year, $month, $date];
-        $this->item  = $item;
+        // $this->item  = $item;
     }
 
     public function item(): SplFileInfo

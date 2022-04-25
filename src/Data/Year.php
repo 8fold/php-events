@@ -56,7 +56,7 @@ class Year
 
     private function path(): string
     {
-        return $this->item()->getRealPath();
+        return $this->item()->getPath();
     }
 
     /**
@@ -64,8 +64,13 @@ class Year
      */
     public function content()
     {
-        if (count($this->content) === 0) {
-            $c = (new Finder())->directories()->in($this->path());
+        if (
+            count($this->content) === 0 and
+            $path = $this->path() . '/' . $this->yearString() and
+            file_exists($path) and
+            is_dir($path)
+         ) {
+            $c = (new Finder())->directories()->in($path);
             foreach ($c as $item) {
                 $parts = explode('/', $item->getRealPath());
                 $month = array_pop($parts);
@@ -125,7 +130,9 @@ class Year
 
     public function uri(): string
     {
-        $parts = explode('/', $this->path());
-        return '/' . array_pop($parts);
+        return '/' . $this->yearString();
+        // die($this->path());
+        // $parts = explode('/', $this->path());
+        // return '/' . array_pop($parts);
     }
 }
