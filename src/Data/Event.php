@@ -85,11 +85,6 @@ class Event
                 $this->monthString() . '/' .
                 $this->dateString() . '_' . $this->count() . '.event'
             );
-            // $this->item = Item::create($this->root)->append(
-            //     $this->yearString(),
-            //     $this->monthString(),
-            //     $this->dateString() . '_' . $this->count() . '.event'
-            // );
 
             if ($this->count() === 1 and ! $this->item->isFile()) {
                 $check = new SplFileInfo(
@@ -121,7 +116,6 @@ class Event
             $this->item()->isFile()
         ) {
             $c = file_get_contents($this->item()->getRealPath());
-            // $c = $this->item()->content();
             if (is_string($c)) {
                 $this->content = $c;
 
