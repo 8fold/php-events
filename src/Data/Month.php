@@ -29,34 +29,10 @@ class Month
      */
     private array $content = [];
 
-    /**
-     * @todo: should be able to deprecate this constructor
-     */
-//     public static function fromItem(string $rootPath, SplFileInfo $item): Month
-//     {
-//         $p = $item->thePath();
-//         $parts = explode('/', $p);
-//
-//         $month = intval(array_pop($parts));
-//
-//         $year = intval(array_pop($parts));
-//
-//         return new Month($rootPath, $year, $month);
-//     }
-
-    /**
-     * @param mixed $args [description]
-     */
-    // public static function fold(...$args): Month
-    // {
-    //     return new Month(...$args);
-    // }
-
     public function __construct(string $root, int $year, int $month)
     {
         $this->root  = $root;
         $this->parts = [$year, $month];
-        // $this->item  = $item;
     }
 
     public function item(): SplFileInfo|false
@@ -99,7 +75,12 @@ class Month
                 $date = substr($fileName, 0, 2);
                 $key  = 'i' . $date;
                 if (! isset($this->content[$key])) {
-                    $d = new Date($this->root, $this->year(), $this->month(), intval($date));
+                    $d = new Date(
+                        $this->root,
+                        $this->year(),
+                        $this->month(),
+                        intval($date)
+                    );
                     $this->content[$key] = $d;
                 }
             }
