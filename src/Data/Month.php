@@ -6,9 +6,9 @@ namespace Eightfold\Events\Data;
 
 use SplFileInfo;
 
-use Eightfold\Events\Data\DataAbstract;
+use Symfony\Component\Finder\Finder;
 
-use Eightfold\FileSystem\Item;
+use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
@@ -32,7 +32,10 @@ class Month
      */
     private array $content = [];
 
-    public static function fromItem(string $rootPath, Item|SplFileInfo $item): Month
+    /**
+     * @todo: should be able to deprecate this constructor
+     */
+    public static function fromItem(string $rootPath, SplFileInfo $item): Month
     {
         $p = $item->thePath();
         $parts = explode('/', $p);
@@ -41,7 +44,7 @@ class Month
 
         $year = intval(array_pop($parts));
 
-        return new Month($rootPath, $year, $month, $item);
+        return new Month($rootPath, $year, $month);
     }
 
     /**
@@ -56,19 +59,20 @@ class Month
         string $root,
         int $year,
         int $month,
-        Item|SplFileInfo $item = null
+        SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month];
         $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo
     {
         if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+            $this->item = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString()
             );
         }
         return $this->item;
@@ -76,7 +80,7 @@ class Month
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        return $this->item()->getRealPath();
     }
 
     /**
@@ -84,22 +88,18 @@ class Month
      */
     public function content()
     {
-        if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $item) {
-                    $path     = $item->thePath();
-                    $p        = explode('/', $path);
-                    $fileName = array_pop($p);
-                    if (substr($path, -6) === '.event') {
-                        $date = substr($fileName, 0, 2);
-                        $key  = 'i' . $date;
-                        if (! isset($this->content[$key])) {
-                            $item = Item::create($this->path() . '/' . $date);
-                            $this->content[$key] = Date::fromItem($this->root, $item);
-
-                        }
-                    }
+        if (count($this->content) === 0 and $this->item()->isDir()) {
+            $c = (new Finder())->files()->name('*.event')
+                ->in($this->item()->getRealPath());
+            foreach ($c as $item) {
+                $path     = $item->getRealPath();
+                $p        = explode('/', $path);
+                $fileName = array_pop($p);
+                $date = substr($fileName, 0, 2);
+                $key  = 'i' . $date;
+                if (! isset($this->content[$key])) {
+                    $d = new Date($this->root, $this->year(), $this->month(), intval($date));
+                    $this->content[$key] = $d;
                 }
             }
         }

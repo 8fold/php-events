@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Events\Data\DataAbstract;
+use SplFileInfo;
 
-use Eightfold\FileSystem\Item;
+use Symfony\Component\Finder\Finder;
+
+use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
@@ -41,17 +43,20 @@ class Year
         $this->parts = [$year];
     }
 
-    private function item(): Item
+    private function item(): SplFileInfo
     {
         if ($this->item === null) {
-            $this->item = Item::create($this->root)->append($this->yearString());
+            $this->item = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString()
+            );
         }
         return $this->item;
     }
 
     private function path(): string
     {
-        return $this->item()->thePath();
+        return $this->item()->getRealPath();
     }
 
     /**
@@ -60,17 +65,17 @@ class Year
     public function content()
     {
         if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $item) {
-                    $parts = explode('/', $item->thePath());
-                    $month = array_pop($parts);
-                    $key   = 'i' . $month;
-                    if (! isset($this->content[$key])) {
-                        $item = Item::create($this->path() . '/' . $month);
-                        $this->content[$key] = Month::fromItem($this->root, $item);
-
-                    }
+            $c = (new Finder())->directories()->in($this->path());
+            foreach ($c as $item) {
+                $parts = explode('/', $item->getRealPath());
+                $month = array_pop($parts);
+                $key   = 'i' . $month;
+                if (! isset($this->content[$key])) {
+                    $this->content[$key] = new Month(
+                        $this->root,
+                        $this->year(),
+                        intval($month)
+                    );
                 }
             }
         }
@@ -92,7 +97,6 @@ class Year
         foreach ($this->content() as $month) {
             if ($month->hasEvents()) {
                 return true;
-
             }
         }
         return false;

@@ -23,7 +23,7 @@ class Date
     use DateImp;
 
     /**
-     * @var Item|null
+     * @var SplFileInfo|null
      */
     private $item;
 
@@ -32,9 +32,12 @@ class Date
      */
     private array $content = [];
 
+    /**
+     * @todo: should be able to deprecate this constructor
+     */
     public static function fromItem(string $rootPath, SplFileInfo $item): Date
     {
-        $p = $item->thePath();
+        $p = $item->getPath();
         $parts = explode('/', $p);
 
         $fileName = array_pop($parts);
@@ -46,8 +49,9 @@ class Date
 
         $year = intval(array_pop($parts));
 
-        // Item doesn't need date; go up one
-        return new Date($rootPath, $year, $month, $date, $item->up());
+        // TODO: Shouldn't need to pass SplFileInfo to constructor
+        $parent = new SplFileInfo(implode('/', $parts));
+        return new Date($rootPath, $year, $month, $date, $parent);
     }
 
     /**
@@ -84,7 +88,7 @@ class Date
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        return $this->item()->getRealPath();
     }
 
     /**
@@ -93,21 +97,17 @@ class Date
     public function content()
     {
         if (count($this->content) === 0) {
-            $c = (new Finder())->in($this->item()->getRealPath());
+            $c = (new Finder())->in($this->item()->getRealPath())->name('*.event');
             foreach ($c as $item) {
                 $path     = $item->getRealPath();
                 $p        = explode('/', $path);
                 $fileName = array_pop($p);
-                if (
-                    str_ends_with($fileName, '.event') and
-                    str_starts_with($fileName, $this->dateString())
-                ) {
+                if (str_starts_with($fileName, $this->dateString())) {
                     $this->content[$path] =
                         Event::fromItem(
                             $this->root,
                             new SplFileInfo($item->getRealPath())
                         );
-
                 }
             }
         }
