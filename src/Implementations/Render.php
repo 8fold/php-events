@@ -13,13 +13,11 @@ trait Render
 {
     private string $uriPrefix = '/events';
 
-    /**
-     * @param  Year|Month|bool|boolean $uriObject [description]
-     * @param  string $title     [description]
-     * @param  string $class     [description]
-     */
-    public function navLink($uriObject, string $title, string $class): HtmlElement
-    {
+    public function navLink(
+        Year|Month|bool $uriObject,
+        string $title,
+        string $class
+    ): HtmlElement {
         if (is_object($uriObject)) {
             return HtmlElement::a(
                 HtmlElement::span($title)

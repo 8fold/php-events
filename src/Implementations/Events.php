@@ -11,12 +11,13 @@ trait Events
     /**
      * @var EventsCollection
      */
-    private $events;
+    private EventsCollection|null $events = null;
 
-    public function events(): EventsCollection
+    public function events(): EventsCollection|null
     {
         if ($this->events === null) {
             $this->events = EventsCollection::fold($this->root());
+            var_dump($this->events);
         }
         return $this->events;
     }

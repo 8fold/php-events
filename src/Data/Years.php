@@ -74,16 +74,12 @@ class Years
         foreach ($this->content() as $year) {
             if ($year->hasEvents()) {
                 return true;
-
             }
         }
         return false;
     }
 
-    /**
-     * @return Year|bool       [description]
-     */
-    public function year(int $year)
+    public function year(int $year): Year|false
     {
         $year = 'i' . $year;
         if ($c = $this->content() and array_key_exists($year, $c)) {
