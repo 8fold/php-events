@@ -76,14 +76,20 @@ class Event
         $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo
     {
         if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+            $this->item = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString() . '/' .
                 $this->dateString() . '_' . $this->count() . '.event'
             );
+            // $this->item = Item::create($this->root)->append(
+            //     $this->yearString(),
+            //     $this->monthString(),
+            //     $this->dateString() . '_' . $this->count() . '.event'
+            // );
 
             if ($this->count() === 1 and ! $this->item->isFile()) {
                 $check = new SplFileInfo(
@@ -109,8 +115,13 @@ class Event
 
     public function content(): string
     {
-        if (strlen($this->content) === 0 and $this->hasEvents()) {
-            $c = $this->item()->content();
+        if (
+            strlen($this->content) === 0 and
+            $this->hasEvents() and
+            $this->item()->isFile()
+        ) {
+            $c = file_get_contents($this->item()->getRealPath());
+            // $c = $this->item()->content();
             if (is_string($c)) {
                 $this->content = $c;
 
