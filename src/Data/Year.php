@@ -23,7 +23,7 @@ class Year
     use YearImp;
 
     /**
-     * @var array<Month>
+     * @var [Month]
      */
     private array $content = [];
 
@@ -32,37 +32,39 @@ class Year
         return 12;
     }
 
-    public static function fold(string $root, int $year): Year
-    {
-        return new Year($root, $year);
-    }
-
     public function __construct(string $root, int $year)
     {
         $this->root  = $root;
         $this->parts = [$year];
     }
 
-    private function item(): SplFileInfo
+    private function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = new SplFileInfo(
+        if ($this->item === false) {
+            $check = new SplFileInfo(
                 $this->root . '/' .
                 $this->yearString()
             );
+
+            if ($check->isDir()) {
+                $this->item = $check;
+            }
         }
         return $this->item;
     }
 
     private function path(): string
     {
+        if ($this->item() === false) {
+            return '';
+        }
         return $this->item()->getPath();
     }
 
     /**
-     * @return array<Month> [description]
+     * @return [Month]
      */
-    public function content()
+    public function content(): array
     {
         if (
             count($this->content) === 0 and

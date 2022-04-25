@@ -65,11 +65,7 @@ class Years
                     $year  = array_pop($parts);
                     $key   = 'i' . $year;
 
-                    $this->content[$key] = Year::fold(
-                        $this->root,
-                        intval($year)
-                    );
-
+                    $this->content[$key] = new Year($this->root, intval($year));
                 }
             // }
         }

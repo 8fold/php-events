@@ -30,17 +30,17 @@ class YearBaselineTest extends TestCase
      */
     public function year_can_answer_before_or_after(): void
     {
-        $this->assertFalse(Year::fold($this->path, 2020)->isAfter(2020));
+        $this->assertFalse((new Year($this->path, 2020))->isAfter(2020));
 
-        $this->assertTrue(Year::fold($this->path, 2020)->isAfter(2019));
+        $this->assertTrue((new Year($this->path, 2020))->isAfter(2019));
 
-        $this->assertFalse(Year::fold($this->path, 2020)->isAfter(2021));
+        $this->assertFalse((new Year($this->path, 2020))->isAfter(2021));
 
-        $this->assertFalse(Year::fold($this->path, 2020)->isBefore(2020));
+        $this->assertFalse((new Year($this->path, 2020))->isBefore(2020));
 
-        $this->assertFalse(Year::fold($this->path, 2020)->isBefore(2019));
+        $this->assertFalse((new Year($this->path, 2020))->isBefore(2019));
 
-        $this->assertTrue(Year::fold($this->path, 2020)->isBefore(2021));
+        $this->assertTrue((new Year($this->path, 2020))->isBefore(2021));
     }
 
     /**
@@ -51,7 +51,7 @@ class YearBaselineTest extends TestCase
      */
     public function year_has_details(): void
     {
-        $year = Year::fold($this->path, 2020);
+        $year = new Year($this->path, 2020);
 
         $result = $year->yearString();
         $this->assertIsString($result);
@@ -71,33 +71,29 @@ class YearBaselineTest extends TestCase
     public function year_has_content(): void
     {
         $this->assertEquals(
-            Year::fold($this->path, 2020)->content(),
+            (new Year($this->path, 2020))->content(),
             [
                 "i05" => new Month(
                     $this->path,
                     2020,
-                    5,
-                    // new SplFileInfo($this->path . '/2020/05')
-                    // Item::create($this->path . '/2020/05')
+                    5
                 ),
                 "i12" => new Month(
                     $this->path,
                     2020,
-                    12,
-                    // new SplFileInfo($this->path . '/2020/12')
-                    // Item::create($this->path . '/2020/12')
+                    12
                 )
             ]
         );
 
-        $result = Year::fold($this->path, 2020)->count();
+        $result = (new Year($this->path, 2020))->count();
         $this->assertIsInt($result);
         $this->assertEquals(2, $result);
 
-        $this->assertTrue(Year::fold($this->path, 2020)->couldHaveEvents());
+        $this->assertTrue((new Year($this->path, 2020))->couldHaveEvents());
 
-        $this->assertTrue(Year::fold($this->path, 2020)->hasEvents());
+        $this->assertTrue((new Year($this->path, 2020))->hasEvents());
 
-        $this->assertFalse(Year::fold($this->path, 2021)->hasEvents());
+        $this->assertFalse((new Year($this->path, 2021))->hasEvents());
     }
 }

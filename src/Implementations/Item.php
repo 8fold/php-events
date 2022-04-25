@@ -8,10 +8,7 @@ use SplFileInfo;
 
 trait Item
 {
-    /**
-     * @var FileSystemItem
-     */
-    private $item;
+    private SplFileInfo|false $item = false;
 
-    abstract public function item(): SplFileInfo;
+    abstract public function item(): SplFileInfo|false;
 }

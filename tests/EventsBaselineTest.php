@@ -85,8 +85,8 @@ class EventsBaselineTest extends TestCase
         $this->assertEquals(
             Events::fold($this->path)->years()->content(),
             [
-                "i2020" => Year::fold($this->path, 2020),
-                "i2022" => Year::fold($this->path, 2022)
+                "i2020" => new Year($this->path, 2020),
+                "i2022" => new Year($this->path, 2022)
             ]
         );
     }

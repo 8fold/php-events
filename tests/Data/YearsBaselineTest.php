@@ -29,7 +29,7 @@ class YearsBaselineTest extends TestCase
      */
     public function years_can_get_single_year(): void
     {
-        $year = Years::fold($this->path)->year(2020);
+        $year = (new Years($this->path))->year(2020);
 
         // TODO: assertion fails
         // $this->assertInstanceOf(Year::class, $year);
@@ -40,7 +40,7 @@ class YearsBaselineTest extends TestCase
         //     Year::fold($this->path, 2020)
         // );
 
-        $this->assertFalse(Years::fold($this->path)->year(2021));
+        $this->assertFalse((new Years($this->path))->year(2021));
     }
 
     /**
@@ -60,7 +60,7 @@ class YearsBaselineTest extends TestCase
         //     Years::fold($this->path)->content()
         // );
 
-        $result = Years::fold($this->path)->count();
+        $result = (new Years($this->path))->count();
         $this->assertIsInt($result);
         // TODO: assertion fails
         // $this->assertEquals(2, $result);
