@@ -10,8 +10,6 @@ use SplFileInfo;
 
 use Eightfold\Events\Data\Event;
 
-use Eightfold\FileSystem\Item;
-
 class EventBaselineTest extends TestCase
 {
     private string $path = '';

@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
 use Eightfold\Events\Data\Year;
-
-use Eightfold\FileSystem\Item;
 use Eightfold\Events\Data\Event;
 use Eightfold\Events\Data\Month;
 
@@ -79,13 +77,15 @@ class YearBaselineTest extends TestCase
                     $this->path,
                     2020,
                     5,
-                    Item::create($this->path . '/2020/05')
+                    new SplFileInfo($this->path . '/2020/05')
+                    // Item::create($this->path . '/2020/05')
                 ),
                 "i12" => Month::fold(
                     $this->path,
                     2020,
                     12,
-                    Item::create($this->path . '/2020/12')
+                    new SplFileInfo($this->path . '/2020/12')
+                    // Item::create($this->path . '/2020/12')
                 )
             ]
         );

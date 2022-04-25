@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
+
+use Symfony\Component\Finder\Finder;
+
+// use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
@@ -30,7 +34,7 @@ class Date
      */
     private array $content = [];
 
-    public static function fromItem(string $rootPath, Item $item): Date
+    public static function fromItem(string $rootPath, SplFileInfo $item): Date
     {
         $p = $item->thePath();
         $parts = explode('/', $p);
@@ -61,20 +65,25 @@ class Date
         int $year,
         int $month,
         int $date,
-        Item $item = null
+        SplFileInfo $item = null
     ) {
         $this->root = $root;
         $this->parts = [$year, $month, $date];
         $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo
     {
         if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+            $this->item = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString()
             );
+            // $this->item = Item::create($this->root)->append(
+            //     $this->yearString(),
+            //     $this->monthString(),
+            // );
         }
         return $this->item;
     }
@@ -90,22 +99,31 @@ class Date
     public function content()
     {
         if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
+            $c = (new Finder())->in($this->item()->getRealPath());
+
+            // $c = $this->item()->getRealPath();
+            // $c = file_get_contents($c);
+            // $c = $this->item()->content();
+            // if (is_array($c)) {
                 foreach ($c as $item) {
-                    $path     = $item->thePath();
+                    $path     = $item->getRealPath();
                     $p        = explode('/', $path);
                     $fileName = array_pop($p);
                     if (
-                        substr($path, -6) === '.event' and
-                        substr($fileName, 0, 2) === $this->dateString()
+                        str_ends_with($fileName, '.event') and
+                        str_starts_with($fileName, $this->dateString())
+                        // substr($path, -6) === '.event' and
+                        // substr($fileName, 0, 2) === $this->dateString()
                     ) {
                         $this->content[$path] =
-                            Event::fromItem($this->root, $item);
+                            Event::fromItem(
+                                $this->root,
+                                new SplFileInfo($item->getRealPath())
+                            );
 
                     }
                 }
-            }
+            // }
         }
         return $this->content;
     }

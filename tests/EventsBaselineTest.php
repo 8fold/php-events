@@ -6,9 +6,9 @@ namespace Eightfold\Events\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use Eightfold\Events\Events;
+use SplFileInfo;
 
-use Eightfold\FileSystem\Item;
+use Eightfold\Events\Events;
 
 use Eightfold\Events\Data\Year;
 use Eightfold\Events\Data\Years;
@@ -19,8 +19,8 @@ class EventsBaselineTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Item::create(__DIR__)->append('test-events', 'events')
-            ->thePath();
+        $this->path = (new SplFileInfo(__DIR__ . '/test-events/events'))
+            ->getRealPath();
     }
 
     /**

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
+
+// use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Interfaces\Event as EventInterface;
 
@@ -21,7 +23,7 @@ class Event
     private string $root;
 
     /**
-     * @var Item|null
+     * @var SplFileInfo|null
      */
     private $item;
 
@@ -34,9 +36,9 @@ class Event
      */
     private array $parts = [];
 
-    public static function fromItem(string $rootPath, Item $item): Event
+    public static function fromItem(string $rootPath, SplFileInfo $item): Event
     {
-        $p = $item->thePath();
+        $p = $item->getRealPath();
         $parts = explode('/', $p);
 
         $fileName = array_pop($parts);
@@ -69,7 +71,7 @@ class Event
         int $month,
         int $date,
         int $count,
-        Item $item = null
+        SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
@@ -86,11 +88,17 @@ class Event
             );
 
             if ($this->count() === 1 and ! $this->item->isFile()) {
-                $check = Item::create($this->root)->append(
-                    $this->yearString(),
-                    $this->monthString(),
+                $check = new SplFileInfo(
+                    $this->root . '/' .
+                    $this->yearString() . '/' .
+                    $this->monthString() . '/' .
                     $this->dateString() . '.event'
                 );
+                // $check = Item::create($this->root)->append(
+                //     $this->yearString(),
+                //     $this->monthString(),
+                //     $this->dateString() . '.event'
+                // );
 
                 if ($check->isFile()) {
                     $this->item = $check;

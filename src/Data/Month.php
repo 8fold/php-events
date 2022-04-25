@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
+use SplFileInfo;
+
 use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\FileSystem\Item;
@@ -30,7 +32,7 @@ class Month
      */
     private array $content = [];
 
-    public static function fromItem(string $rootPath, Item $item): Month
+    public static function fromItem(string $rootPath, Item|SplFileInfo $item): Month
     {
         $p = $item->thePath();
         $parts = explode('/', $p);
@@ -54,7 +56,7 @@ class Month
         string $root,
         int $year,
         int $month,
-        Item $item = null
+        Item|SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month];

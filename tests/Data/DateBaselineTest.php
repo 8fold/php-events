@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
 use Eightfold\Events\Data\Date;
-
-use Eightfold\FileSystem\Item;
 use Eightfold\Events\Data\Event;
 
 class DateBaselineTest extends TestCase
@@ -71,7 +69,6 @@ class DateBaselineTest extends TestCase
     {
         // 15.43ms 521kb
         $this->assertEquals(
-            Date::fold($this->path, 2020, 5, 21)->content(),
             [
                 $this->path . '/2020/05/21.event' =>
                     Event::fold(
@@ -80,33 +77,38 @@ class DateBaselineTest extends TestCase
                         5,
                         21,
                         1,
-                        Item::create($this->path . '/2020/05/21.event')
+                        new SplFileInfo($this->path . '/2020/05/21.event')
+                        // Item::create($this->path . '/2020/05/21.event')
+                    )
+            ],
+            Date::fold($this->path, 2020, 5, 21)->content()
+        );
+
+        // 11.41ms 327kb
+        $this->assertEquals(
+            Date::fold($this->path, 2020, 5, 22)->content(),
+            [
+                $this->path . '/2020/05/22_1.event' =>
+                    Event::fold(
+                        $this->path,
+                        2020,
+                        5,
+                        22,
+                        1,
+                        new SplFileInfo($this->path . '/2020/05/22_1.event')
+                        // Item::create($this->path . '/2020/05/22_1.event')
+                    ),
+                $this->path . '/2020/05/22_2.event' =>
+                    Event::fold(
+                        $this->path,
+                        2020,
+                        5,
+                        22,
+                        2,
+                        new SplFileInfo($this->path . '/2020/05/22_2.event')
+                        // Item::create($this->path . '/2020/05/22_2.event')
                     )
             ]);
-
-    // 11.41ms 327kb
-    $this->assertEquals(
-        Date::fold($this->path, 2020, 5, 22)->content(),
-        [
-            $this->path . '/2020/05/22_1.event' =>
-                Event::fold(
-                    $this->path,
-                    2020,
-                    5,
-                    22,
-                    1,
-                    Item::create($this->path . '/2020/05/22_1.event')
-                ),
-            $this->path . '/2020/05/22_2.event' =>
-                Event::fold(
-                    $this->path,
-                    2020,
-                    5,
-                    22,
-                    2,
-                    Item::create($this->path . '/2020/05/22_2.event')
-                )
-        ]);
 
         $result = Date::fold($this->path, 2020, 5, 22)->count();
         $this->assertIsInt($result);

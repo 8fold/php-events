@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
 use Eightfold\Events\Data\Month;
-
-use Eightfold\FileSystem\Item;
 use Eightfold\Events\Data\Event;
 
 class MonthBaselineTest extends TestCase

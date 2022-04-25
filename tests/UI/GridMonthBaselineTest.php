@@ -6,9 +6,9 @@ namespace Eightfold\Events\Tests\UI;
 
 use PHPUnit\Framework\TestCase;
 
-use Eightfold\Events\UI\GridForMonth;
+use SplFileInfo;
 
-use Eightfold\FileSystem\Item;
+use Eightfold\Events\UI\GridForMonth;
 
 class GridMonthBaselineTest extends TestCase
 {
@@ -16,9 +16,8 @@ class GridMonthBaselineTest extends TestCase
 
     public function setUp(): void
     {
-        $this->path = Item::create(__DIR__)->up()
-            ->append('test-events', 'events')
-            ->thePath();
+        $this->path = (new SplFileInfo(__DIR__ . '/../test-events/events'))
+            ->getRealPath();
     }
 
     /**

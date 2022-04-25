@@ -9,9 +9,6 @@ use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 
 use Eightfold\Events\Data\Years;
-
-use Eightfold\FileSystem\Item;
-
 use Eightfold\Events\Data\Year;
 
 class YearsBaselineTest extends TestCase
