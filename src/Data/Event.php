@@ -20,10 +20,7 @@ class Event
 
     private string $root;
 
-    /**
-     * @var SplFileInfo|false
-     */
-    private $item = false;
+    private SplFileInfo|false $item = false;
 
     private int $count;
 
