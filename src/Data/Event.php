@@ -6,8 +6,6 @@ namespace Eightfold\Events\Data;
 
 use SplFileInfo;
 
-// use Eightfold\FileSystem\Item;
-
 use Eightfold\Events\Data\Interfaces\Event as EventInterface;
 
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -94,11 +92,6 @@ class Event
                     $this->monthString() . '/' .
                     $this->dateString() . '.event'
                 );
-                // $check = Item::create($this->root)->append(
-                //     $this->yearString(),
-                //     $this->monthString(),
-                //     $this->dateString() . '.event'
-                // );
 
                 if ($check->isFile()) {
                     $this->item = $check;
