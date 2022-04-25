@@ -29,17 +29,17 @@ class MonthBaselineTest extends TestCase
      */
     public function month_can_answer_before_or_after(): void
     {
-        $this->assertFalse(Month::fold($this->path, 2020, 7)->isAfter(7));
+        $this->assertFalse((new Month($this->path, 2020, 7))->isAfter(7));
 
-        $this->assertTrue(Month::fold($this->path, 2020, 7)->isAfter(6));
+        $this->assertTrue((new Month($this->path, 2020, 7))->isAfter(6));
 
-        $this->assertFalse(Month::fold($this->path, 2020, 7)->isAfter(8));
+        $this->assertFalse((new Month($this->path, 2020, 7))->isAfter(8));
 
-        $this->assertFalse(Month::fold($this->path, 2020, 7)->isBefore(7));
+        $this->assertFalse((new Month($this->path, 2020, 7))->isBefore(7));
 
-        $this->assertFalse(Month::fold($this->path, 2020, 7)->isBefore(6));
+        $this->assertFalse((new Month($this->path, 2020, 7))->isBefore(6));
 
-        $this->assertTrue(Month::fold($this->path, 2020, 7)->isBefore(8));
+        $this->assertTrue((new Month($this->path, 2020, 7))->isBefore(8));
     }
 
     /**
@@ -50,7 +50,7 @@ class MonthBaselineTest extends TestCase
      */
     public function month_has_details(): void
     {
-        $month = Month::fold($this->path, 1999, 1);
+        $month = new Month($this->path, 1999, 1);
 
         // 3.14ms 29kb
         $result = $month->yearString();
@@ -70,7 +70,7 @@ class MonthBaselineTest extends TestCase
         $this->assertIsInt($result);
         $this->assertEquals(1, $result);
 
-        $result = Month::fold($this->path, 2020, 5)->daysInMonth();
+        $result = (new Month($this->path, 2020, 5))->daysInMonth();
         $this->assertIsInt($result);
         $this->assertEquals(31, $result);
     }
@@ -84,17 +84,17 @@ class MonthBaselineTest extends TestCase
     public function month_has_content(): void
     {
         // 10.6ms 396kb
-        $result = Month::fold($this->path, 2020, 5)->count();
+        $result = (new Month($this->path, 2020, 5))->count();
         $this->assertIsInt($result);
         $this->assertEquals(5, $result);
 
         // 13.75ms 415kb
-        $this->assertTrue(Month::fold($this->path, 2020, 5)->hasEvents());
+        $this->assertTrue((new Month($this->path, 2020, 5))->hasEvents());
 
         // 1.36ms 1kb
-        $this->assertFalse(Month::fold($this->path, 2020, 6)->hasEvents());
+        $this->assertFalse((new Month($this->path, 2020, 6))->hasEvents());
 
         // 1.26ms 1
-        $this->assertFalse(Month::fold($this->path, 2020, 10)->couldHaveEvents());
+        $this->assertFalse((new Month($this->path, 2020, 10))->couldHaveEvents());
     }
 }

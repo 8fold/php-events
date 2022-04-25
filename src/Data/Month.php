@@ -22,58 +22,55 @@ class Month
     use YearImp;
     use MonthImp;
 
-    /**
-     * @var Item|null
-     */
-    private $item;
+    private SplFileInfo|false $item = false;
 
     /**
-     * @var array<Date>
+     * @var [Date]
      */
     private array $content = [];
 
     /**
      * @todo: should be able to deprecate this constructor
      */
-    public static function fromItem(string $rootPath, SplFileInfo $item): Month
-    {
-        $p = $item->thePath();
-        $parts = explode('/', $p);
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        return new Month($rootPath, $year, $month);
-    }
+//     public static function fromItem(string $rootPath, SplFileInfo $item): Month
+//     {
+//         $p = $item->thePath();
+//         $parts = explode('/', $p);
+//
+//         $month = intval(array_pop($parts));
+//
+//         $year = intval(array_pop($parts));
+//
+//         return new Month($rootPath, $year, $month);
+//     }
 
     /**
      * @param mixed $args [description]
      */
-    public static function fold(...$args): Month
-    {
-        return new Month(...$args);
-    }
+    // public static function fold(...$args): Month
+    // {
+    //     return new Month(...$args);
+    // }
 
-    public function __construct(
-        string $root,
-        int $year,
-        int $month,
-        // SplFileInfo $item = null
-    ) {
+    public function __construct(string $root, int $year, int $month)
+    {
         $this->root  = $root;
         $this->parts = [$year, $month];
         // $this->item  = $item;
     }
 
-    public function item(): SplFileInfo
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = new SplFileInfo(
+        if ($this->item === false) {
+            $check = new SplFileInfo(
                 $this->root . '/' .
                 $this->yearString() . '/' .
                 $this->monthString()
             );
+
+            if ($check->isDir()) {
+                $this->item = $check;
+            }
         }
         return $this->item;
     }
@@ -84,11 +81,15 @@ class Month
     }
 
     /**
-     * @return array<Date>
+     * @return [Date]
      */
-    public function content()
+    public function content(): array
     {
-        if (count($this->content) === 0 and $this->item()->isDir()) {
+        if (
+            count($this->content) === 0 and
+            $this->item() !== false and
+            $this->item()->isDir()
+        ) {
             $c = (new Finder())->files()->name('*.event')
                 ->in($this->item()->getRealPath());
             foreach ($c as $item) {
