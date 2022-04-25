@@ -29,7 +29,7 @@ class DateBaselineTest extends TestCase
      */
     public function date_has_details(): void
     {
-        $date = Date::fold($this->path, 1999, 1, 10);
+        $date = new Date($this->path, 1999, 1, 10);
 
         // 3.14ms 29kb
         $result = $date->yearString();
@@ -81,12 +81,12 @@ class DateBaselineTest extends TestCase
                         // Item::create($this->path . '/2020/05/21.event')
                     ))
             ],
-            Date::fold($this->path, 2020, 5, 21)->content()
+            (new Date($this->path, 2020, 5, 21))->content()
         );
 
         // 11.41ms 327kb
         $this->assertEquals(
-            Date::fold($this->path, 2020, 5, 22)->content(),
+            (new Date($this->path, 2020, 5, 22))->content(),
             [
                 $this->path . '/2020/05/22_1.event' =>
                     (new Event(
@@ -94,9 +94,7 @@ class DateBaselineTest extends TestCase
                         2020,
                         5,
                         22,
-                        1,
-                        // new SplFileInfo($this->path . '/2020/05/22_1.event')
-                        // Item::create($this->path . '/2020/05/22_1.event')
+                        1
                     )),
                 $this->path . '/2020/05/22_2.event' =>
                     (new Event(
@@ -104,16 +102,14 @@ class DateBaselineTest extends TestCase
                         2020,
                         5,
                         22,
-                        2,
-                        // new SplFileInfo($this->path . '/2020/05/22_2.event')
-                        // Item::create($this->path . '/2020/05/22_2.event')
+                        2
                     ))
             ]);
 
-        $result = Date::fold($this->path, 2020, 5, 22)->count();
+        $result = (new Date($this->path, 2020, 5, 22))->count();
         $this->assertIsInt($result);
         $this->assertEquals(2, $result);
 
-        $this->assertFalse(Date::fold($this->path, 2020, 5, 23)->hasEvents());
+        $this->assertFalse((new Date($this->path, 2020, 5, 23))->hasEvents());
     }
 }
