@@ -102,6 +102,8 @@ class Month
                     $this->content[$key] = $d;
                 }
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }

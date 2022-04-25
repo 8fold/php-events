@@ -34,35 +34,6 @@ class Event
      */
     private array $parts = [];
 
-//     public static function fromItem(string $rootPath, SplFileInfo $item): Event
-//     {
-//         $p = $item->getRealPath();
-//         $parts = explode('/', $p);
-//
-//         $fileName = array_pop($parts);
-//         $fileName = str_replace('.event', '', $fileName);
-//         $fParts   = explode('_', $fileName);
-//         $date     = intval(array_shift($fParts));
-//         $count    = 1;
-//         if (count($fParts) > 0) {
-//             $count = intval($fParts[0]);
-//         }
-//
-//         $month = intval(array_pop($parts));
-//
-//         $year = intval(array_pop($parts));
-//
-//         return new Event($rootPath, $year, $month, $date, $count, $item);
-//     }
-
-    /**
-     * @param mixed $args [description]
-     */
-    // public static function fold(...$args): Event
-    // {
-    //     return new Event(...$args);
-    // }
-
     public function __construct(
         string $root,
         int $year,
@@ -86,7 +57,7 @@ class Event
                 $this->dateString() . '_' . $this->count() . '.event'
             );
 
-            if ($this->count() === 1) {
+            if ($this->count() === 1 and $check->isFile() === false) {
                 $check = new SplFileInfo(
                     $this->root . '/' .
                     $this->yearString() . '/' .

@@ -49,8 +49,6 @@ class Date
 
         $year = intval(array_pop($parts));
 
-        // TODO: Shouldn't need to pass SplFileInfo to constructor
-        $parent = new SplFileInfo(implode('/', $parts));
         return new Date($rootPath, $year, $month, $date, $parent);
     }
 
