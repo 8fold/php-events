@@ -17,7 +17,6 @@ trait Events
     {
         if ($this->events === null) {
             $this->events = EventsCollection::fold($this->root());
-            var_dump($this->events);
         }
         return $this->events;
     }
