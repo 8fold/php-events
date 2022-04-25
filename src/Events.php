@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Events;
 
-use Eightfold\FileSystem\Item;
-
 use Eightfold\Events\Data\Years;
 use Eightfold\Events\Data\Year;
 use Eightfold\Events\Data\Month;
@@ -13,14 +11,11 @@ use Eightfold\Events\Data\Date;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 
-class Events // extends Fold
+class Events
 {
     use RootImp;
 
-    /**
-     * @var Years
-     */
-    private $years;
+    private Years|false $years = false;
 
     public static function fold(string $root): Events
     {
@@ -34,16 +29,13 @@ class Events // extends Fold
 
     public function years(): Years
     {
-        if ($this->years === null) {
+        if ($this->years === false) {
             $this->years = new Years($this->root());
         }
         return $this->years;
     }
 
-    /**
-     * @return Year|bool|boolean        [description]
-     */
-    public function year(int $year)
+    public function year(int $year): Year|false
     {
         if ($this->years()->count() === 0) {
             return false;
@@ -55,14 +47,10 @@ class Events // extends Fold
         if (! array_key_exists($yearKey, $years)) {
             return false;
         }
-
         return  $years[$yearKey];
     }
 
-    /**
-     * @return Month|bool|boolean        [description]
-     */
-    public function month(int $year, int $month)
+    public function month(int $year, int $month): Month|false
     {
         $y = $this->year($year);
         if (! is_object($y)) {
@@ -81,10 +69,7 @@ class Events // extends Fold
         return $months[$monthKey];
     }
 
-    /**
-     * @return Date|bool|boolean        [description]
-     */
-    public function date(int $year, int $month, int $date)
+    public function date(int $year, int $month, int $date): Date|false
     {
         $m = $this->month($year, $month);
         if (! is_object($m)) {
@@ -115,9 +100,7 @@ class Events // extends Fold
         if (count($years) === 0) {
             return false;
         }
-
         return array_shift($years);
-        // return $years[0];
     }
 
     public function previousYearWithEvents(int $baseYear = 0): Year|false
@@ -137,10 +120,7 @@ class Events // extends Fold
         return array_shift($y);
     }
 
-    /**
-     * @return Month|bool|boolean        [description]
-     */
-    public function nextMonthWithEvents(int $year, int $month)
+    public function nextMonthWithEvents(int $year, int $month): Month|false
     {
         $years = $this->years();
 
@@ -186,7 +166,6 @@ class Events // extends Fold
         }
 
         $months = [];
-
         foreach ($years as $y) {
             if ($y->isSameAs($year) or $y->isBefore($year)) {
                 foreach ($y->content() as $m) {
@@ -212,31 +191,7 @@ class Events // extends Fold
                 $months = array_reverse($months);
                 return array_shift($months);
             }
-            // return $months[0];
         }
-//         if ($y = $years->year($year) and is_object($y)) {
-//             $months = [];
-//             foreach ($y->content() as $m) {
-//                 if ($m->isBefore($month) and $m->hasEvents()) {
-//                     $months[] = $m;
-//                 }
-//             }
-// die(var_dump($months));
-//             // Check if there is a previous year with events.
-//             if (count($months) === 0) {
-//                 if (
-//                     $previousYear = $this->previousYearWithEvents($y->year()) and
-//                     is_object($previousYear)
-//                 ) {
-//                     // Return a month from a previous year.
-//                     return $this->previousMonthWithEvents($previousYear->year(), 13);
-//                 }
-//                 return false;
-//             }
-//
-//             $months = array_reverse($months);
-//             return $months[0];
-//         }
 
         $years = $years->content();
         $years = array_reverse($years);
