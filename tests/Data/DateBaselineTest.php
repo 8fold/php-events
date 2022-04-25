@@ -71,15 +71,15 @@ class DateBaselineTest extends TestCase
         $this->assertEquals(
             [
                 $this->path . '/2020/05/21.event' =>
-                    Event::fold(
+                    (new Event(
                         $this->path,
                         2020,
                         5,
                         21,
                         1,
-                        new SplFileInfo($this->path . '/2020/05/21.event')
+                        // new SplFileInfo($this->path . '/2020/05/21.event')
                         // Item::create($this->path . '/2020/05/21.event')
-                    )
+                    ))
             ],
             Date::fold($this->path, 2020, 5, 21)->content()
         );
@@ -89,25 +89,25 @@ class DateBaselineTest extends TestCase
             Date::fold($this->path, 2020, 5, 22)->content(),
             [
                 $this->path . '/2020/05/22_1.event' =>
-                    Event::fold(
+                    (new Event(
                         $this->path,
                         2020,
                         5,
                         22,
                         1,
-                        new SplFileInfo($this->path . '/2020/05/22_1.event')
+                        // new SplFileInfo($this->path . '/2020/05/22_1.event')
                         // Item::create($this->path . '/2020/05/22_1.event')
-                    ),
+                    )),
                 $this->path . '/2020/05/22_2.event' =>
-                    Event::fold(
+                    (new Event(
                         $this->path,
                         2020,
                         5,
                         22,
                         2,
-                        new SplFileInfo($this->path . '/2020/05/22_2.event')
+                        // new SplFileInfo($this->path . '/2020/05/22_2.event')
                         // Item::create($this->path . '/2020/05/22_2.event')
-                    )
+                    ))
             ]);
 
         $result = Date::fold($this->path, 2020, 5, 22)->count();

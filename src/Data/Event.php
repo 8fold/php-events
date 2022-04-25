@@ -21,9 +21,9 @@ class Event
     private string $root;
 
     /**
-     * @var SplFileInfo|null
+     * @var SplFileInfo|false
      */
-    private $item;
+    private $item = false;
 
     private int $count;
 
@@ -34,34 +34,34 @@ class Event
      */
     private array $parts = [];
 
-    public static function fromItem(string $rootPath, SplFileInfo $item): Event
-    {
-        $p = $item->getRealPath();
-        $parts = explode('/', $p);
-
-        $fileName = array_pop($parts);
-        $fileName = str_replace('.event', '', $fileName);
-        $fParts   = explode('_', $fileName);
-        $date     = intval(array_shift($fParts));
-        $count    = 1;
-        if (count($fParts) > 0) {
-            $count = intval($fParts[0]);
-        }
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        return new Event($rootPath, $year, $month, $date, $count, $item);
-    }
+//     public static function fromItem(string $rootPath, SplFileInfo $item): Event
+//     {
+//         $p = $item->getRealPath();
+//         $parts = explode('/', $p);
+//
+//         $fileName = array_pop($parts);
+//         $fileName = str_replace('.event', '', $fileName);
+//         $fParts   = explode('_', $fileName);
+//         $date     = intval(array_shift($fParts));
+//         $count    = 1;
+//         if (count($fParts) > 0) {
+//             $count = intval($fParts[0]);
+//         }
+//
+//         $month = intval(array_pop($parts));
+//
+//         $year = intval(array_pop($parts));
+//
+//         return new Event($rootPath, $year, $month, $date, $count, $item);
+//     }
 
     /**
      * @param mixed $args [description]
      */
-    public static function fold(...$args): Event
-    {
-        return new Event(...$args);
-    }
+    // public static function fold(...$args): Event
+    // {
+    //     return new Event(...$args);
+    // }
 
     public function __construct(
         string $root,
@@ -69,35 +69,34 @@ class Event
         int $month,
         int $date,
         int $count,
-        SplFileInfo $item = null
+        // SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
-        $this->item  = $item;
+        // $this->item  = $item;
     }
 
-    public function item(): SplFileInfo
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = new SplFileInfo(
+        if ($this->item === false) {
+            $check = new SplFileInfo(
                 $this->root . '/' .
                 $this->yearString() . '/' .
                 $this->monthString() . '/' .
                 $this->dateString() . '_' . $this->count() . '.event'
             );
 
-            if ($this->count() === 1 and ! $this->item->isFile()) {
+            if ($this->count() === 1) {
                 $check = new SplFileInfo(
                     $this->root . '/' .
                     $this->yearString() . '/' .
                     $this->monthString() . '/' .
                     $this->dateString() . '.event'
                 );
+            }
 
-                if ($check->isFile()) {
-                    $this->item = $check;
-
-                }
+            if ($check->isFile()) {
+                $this->item = $check;
             }
         }
         return $this->item;
@@ -113,12 +112,11 @@ class Event
         if (
             strlen($this->content) === 0 and
             $this->hasEvents() and
-            $this->item()->isFile()
+            $this->item()
         ) {
             $c = file_get_contents($this->item()->getRealPath());
             if (is_string($c)) {
                 $this->content = $c;
-
             }
         }
         return $this->content;
@@ -129,14 +127,12 @@ class Event
         $content = $this->content();
         if (strlen($content) === 0) {
             return '';
-
         }
 
         $parts = $this->contentParts();
         $title = array_shift($parts);
         if ($title === null) {
             return '';
-
         }
         return trim($title);
     }
@@ -146,14 +142,12 @@ class Event
         $content = $this->content();
         if (strlen($content) === 0) {
             return '';
-
         }
 
         $parts = $this->contentParts();
         $body  = array_pop($parts);
         if ($body === null) {
             return '';
-
         }
         return trim($body);
     }
@@ -178,6 +172,9 @@ class Event
 
     public function hasEvents(): bool
     {
-        return $this->item()->isFile();
+        if ($this->item()) {
+            return $this->item()->isFile();
+        }
+        return false;
     }
 }

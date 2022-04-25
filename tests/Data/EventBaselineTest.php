@@ -28,7 +28,7 @@ class EventBaselineTest extends TestCase
      */
     public function event_has_event_details(): void
     {
-        $event = Event::fold($this->path, 2020, 5, 22, 2);
+        $event = new Event($this->path, 2020, 5, 22, 2);
 
         // 0.59ms 27kb
         $result = $event->yearString();
@@ -67,11 +67,11 @@ class EventBaselineTest extends TestCase
     public function event_has_content(): void
     {
         // 9.66ms 319kb
-        $result = Event::fold($this->path, 2020, 5, 20, 1)->content();
+        $result = (new Event($this->path, 2020, 5, 20, 1))->content();
         $this->assertIsString($result);
         $this->assertEquals('Hello, World!', $result);
 
-        $result = Event::fold($this->path, 2020, 5, 22, 2)->content();
+        $result = (new Event($this->path, 2020, 5, 22, 2))->content();
         $this->assertIsString($result);
         $this->assertEquals(<<<md
             Hello, Day?
@@ -82,7 +82,7 @@ class EventBaselineTest extends TestCase
             $result
         );
 
-        $result = Event::fold($this->path, 2020, 5, 23, 2)->content();
+        $result = (new Event($this->path, 2020, 5, 23, 2))->content();
         $this->assertIsString($result);
         $this->assertEmpty($result);
     }
@@ -95,11 +95,11 @@ class EventBaselineTest extends TestCase
      */
     public function event_can_be_separated_by_title_and_body(): void
     {
-        $result = Event::fold($this->path, 2020, 5, 22, 2)->title();
+        $result = (new Event($this->path, 2020, 5, 22, 2))->title();
         $this->assertIsString($result);
         $this->assertEquals('Hello, Day?', $result);
 
-        $result = Event::fold($this->path, 2020, 5, 22, 2)->body();
+        $result = (new Event($this->path, 2020, 5, 22, 2))->body();
         $this->assertIsString($result);
         $this->assertEquals('Something', $result);
     }
@@ -113,10 +113,10 @@ class EventBaselineTest extends TestCase
     public function event_can_check_for_events(): void
     {
         // 2.72ms 92kb
-        $this->assertTrue(Event::fold($this->path, 2020, 5, 20, 1)->hasEvents());
+        $this->assertTrue((new Event($this->path, 2020, 5, 20, 1))->hasEvents());
 
-        $this->assertTrue(Event::fold($this->path, 2020, 5, 22, 2)->hasEvents());
+        $this->assertTrue((new Event($this->path, 2020, 5, 22, 2))->hasEvents());
 
-        $this->assertFalse(Event::fold($this->path, 2020, 5, 23, 2)->hasEvents());
+        $this->assertFalse((new Event($this->path, 2020, 5, 23, 2))->hasEvents());
     }
 }

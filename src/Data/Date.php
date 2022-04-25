@@ -103,11 +103,23 @@ class Date
                 $p        = explode('/', $path);
                 $fileName = array_pop($p);
                 if (str_starts_with($fileName, $this->dateString())) {
+                    $fParts = explode('_', $fileName);
+                    $count = 1;
+                    if (count($fParts) > 1) {
+                        $count = array_pop($fParts);
+                        $count = str_replace('.events', '', $count);
+                        $count = intval($count);
+                    }
+
                     $this->content[$path] =
-                        Event::fromItem(
+                        (new Event(
                             $this->root,
-                            new SplFileInfo($item->getRealPath())
-                        );
+                            $this->year(),
+                            $this->month(),
+                            $this->date(),
+                            $count
+                            // new SplFileInfo($item->getRealPath())
+                        ));
                 }
             }
         }
