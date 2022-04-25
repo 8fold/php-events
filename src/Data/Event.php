@@ -40,11 +40,9 @@ class Event
         int $month,
         int $date,
         int $count,
-        // SplFileInfo $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
-        // $this->item  = $item;
     }
 
     public function item(): SplFileInfo|false
