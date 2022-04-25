@@ -71,8 +71,8 @@ class Year
             is_dir($path)
          ) {
             $c = (new Finder())->directories()->in($path);
-            foreach ($c as $item) {
-                $parts = explode('/', $item->getRealPath());
+            foreach ($c as $month) {
+                $parts = explode('/', $month->getRealPath());
                 $month = array_pop($parts);
                 $key   = 'i' . $month;
                 if (! isset($this->content[$key])) {
@@ -107,7 +107,7 @@ class Year
         return false;
     }
 
-    private function isSameAs(int $compare): bool
+    public function isSameAs(int $compare): bool
     {
         return $this->year() === $compare;
     }
@@ -131,8 +131,5 @@ class Year
     public function uri(): string
     {
         return '/' . $this->yearString();
-        // die($this->path());
-        // $parts = explode('/', $this->path());
-        // return '/' . array_pop($parts);
     }
 }

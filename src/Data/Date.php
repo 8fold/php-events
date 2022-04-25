@@ -22,59 +22,22 @@ class Date
     use MonthImp;
     use DateImp;
 
-    /**
-     * @var SplFileInfo|null
-     */
-    private $item;
+    private SplFileInfo|false $item = false;
 
     /**
-     * @var array<Event>
+     * @var [Event]
      */
     private array $content = [];
 
-    /**
-     * @todo: should be able to deprecate this constructor
-     */
-//     public static function fromItem(string $rootPath, SplFileInfo $item): Date
-//     {
-//         $p = $item->getPath();
-//         $parts = explode('/', $p);
-//
-//         $fileName = array_pop($parts);
-//         $fileName = str_replace('.event', '', $fileName);
-//         $fParts   = explode('_', $fileName);
-//         $date     = intval(array_shift($fParts));
-//
-//         $month = intval(array_pop($parts));
-//
-//         $year = intval(array_pop($parts));
-//
-//         return new Date($rootPath, $year, $month, $date, $parent);
-//     }
-
-    /**
-     * @param mixed $args [description]
-     */
-    // public static function fold(...$args): Date
-    // {
-    //     return new Date(...$args);
-    // }
-
-    public function __construct(
-        string $root,
-        int $year,
-        int $month,
-        int $date,
-        // SplFileInfo $item = null
-    ) {
+    public function __construct(string $root, int $year, int $month, int $date)
+    {
         $this->root = $root;
         $this->parts = [$year, $month, $date];
-        // $this->item  = $item;
     }
 
-    public function item(): SplFileInfo
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
+        if ($this->item === false) {
             $this->item = new SplFileInfo(
                 $this->root . '/' .
                 $this->yearString() . '/' .
@@ -90,12 +53,13 @@ class Date
     }
 
     /**
-     * @return array<Event>
+     * @return [Event]
      */
-    public function content()
+    public function content(): array
     {
-        if (count($this->content) === 0) {
-            $c = (new Finder())->in($this->item()->getRealPath())->name('*.event');
+        if (count($this->content) === 0 and $this->item() !== false) {
+            $c = (new Finder())->name('*.event')
+                ->in($this->item()->getRealPath());
             foreach ($c as $item) {
                 $path     = $item->getRealPath();
                 $p        = explode('/', $path);
@@ -116,7 +80,6 @@ class Date
                             $this->month(),
                             $this->date(),
                             $count
-                            // new SplFileInfo($item->getRealPath())
                         ));
                 }
             }

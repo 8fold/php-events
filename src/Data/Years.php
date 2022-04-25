@@ -2,7 +2,10 @@
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
+
+use Symfony\Component\Finder\Finder;
+// use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Year;
 
@@ -13,10 +16,7 @@ class Years
 {
     use RootImp;
 
-    /**
-     * @var Item
-     */
-    private $item;
+    private SplFileInfo|false $item = false;
 
     /**
      * @var array<Year>
@@ -41,10 +41,10 @@ class Years
         return $this->root();
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root);
+        if ($this->item === false) {
+            $this->item = new SplfileInfo($this->root);
         }
         return $this->item;
     }
@@ -55,10 +55,12 @@ class Years
     public function content(): array
     {
         if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
+            $c = (new Finder())->directories()->depth('== 0')
+                ->in($this->item()->getRealPath());
+            // $c = $this->item()->content();
+            // if (is_array($c)) {
                 foreach ($c as $year) {
-                    $path  = $year->thePath();
+                    $path  = $year->getRealPath();
                     $parts = explode('/', $path);
                     $year  = array_pop($parts);
                     $key   = 'i' . $year;
@@ -69,7 +71,7 @@ class Years
                     );
 
                 }
-            }
+            // }
         }
         return $this->content;
     }
