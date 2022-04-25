@@ -5,31 +5,21 @@ namespace Eightfold\Events\Data;
 use SplFileInfo;
 
 use Symfony\Component\Finder\Finder;
-// use Eightfold\FileSystem\Item;
 
 use Eightfold\Events\Data\Year;
 
 use Eightfold\Events\Implementations\Root as RootImp;
-
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Years
 {
     use RootImp;
-
-    private SplFileInfo|false $item = false;
+    use ItemImp;
 
     /**
-     * @var array<Year>
+     * @var [Year]
      */
     private array $content = [];
-
-    /**
-     * @param string $args [description]
-     */
-    public static function fold(...$args): Years
-    {
-        return new Years(...$args);
-    }
 
     public function __construct(string $root)
     {
@@ -50,24 +40,21 @@ class Years
     }
 
     /**
-     * @return array<Year> [description]
+     * @return [Year]
      */
     public function content(): array
     {
         if (count($this->content) === 0) {
             $c = (new Finder())->directories()->depth('== 0')
                 ->in($this->item()->getRealPath());
-            // $c = $this->item()->content();
-            // if (is_array($c)) {
-                foreach ($c as $year) {
-                    $path  = $year->getRealPath();
-                    $parts = explode('/', $path);
-                    $year  = array_pop($parts);
-                    $key   = 'i' . $year;
+            foreach ($c as $year) {
+                $path  = $year->getRealPath();
+                $parts = explode('/', $path);
+                $year  = array_pop($parts);
+                $key   = 'i' . $year;
 
-                    $this->content[$key] = new Year($this->root, intval($year));
-                }
-            // }
+                $this->content[$key] = new Year($this->root, intval($year));
+            }
         }
         return $this->content;
     }

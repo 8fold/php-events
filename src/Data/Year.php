@@ -12,15 +12,15 @@ use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
-use Eightfold\Events\Implementations\Item as ItemImp;
 use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Year
 {
     use RootImp;
     use PartsImp;
-    use ItemImp;
     use YearImp;
+    use ItemImp;
 
     /**
      * @var [Month]
@@ -72,7 +72,7 @@ class Year
             file_exists($path) and
             is_dir($path)
          ) {
-            $c = (new Finder())->directories()->in($path);
+            $c = (new Finder())->directories()->depth('== 0')->in($path);
             foreach ($c as $month) {
                 $parts = explode('/', $month->getRealPath());
                 $month = array_pop($parts);

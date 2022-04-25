@@ -11,16 +11,16 @@ use Eightfold\Events\Data\Interfaces\Event as EventInterface;
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
 use Eightfold\Events\Implementations\Date as DateImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Event
 {
     use YearImp;
     use MonthImp;
     use DateImp;
+    use ItemImp;
 
     private string $root;
-
-    private SplFileInfo|false $item = false;
 
     private int $count;
 

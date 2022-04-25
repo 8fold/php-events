@@ -14,6 +14,7 @@ use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Month
 {
@@ -21,8 +22,9 @@ class Month
     use PartsImp;
     use YearImp;
     use MonthImp;
+    use ItemImp;
 
-    private SplFileInfo|false $item = false;
+    // private SplFileInfo|false $item = false;
 
     /**
      * @var [Date]
@@ -66,7 +68,7 @@ class Month
             $this->item() !== false and
             $this->item()->isDir()
         ) {
-            $c = (new Finder())->files()->name('*.event')
+            $c = (new Finder())->files()->depth('== 0')->name('*.event')
                 ->in($this->item()->getRealPath());
             foreach ($c as $item) {
                 $path     = $item->getRealPath();

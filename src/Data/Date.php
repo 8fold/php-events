@@ -13,6 +13,7 @@ use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
 use Eightfold\Events\Implementations\Date as DateImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Date
 {
@@ -21,8 +22,7 @@ class Date
     use YearImp;
     use MonthImp;
     use DateImp;
-
-    private SplFileInfo|false $item = false;
+    use ItemImp;
 
     /**
      * @var [Event]

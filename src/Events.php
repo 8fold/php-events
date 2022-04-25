@@ -35,7 +35,7 @@ class Events // extends Fold
     public function years(): Years
     {
         if ($this->years === null) {
-            $this->years = Years::fold($this->root());
+            $this->years = new Years($this->root());
         }
         return $this->years;
     }
