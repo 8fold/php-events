@@ -30,12 +30,12 @@ class GridMonthBaselineTest extends TestCase
     {
         $this->assertEquals(
             '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
-            GridForMonth::fold($this->path, 2020, 12)->nextLink()->build()
+            (new GridForMonth($this->path, 2020, 12))->nextLink()->build()
         );
 
         $this->assertEquals(
             '<a class="ef-grid-previous-month" href="/events/2020/12" title="December 2020"><span>December 2020</span></a>',
-            GridForMonth::fold($this->path, 2022, 5)->previousLink()->build()
+            (new GridForMonth($this->path, 2022, 5))->previousLink()->build()
         );
     }
 
@@ -49,27 +49,27 @@ class GridMonthBaselineTest extends TestCase
     {
         $this->assertEquals(
             '<span class="ef-grid-previous-month"></span>',
-            GridForMonth::fold($this->path, 2020, 5)->previousLink()->build()
+            (new GridForMonth($this->path, 2020, 5))->previousLink()->build()
         );
 
         $this->assertEquals(
             '<span class="ef-grid-next-month"></span>',
-            GridForMonth::fold($this->path, 2023, 5)->nextLink()->build()
+            (new GridForMonth($this->path, 2023, 5))->nextLink()->build()
         );
 
         $this->assertEquals(
             '<a class="ef-grid-next-month" href="/events/2022/05" title="May 2022"><span>May 2022</span></a>',
-            GridForMonth::fold($this->path, 2020, 12)->nextLink()->build()
+            (new GridForMonth($this->path, 2020, 12))->nextLink()->build()
         );
 
         $this->assertEquals(
             '<button role="presentation" aria-disabled="true" disabled><abbr title="1st of February 2020">1</abbr></button>',
-            GridForMonth::fold($this->path, 2020, 2)->gridItem(1)->build()
+            (new GridForMonth($this->path, 2020, 2))->gridItem(1)->build()
         );
 
         $this->assertEquals(
             '<button id="toggle-20200522" class="calendar-date" aria-expanded="false" onclick="EFEventsModals.init(this, 20200522)"><abbr title="22nd of May 2020">22</abbr><span>Hello, Event!</span><span>Hello, Day?</span></button>',
-            GridForMonth::fold($this->path, 2020, 5)->gridItem(22)->build()
+            (new GridForMonth($this->path, 2020, 5))->gridItem(22)->build()
         );
     }
 
@@ -83,7 +83,7 @@ class GridMonthBaselineTest extends TestCase
     {
         $this->assertEquals(
            '<h2>May 2020</h2>',
-           GridForMonth::fold($this->path, 2020, 5)->header()->build()
+           (new GridForMonth($this->path, 2020, 5))->header()->build()
         );
     }
 }

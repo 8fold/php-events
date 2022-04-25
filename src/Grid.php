@@ -13,7 +13,7 @@ class Grid
         string $root,
         int $year
     ): GridForYear {
-        return GridForYear::fold($root, $year);
+        return new GridForYear($root, $year);
     }
 
     public static function forMonth(
@@ -21,6 +21,6 @@ class Grid
         int $year,
         int $month
     ): GridForMonth {
-        return GridForMonth::fold($root, $year, $month);
+        return new GridForMonth($root, $year, $month);
     }
 }

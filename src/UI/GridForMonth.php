@@ -39,15 +39,6 @@ class GridForMonth
     private string $dayAbbrFormat = 'j';
     private string $dayTitleFormat = 'jS \\of F Y';
 
-    public static function fold(
-        string $root,
-        int $year,
-        int $month,
-        string $uriPrefix = '/events'
-    ): GridForMonth {
-        return new GridForMonth($root, $year, $month);
-    }
-
     public function __construct(string $root, int $year, int $month)
     {
         $this->root = $root;
