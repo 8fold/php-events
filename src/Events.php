@@ -106,6 +106,7 @@ class Events
     public function previousYearWithEvents(int $baseYear = 0): Year|false
     {
         $years = $this->years()->content();
+        krsort($years);
 
         $y = [];
         foreach ($years as $year) {
@@ -165,40 +166,37 @@ class Events
             return false;
         }
 
-        $months = [];
-        foreach ($years as $y) {
-            if ($y->isSameAs($year) or $y->isBefore($year)) {
-                foreach ($y->content() as $m) {
-                    if (
-                        $m->isBefore($month) and
-                        $m->hasEvents()
-                    ) {
-                        $months[] = $m;
-                    }
-                }
+        $requestedYearKey = 'i' . $year;
+        if (array_key_exists($requestedYearKey, $years)) {
+            $requestedYear = $years[$requestedYearKey];
+            $requestedYearMonths = $requestedYear->content();
+            $mon = false;
+            foreach ($requestedYearMonths as $m) {
+                if ($mon !== false and $mon->isAfter($month)) {
+                    $mon = $m;
 
-                if (count($months) === 0) {
-                    if (
-                        $previousYear = $this->previousYearWithEvents($y->year()) and
-                        $previousYear !== false
-                    ) {
-                        // Return a month from a previous year.
-                        return $this->previousMonthWithEvents($previousYear->year(), 13);
-                    }
-                    return false;
-                }
+                } elseif ($m->isBefore($month) and $m->hasEvents()) {
+                    $mon = $m;
 
-                $months = array_reverse($months);
-                return array_shift($months);
+                }
+            }
+
+            if ($mon !== false) {
+                return $mon;
             }
         }
 
-        $years = $years->content();
-        $years = array_reverse($years);
-        $year  = array_shift($years);
-        if (is_object($year)) {
-            return $this->previousMonthWithEvents($year->year(), 13);
+        $previousYear = false;
+        foreach ($years as $y) {
+            if ($y->isBefore($year) and $y->hasEvents()) {
+                $previousYear = $y;
+
+            }
         }
-        return false;
+
+        if ($previousYear === false) {
+            return false;
+        }
+        return $this->previousMonthWithEvents($previousYear->year(), 13);
     }
 }

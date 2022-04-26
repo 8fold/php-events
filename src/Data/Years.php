@@ -55,6 +55,8 @@ class Years
 
                 $this->content[$key] = new Year($this->root, intval($year));
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }

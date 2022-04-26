@@ -34,14 +34,6 @@ class GridForYear
 
     protected string $monthTitleFormat = 'F Y';
 
-    // public static function fold(
-    //     string $root,
-    //     int $year,
-    //     string $uriPrefix = '/events'
-    // ): GridForYear {
-    //     return new GridForYear($root, $year);
-    // }
-
     public function __construct(
         string $root,
         int $year,
@@ -49,7 +41,6 @@ class GridForYear
     ) {
         $this->root = $root;
         $this->parts = [$year];
-        // $this->uriPrefix = $uriPrefix;
     }
 
     public function carbon(): DateTime

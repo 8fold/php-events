@@ -26,7 +26,31 @@ class GridYearBaselineTest extends TestCase
      * @group ui
      * @group year
      */
-    public function year_grid_has_next_and_previous_links(): void
+    public function year_grid_has_next_links(): void
+    {
+        $this->assertEquals(
+            '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
+            (new GridForYear($this->path, 2021))->nextLink()->build()
+        );
+
+        $this->assertEquals(
+            '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>',
+            (new GridForYear($this->path, 2020))->gridItem(5)->build()
+        );
+
+        $this->assertEquals(
+            '<a class="ef-grid-next-year" href="/events/2020" title="2020"><span>2020</span></a>',
+            (new GridForYear($this->path, 2019))->nextLink()->build()
+        );
+    }
+
+    /**
+     * @test
+     *
+     * @group ui
+     * @group year
+     */
+    public function year_grid_has_previous_links(): void
     {
         $this->assertEquals(
             '<span class="ef-grid-previous-year"></span>',
@@ -39,13 +63,8 @@ class GridYearBaselineTest extends TestCase
         );
 
         $this->assertEquals(
-            '<a class="ef-grid-next-year" href="/events/2022" title="2022"><span>2022</span></a>',
-            (new GridForYear($this->path, 2021))->nextLink()->build()
-        );
-
-        $this->assertEquals(
-            '<a href="/events/2020/05"><abbr title="May 2020">May</abbr><span>5</span></a>',
-            (new GridForYear($this->path, 2020))->gridItem(5)->build()
+            '<a class="ef-grid-previous-year" href="/events/2022" title="2022"><span>2022</span></a>',
+            (new GridForYear($this->path, 2023))->previousLink()->build()
         );
     }
 

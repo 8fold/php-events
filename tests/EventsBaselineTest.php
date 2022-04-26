@@ -69,7 +69,7 @@ class EventsBaselineTest extends TestCase
 
         $this->assertEquals(
             2022,
-            Events::fold($this->path)->previousMonthWithEvents(2023, 10)->year()
+            Events::fold($this->path)->previousMonthWithEvents(2023, 1)->year()
         );
     }
 
