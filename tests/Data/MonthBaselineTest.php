@@ -1,77 +1,100 @@
 <?php
 
-use Eightfold\Events\Data\Month;
+declare(strict_types=1);
 
-use Eightfold\FileSystem\Item;
+namespace Eightfold\Events\Tests\Data;
+
+use PHPUnit\Framework\TestCase;
+
+use SplFileInfo;
+
+use Eightfold\Events\Data\Month;
 use Eightfold\Events\Data\Event;
 
-beforeEach(function() {
-    $this->path = Item::create(__DIR__)
-        ->up()->append('test-events', 'events')->thePath();
-});
+class MonthBaselineTest extends TestCase
+{
+    private string $path = '';
 
-test('Month can answer before or after', function() {
-    expect(
-        Month::fold($this->path, 2020, 7)->isAfter(7)
-    )->toBeFalse();
+    public function setUp(): void
+    {
+        $this->path = (new SplFileInfo(__DIR__ . '/../test-events/events'))
+            ->getRealPath();
+    }
 
-    expect(
-        Month::fold($this->path, 2020, 7)->isAfter(6)
-    )->toBeTrue();
+    /**
+     * @test
+     *
+     * @group data
+     * @group month
+     */
+    public function month_can_answer_before_or_after(): void
+    {
+        $this->assertFalse((new Month($this->path, 2020, 7))->isAfter(7));
 
-    expect(
-        Month::fold($this->path, 2020, 7)->isAfter(8)
-    )->toBeFalse();
+        $this->assertTrue((new Month($this->path, 2020, 7))->isAfter(6));
 
-    expect(
-        Month::fold($this->path, 2020, 7)->isBefore(7)
-    )->toBeFalse();
+        $this->assertFalse((new Month($this->path, 2020, 7))->isAfter(8));
 
-    expect(
-        Month::fold($this->path, 2020, 7)->isBefore(6)
-    )->toBeFalse();
+        $this->assertFalse((new Month($this->path, 2020, 7))->isBefore(7));
 
-    expect(
-        Month::fold($this->path, 2020, 7)->isBefore(8)
-    )->toBeTrue();
-})->group('data', 'month');
+        $this->assertFalse((new Month($this->path, 2020, 7))->isBefore(6));
 
-test('Month has details', function() {
-    $month = Month::fold($this->path, 1999, 1);
+        $this->assertTrue((new Month($this->path, 2020, 7))->isBefore(8));
+    }
 
-    // 3.14ms 29kb
-    expect($month->yearString())->toBeString()->toBe('1999');
+    /**
+     * @test
+     *
+     * @group data
+     * @group month
+     */
+    public function month_has_details(): void
+    {
+        $month = new Month($this->path, 1999, 1);
 
-    expect($month->year())->toBeInt()->toBe(1999);
+        // 3.14ms 29kb
+        $result = $month->yearString();
+        $this->assertIsString($result);
+        $this->assertEquals('1999', $result);
 
-    // 2.51ms 33kb
-    expect($month->monthString())->toBeString()->toBe('01');
+        $result = $month->year();
+        $this->assertIsInt($result);
+        $this->assertEquals(1999, $result);
 
-    expect($month->month(false))->toBeInt()->toBe(1);
+        // 2.51ms 33kb
+        $result = $month->monthString();
+        $this->assertIsString($result);
+        $this->assertEquals($result, '01');
 
-    expect(
-        Month::fold($this->path, 2020, 5)->daysInMonth()
-    )->toBeInt()->toBe(31);
-})->group('data', 'month');
+        $result = $month->month(false);
+        $this->assertIsInt($result);
+        $this->assertEquals(1, $result);
 
-test('Month has content', function() {
-    // 10.6ms 396kb
-    expect(
-        Month::fold($this->path, 2020, 5)->count()
-    )->toBeInt()->toBe(5);
+        $result = (new Month($this->path, 2020, 5))->daysInMonth();
+        $this->assertIsInt($result);
+        $this->assertEquals(31, $result);
+    }
 
-    // 13.75ms 415kb
-    expect(
-        Month::fold($this->path, 2020, 5)->hasEvents()
-    )->toBeTrue();
+    /**
+     * @test
+     *
+     * @group data
+     * @group month
+     */
+    public function month_has_content(): void
+    {
+        // 10.6ms 396kb
+        $result = (new Month($this->path, 2020, 5))->count();
+        $this->assertIsInt($result);
+        $this->assertEquals(5, $result);
 
-    // 1.36ms 1kb
-    expect(
-        Month::fold($this->path, 2020, 6)->hasEvents()
-    )->toBeFalse();
+        // 13.75ms 415kb
+        $this->assertTrue((new Month($this->path, 2020, 5))->hasEvents());
 
-    // 1.26ms 1
-    expect(
-        Month::fold($this->path, 2020, 10)->couldHaveEvents()
-    )->toBeFalse();
-})->group('data', 'month');
+        // 1.36ms 1kb
+        $this->assertFalse((new Month($this->path, 2020, 6))->hasEvents());
+
+        // 1.26ms 1
+        $this->assertFalse((new Month($this->path, 2020, 10))->couldHaveEvents());
+    }
+}

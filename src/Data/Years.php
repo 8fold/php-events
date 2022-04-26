@@ -2,34 +2,24 @@
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
+
+use Symfony\Component\Finder\Finder;
 
 use Eightfold\Events\Data\Year;
 
 use Eightfold\Events\Implementations\Root as RootImp;
-
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Years
 {
     use RootImp;
+    use ItemImp;
 
     /**
-     * @var Item
-     */
-    private $item;
-
-    /**
-     * @var array<Year>
+     * @var Year[]
      */
     private array $content = [];
-
-    /**
-     * @param string $args [description]
-     */
-    public static function fold(...$args): Years
-    {
-        return new Years(...$args);
-    }
 
     public function __construct(string $root)
     {
@@ -41,35 +31,32 @@ class Years
         return $this->root();
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root);
+        if ($this->item === false) {
+            $this->item = new SplfileInfo($this->root);
         }
         return $this->item;
     }
 
     /**
-     * @return array<Year> [description]
+     * @return Year[]
      */
     public function content(): array
     {
-        if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $year) {
-                    $path  = $year->thePath();
-                    $parts = explode('/', $path);
-                    $year  = array_pop($parts);
-                    $key   = 'i' . $year;
+        if (count($this->content) === 0 and $this->item() !== false) {
+            $c = (new Finder())->directories()->depth('== 0')
+                ->in($this->item()->getRealPath());
+            foreach ($c as $year) {
+                $path  = $year->getRealPath();
+                $parts = explode('/', $path);
+                $year  = array_pop($parts);
+                $key   = 'i' . $year;
 
-                    $this->content[$key] = Year::fold(
-                        $this->root,
-                        intval($year)
-                    );
-
-                }
+                $this->content[$key] = new Year($this->root, intval($year));
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }
@@ -89,16 +76,12 @@ class Years
         foreach ($this->content() as $year) {
             if ($year->hasEvents()) {
                 return true;
-
             }
         }
         return false;
     }
 
-    /**
-     * @return Year|bool       [description]
-     */
-    public function year(int $year)
+    public function year(int $year): Year|false
     {
         $year = 'i' . $year;
         if ($c = $this->content() and array_key_exists($year, $c)) {

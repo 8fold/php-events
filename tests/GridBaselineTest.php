@@ -1,80 +1,103 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Eightfold\Events\Tests;
+
+use PHPUnit\Framework\TestCase;
+
+use SplFileInfo;
 
 use Eightfold\Events\Grid;
 
 use Eightfold\FileSystem\Item;
 
-// use Eightfold\Events\UI\GridForYear;
-// use Eightfold\Events\UI\GridForMonth;
+class DateBaselineTest extends TestCase
+{
+    private string $path = '';
 
-beforeEach(function() {
-    $this->path = Item::create(__DIR__)
-        ->append('test-events', 'events')->thePath();
-});
-test('Grid render month', function() {
-    expect(
-        Grid::forMonth($this->path, 2020, 5)->header()->build()
-    )->toBe(
-        '<h2>May 2020</h2>'
-    );
+    public function setUp(): void
+    {
+        $this->path = (new SplFileInfo(__DIR__ . '/test-events/events'))
+            ->getRealPath();
+    }
 
-    expect(
-        Grid::forMonth($this->path, 2020, 5)->previousLink()->build()
-    )->toBe(
-        '<span class="ef-grid-previous-month"></span>'
-    );
-})->group('ui', 'grid', 'month');
+    /**
+     * @test
+     *
+     * @group ui
+     * @group grid
+     * @group month
+     */
+    public function grid_render_month(): void
+    {
+        $this->assertEquals(
+            '<h2>May 2020</h2>',
+            Grid::forMonth($this->path, 2020, 5)->header()->build()
+        );
 
-test('Grid render year', function() {
-    expect(
-        Grid::forYear($this->path, 2020)->header()->build()
-    )->toBe(
-        '<h2>2020</h2>'
-    );
-})->group('ui', 'grid', 'year');
+        $this->assertEquals(
+            '<span class="ef-grid-previous-month"></span>',
+            Grid::forMonth($this->path, 2020, 5)->previousLink()->build()
+        );
+    }
 
-test('Grid total grid items', function() {
-    expect(
-        Grid::forYear($this->path, 2020)->totalGridItems()
-    )->toBe(
-        12
-    );
+    /**
+     * @test
+     *
+     * @group ui
+     * @group grid
+     * @group year
+     */
+    public function grid_render_year(): void
+    {
+        $this->assertEquals(
+            '<h2>2020</h2>',
+            Grid::forYear($this->path, 2020)->header()->build()
+        );
+    }
 
-    expect(
-        Grid::forMonth($this->path, 2020, 5)->totalStartGridBlanks()
-    )->toBe(
-        4
-    );
+    /**
+     * @test
+     *
+     * @group ui
+     * @group grid
+     */
+    public function grid_total_items(): void
+    {
+        $this->assertEquals(
+            12,
+            Grid::forYear($this->path, 2020)->totalGridItems()
+        );
 
-    expect(
-        Grid::forMonth($this->path, 2020, 5)->daysInMonth()
-    )->toBe(
-        31
-    );
+        $this->assertEquals(
+            4,
+            Grid::forMonth($this->path, 2020, 5)->totalStartGridBlanks()
+        );
 
-    expect(
-        Grid::forMonth($this->path, 2020, 5)->totalEndGridBlanks()
-    )->toBe(
-        0
-    );
+        $this->assertEquals(
+            31,
+            Grid::forMonth($this->path, 2020, 5)->daysInMonth()
+        );
 
-    expect(
-        Grid::forMonth($this->path, 2020, 4)->totalStartGridBlanks()
-    )->toBe(
-        2
-    );
+        $this->assertEquals(
+            0,
+            Grid::forMonth($this->path, 2020, 5)->totalEndGridBlanks()
+        );
 
-    expect(
-        Grid::forMonth($this->path, 2020, 4)->daysInMonth()
-    )->toBe(
-        30
-    );
+        $this->assertEquals(
+            2,
+            Grid::forMonth($this->path, 2020, 4)->totalStartGridBlanks()
+        );
 
-    expect(
-        Grid::forMonth($this->path, 2020, 4)->totalEndGridBlanks()
-    )->toBe(
-        3
-    );
-})->group('ui', 'grid');
+        $this->assertEquals(
+            30,
+            Grid::forMonth($this->path, 2020, 4)->daysInMonth()
+        );
+
+        $this->assertEquals(
+            3,
+            Grid::forMonth($this->path, 2020, 4)->totalEndGridBlanks()
+        );
+    }
+}

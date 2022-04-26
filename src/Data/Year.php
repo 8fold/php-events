@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Events\Data\DataAbstract;
+use SplFileInfo;
 
-use Eightfold\FileSystem\Item;
+use Symfony\Component\Finder\Finder;
+
+use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
-use Eightfold\Events\Implementations\Item as ItemImp;
 use Eightfold\Events\Implementations\Year as YearImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Year
 {
     use RootImp;
     use PartsImp;
-    use ItemImp;
     use YearImp;
+    use ItemImp;
 
     /**
-     * @var array<Month>
+     * @var Month[]
      */
     private array $content = [];
 
@@ -30,47 +32,61 @@ class Year
         return 12;
     }
 
-    public static function fold(string $root, int $year): Year
-    {
-        return new Year($root, $year);
-    }
-
     public function __construct(string $root, int $year)
     {
         $this->root  = $root;
         $this->parts = [$year];
     }
 
-    private function item(): Item
+    private function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root)->append($this->yearString());
+        if ($this->item === false) {
+            $check = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString()
+            );
+
+            if ($check->isDir()) {
+                $this->item = $check;
+
+            } else {
+                return false;
+
+            }
         }
         return $this->item;
     }
 
     private function path(): string
     {
-        return $this->item()->thePath();
+        if ($this->item() === false) {
+            return '';
+        }
+        return $this->item()->getPath();
     }
 
     /**
-     * @return array<Month> [description]
+     * @return Month[]
      */
-    public function content()
+    public function content(): array
     {
-        if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $item) {
-                    $parts = explode('/', $item->thePath());
-                    $month = array_pop($parts);
-                    $key   = 'i' . $month;
-                    if (! isset($this->content[$key])) {
-                        $item = Item::create($this->path() . '/' . $month);
-                        $this->content[$key] = Month::fromItem($this->root, $item);
-
-                    }
+        $path = $this->path() . '/' . $this->yearString();
+        if (
+            count($this->content) === 0 and
+            file_exists($path) and
+            is_dir($path)
+        ) {
+            $c = (new Finder())->directories()->depth('== 0')->in($path);
+            foreach ($c as $month) {
+                $parts = explode('/', $month->getRealPath());
+                $month = array_pop($parts);
+                $key   = 'i' . $month;
+                if (! isset($this->content[$key])) {
+                    $this->content[$key] = new Month(
+                        $this->root,
+                        $this->year(),
+                        intval($month)
+                    );
                 }
             }
         }
@@ -92,13 +108,12 @@ class Year
         foreach ($this->content() as $month) {
             if ($month->hasEvents()) {
                 return true;
-
             }
         }
         return false;
     }
 
-    private function isSameAs(int $compare): bool
+    public function isSameAs(int $compare): bool
     {
         return $this->year() === $compare;
     }
@@ -121,7 +136,6 @@ class Year
 
     public function uri(): string
     {
-        $parts = explode('/', $this->path());
-        return '/' . array_pop($parts);
+        return '/' . $this->yearString();
     }
 }

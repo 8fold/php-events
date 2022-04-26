@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
+
+use Symfony\Component\Finder\Finder;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
 use Eightfold\Events\Implementations\Date as DateImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Date
 {
@@ -19,61 +22,26 @@ class Date
     use YearImp;
     use MonthImp;
     use DateImp;
+    use ItemImp;
 
     /**
-     * @var Item|null
-     */
-    private $item;
-
-    /**
-     * @var array<Event>
+     * @var Event[]
      */
     private array $content = [];
 
-    public static function fromItem(string $rootPath, Item $item): Date
+    public function __construct(string $root, int $year, int $month, int $date)
     {
-        $p = $item->thePath();
-        $parts = explode('/', $p);
-
-        $fileName = array_pop($parts);
-        $fileName = str_replace('.event', '', $fileName);
-        $fParts   = explode('_', $fileName);
-        $date     = intval(array_shift($fParts));
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        // Item doesn't need date; go up one
-        return new Date($rootPath, $year, $month, $date, $item->up());
-    }
-
-    /**
-     * @param mixed $args [description]
-     */
-    public static function fold(...$args): Date
-    {
-        return new Date(...$args);
-    }
-
-    public function __construct(
-        string $root,
-        int $year,
-        int $month,
-        int $date,
-        Item $item = null
-    ) {
         $this->root = $root;
         $this->parts = [$year, $month, $date];
-        $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+        if ($this->item === false) {
+            $this->item = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString()
             );
         }
         return $this->item;
@@ -81,31 +49,45 @@ class Date
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        if ($this->item() === false) {
+            return '';
+        }
+        return $this->item()->getRealPath();
     }
 
     /**
-     * @return array<Event>
+     * @return Event[]
      */
-    public function content()
+    public function content(): array
     {
-        if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $item) {
-                    $path     = $item->thePath();
-                    $p        = explode('/', $path);
-                    $fileName = array_pop($p);
-                    if (
-                        substr($path, -6) === '.event' and
-                        substr($fileName, 0, 2) === $this->dateString()
-                    ) {
-                        $this->content[$path] =
-                            Event::fromItem($this->root, $item);
-
+        if (count($this->content) === 0 and $this->item() !== false) {
+            $c = (new Finder())->name('*.event')
+                ->in($this->item()->getRealPath());
+            foreach ($c as $item) {
+                $path     = $item->getRealPath();
+                $p        = explode('/', $path);
+                $fileName = array_pop($p);
+                if (str_starts_with($fileName, $this->dateString())) {
+                    $fParts = explode('_', $fileName);
+                    $count = 1;
+                    if (count($fParts) > 1) {
+                        $count = array_pop($fParts);
+                        $count = str_replace('.events', '', $count);
+                        $count = intval($count);
                     }
+
+                    $this->content[$path] =
+                        (new Event(
+                            $this->root,
+                            $this->year(),
+                            $this->month(),
+                            $this->date(),
+                            $count
+                        ));
                 }
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }

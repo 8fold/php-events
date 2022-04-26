@@ -1,80 +1,115 @@
 <?php
 
-use Eightfold\Events\Data\Date;
+declare(strict_types=1);
 
-use Eightfold\FileSystem\Item;
+namespace Eightfold\Events\Tests\Data;
+
+use PHPUnit\Framework\TestCase;
+
+use SplFileInfo;
+
+use Eightfold\Events\Data\Date;
 use Eightfold\Events\Data\Event;
 
-beforeEach(function() {
-    $this->path = Item::create(__DIR__)
-        ->up()->append('test-events', 'events')->thePath();
-});
+class DateBaselineTest extends TestCase
+{
+    private string $path = '';
 
-test('Date has details', function() {
-    $date = Date::fold($this->path, 1999, 1, 10);
+    public function setUp(): void
+    {
+        $this->path = (new SplFileInfo(__DIR__ . '/../test-events/events'))
+            ->getRealPath();
+    }
 
-    // 3.14ms 29kb
-    expect($date->yearString())->toBeString()->toBe('1999');
+    /**
+     * @test
+     *
+     * @group data
+     * @group date
+     */
+    public function date_has_details(): void
+    {
+        $date = new Date($this->path, 1999, 1, 10);
 
-    expect($date->year())->toBeInt()->toBe(1999);
+        // 3.14ms 29kb
+        $result = $date->yearString();
+        $this->assertIsString($result);
+        $this->assertEquals('1999', $result);
 
-    // 2.51ms 33kb
-    expect($date->monthString())->toBeString()->toBe('01');
+        $result = $date->year();
+        $this->assertIsInt($result);
+        $this->assertEquals(1999, $result);
 
-    expect($date->month())->toBeInt()->toBe(1);
+        // 2.51ms 33kb
+        $result = $date->monthString();
+        $this->assertIsString($result);
+        $this->assertEquals('01', $result);
 
-    // 0.03ms 1kb
-    expect($date->dateString())->toBeString()->toBe('10');
+        $result = $date->month();
+        $this->assertIsInt($result);
+        $this->assertEquals(1, $result);
 
-    expect($date->date())->toBeInt()->toBe(10);
-})->group('data', 'date');
+        // 0.03ms 1kb
+        $result = $date->dateString();
+        $this->assertIsString($result);
+        $this->assertEquals('10', $result);
 
-test('Date has content', function() {
-    // 15.43ms 521kb
-    $this->assertEquals(
-        Date::fold($this->path, 2020, 5, 21)->content(),
-        [
-            $this->path . '/2020/05/21.event' =>
-                Event::fold(
-                    $this->path,
-                    2020,
-                    5,
-                    21,
-                    1,
-                    Item::create($this->path . '/2020/05/21.event')
-                )
-        ]);
+        $result = $date->date();
+        $this->assertIsInt($result);
+        $this->assertEquals(10, $result);
+    }
 
-    // 11.41ms 327kb
-    $this->assertEquals(
-        Date::fold($this->path, 2020, 5, 22)->content(),
-        [
-            $this->path . '/2020/05/22_1.event' =>
-                Event::fold(
-                    $this->path,
-                    2020,
-                    5,
-                    22,
-                    1,
-                    Item::create($this->path . '/2020/05/22_1.event')
-                ),
-            $this->path . '/2020/05/22_2.event' =>
-                Event::fold(
-                    $this->path,
-                    2020,
-                    5,
-                    22,
-                    2,
-                    Item::create($this->path . '/2020/05/22_2.event')
-                )
-        ]);
+    /**
+     * @test
+     *
+     * @group data
+     * @group date
+     */
+    public function date_has_content(): void
+    {
+        // 15.43ms 521kb
+        $this->assertEquals(
+            [
+                $this->path . '/2020/05/21.event' =>
+                    (new Event(
+                        $this->path,
+                        2020,
+                        5,
+                        21,
+                        1,
+                        // new SplFileInfo($this->path . '/2020/05/21.event')
+                        // Item::create($this->path . '/2020/05/21.event')
+                    ))
+            ],
+            (new Date($this->path, 2020, 5, 21))->content()
+        );
 
-    expect(
-        Date::fold($this->path, 2020, 5, 22)->count()
-    )->toBeInt()->toBe(2);
+        // 11.41ms 327kb
+        $this->assertEquals(
+            (new Date($this->path, 2020, 5, 22))->content(),
+            [
+                $this->path . '/2020/05/22_1.event' =>
+                    (new Event(
+                        $this->path,
+                        2020,
+                        5,
+                        22,
+                        1
+                    )),
+                $this->path . '/2020/05/22_2.event' =>
+                    (new Event(
+                        $this->path,
+                        2020,
+                        5,
+                        22,
+                        2
+                    ))
+            ]);
 
-    // 3.89ms 1kb
-    expect(
-        Date::fold($this->path, 2020, 5, 23)->hasEvents()
-    )->toBeFalse();
-})->group('data', 'date');
+        $result = (new Date($this->path, 2020, 5, 22))->count();
+        $this->assertIsInt($result);
+        $this->assertEquals(2, $result);
+
+        $this->assertFalse((new Date($this->path, 2020, 5, 23))->hasEvents());
+    }
+}

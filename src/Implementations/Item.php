@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Implementations;
 
-use Eightfold\FileSystem\Item as FileSystemItem;
+use SplFileInfo;
 
 trait Item
 {
-    /**
-     * @var FileSystemItem
-     */
-    private $item;
+    private SplFileInfo|false $item = false;
 
-    abstract public function item(): FileSystemItem;
+    abstract public function item(): SplFileInfo|false;
 }

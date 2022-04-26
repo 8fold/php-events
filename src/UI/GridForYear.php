@@ -6,7 +6,7 @@ namespace Eightfold\Events\UI;
 
 use Eightfold\HTMLBuilder\Element as HtmlElement;
 
-use Carbon\Carbon;
+use DateTime;
 
 use Eightfold\Events\Data\Year;
 
@@ -14,7 +14,6 @@ use Eightfold\Events\Events;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Events as EventsImp;
-use Eightfold\Events\Implementations\Carbon as CarbonImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Render as RenderImp;
 use Eightfold\Events\Implementations\Year as YearImp;
@@ -23,10 +22,11 @@ class GridForYear
 {
     use RootImp;
     use EventsImp;
-    use CarbonImp;
     use PartsImp;
     use RenderImp;
     use YearImp;
+
+    private DateTime $carbon;
 
     private string $yearTitleFormat = 'Y';
 
@@ -34,30 +34,20 @@ class GridForYear
 
     protected string $monthTitleFormat = 'F Y';
 
-    public static function fold(
-        string $root,
-        int $year,
-        string $uriPrefix = '/events'
-    ): GridForYear {
-        return new GridForYear($root, $year);
-    }
-
-    public function __construct(
-        string $root,
-        int $year,
-        string $uriPrefix = '/events'
-    ) {
+    public function __construct(string $root, int $year)
+    {
         $this->root = $root;
         $this->parts = [$year];
-        $this->uriPrefix = $uriPrefix;
     }
 
-    public function carbon(): Carbon
+    public function carbon(): DateTime
     {
-        if ($this->carbon === null) {
-            $this->carbon = Carbon::now()
-                ->year($this->year())->month(1)->day(10)
-                ->startOfWeek(Carbon::MONDAY);
+        if (isset($this->carbon) === false) {
+            $this->carbon = (new DateTime())->setDate(
+                $this->year(),
+                1,
+                10
+            );
         }
         return $this->carbon;
     }
@@ -69,71 +59,88 @@ class GridForYear
 
     public function header(): HtmlElement
     {
-        $title = $this->carbon()->copy()->format($this->yearTitleFormat);
+        $cc = clone $this->carbon();
+
+        $title = $cc->format($this->yearTitleFormat);
         return HtmlElement::h2($title);
     }
 
     public function previousLink(): HtmlElement
     {
-        $year = $this->events()->previousYearWithEvents($this->year());
-        $title = '';
+        $events = $this->events();
+        $year   = false;
+        $title  = '';
+        if ($events !== null) {
+            $year = $events->previousYearWithEvents($this->year());
 
-        if (is_object($year)) {
-            $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
+            if (is_object($year)) {
+                $format = $this->yearTitleFormat;
+
+                $cc = clone $this->carbon();
+                $cc->setDate($year->year(), 6, 10);
+
+                $title = $cc->format($format);
+            }
         }
-
         return $this->navLink($year, $title, 'ef-grid-previous-year');
     }
 
     public function nextLink(): HtmlElement
     {
-        $year = $this->events()->nextYearWithEvents($this->year());
+        $events = $this->events();
+        $year   = false;
         $title = '';
+        if ($events !== null) {
+            $year = $events->nextYearWithEvents($this->year());
 
-        if (is_object($year)) {
-            $format = $this->yearTitleFormat;
-            $title = $this->carbon()->copy()->year($year->year())
-                ->format($format);
+            if (is_object($year)) {
+                $format = $this->yearTitleFormat;
+
+                $cc = clone $this->carbon();
+                $cc->setDate($year->year(), 6, 1);
+
+                $title = $cc->format($format);
+            }
         }
-
         return $this->navLink($year, $title, 'ef-grid-next-year');
     }
 
     public function gridItem(int $itemNumber): HtmlElement
     {
-        $year = $this->events()->year($this->year());
-        if (! $year) {
-            return $this->gridItemBlank($itemNumber);
+        $events = $this->events();
+        if ($events !== null) {
+            $year = $events->year($this->year());
+            if (! $year) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $month = $events->month($this->year(), $itemNumber);
+            if (! is_object($month) or (is_object($month) and ! $month->hasEvents())) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $cc = clone $this->carbon();
+            $cc->setDate($month->year(), $month->month(), 1);
+
+            $abbr   = $cc->format($this->monthAbbrFormat);
+            $title  = $cc->format($this->monthTitleFormat);
+            $total = strval($month->count());
+
+            return HtmlElement::a(
+                HtmlElement::abbr($abbr)
+                    ->props('title ' . $title),
+                HtmlElement::span($total)
+            )->props(
+                'href ' . $this->uriPrefix() . $month->uri()
+            );
         }
-
-        $month = $this->events()->month($this->year(), $itemNumber);
-        if (! is_object($month) or (is_object($month) and ! $month->hasEvents())) {
-            return $this->gridItemBlank($itemNumber);
-        }
-
-        $cc = $this->carbon()->copy()
-            ->year($month->year())
-            ->month($month->month());
-
-        $abbr   = $cc->format($this->monthAbbrFormat);
-        $title  = $cc->format($this->monthTitleFormat);
-        $total = strval($month->count());
-
-        return HtmlElement::a(
-            HtmlElement::abbr($abbr)
-                ->props('title ' . $title),
-            HtmlElement::span($total)
-        )->props(
-            'href ' . $this->uriPrefix() . $month->uri()
-        );
+        return $this->gridItemBlank($itemNumber);
     }
 
     public function gridItemBlank(int $itemNumber): HtmlElement
     {
-        $cc = $this->carbon()->copy()
-            ->year($this->year())->month($itemNumber);
+        $cc = clone $this->carbon();
+        $cc->setDate($this->year(), $itemNumber, 1);
 
         $abbr = $cc->format($this->monthAbbrFormat);
         $title = $cc->format($this->monthTitleFormat);

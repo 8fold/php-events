@@ -4,28 +4,23 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\FileSystem\Item;
+use SplFileInfo;
 
 use Eightfold\Events\Data\Interfaces\Event as EventInterface;
 
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
 use Eightfold\Events\Implementations\Date as DateImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Event
 {
     use YearImp;
     use MonthImp;
     use DateImp;
+    use ItemImp;
 
     private string $root;
-
-    /**
-     * @var Item|null
-     */
-    private $item;
-
-    private int $count;
 
     private string $content = '';
 
@@ -34,68 +29,38 @@ class Event
      */
     private array $parts = [];
 
-    public static function fromItem(string $rootPath, Item $item): Event
-    {
-        $p = $item->thePath();
-        $parts = explode('/', $p);
-
-        $fileName = array_pop($parts);
-        $fileName = str_replace('.event', '', $fileName);
-        $fParts   = explode('_', $fileName);
-        $date     = intval(array_shift($fParts));
-        $count    = 1;
-        if (count($fParts) > 0) {
-            $count = intval($fParts[0]);
-        }
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        return new Event($rootPath, $year, $month, $date, $count, $item);
-    }
-
-    /**
-     * @param mixed $args [description]
-     */
-    public static function fold(...$args): Event
-    {
-        return new Event(...$args);
-    }
-
     public function __construct(
         string $root,
         int $year,
         int $month,
         int $date,
         int $count,
-        Item $item = null
     ) {
         $this->root  = $root;
         $this->parts = [$year, $month, $date, $count];
-        $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+        if ($this->item === false) {
+            $check = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString() . '/' .
                 $this->dateString() . '_' . $this->count() . '.event'
             );
 
-            if ($this->count() === 1 and ! $this->item->isFile()) {
-                $check = Item::create($this->root)->append(
-                    $this->yearString(),
-                    $this->monthString(),
+            if ($this->count() === 1 and $check->isFile() === false) {
+                $check = new SplFileInfo(
+                    $this->root . '/' .
+                    $this->yearString() . '/' .
+                    $this->monthString() . '/' .
                     $this->dateString() . '.event'
                 );
+            }
 
-                if ($check->isFile()) {
-                    $this->item = $check;
-
-                }
+            if ($check->isFile()) {
+                $this->item = $check;
             }
         }
         return $this->item;
@@ -103,16 +68,22 @@ class Event
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        if ($this->item() === false) {
+            return '';
+        }
+        return $this->item()->getRealPath();
     }
 
     public function content(): string
     {
-        if (strlen($this->content) === 0 and $this->hasEvents()) {
-            $c = $this->item()->content();
+        if (
+            strlen($this->content) === 0 and
+            $this->hasEvents() and
+            $this->item()
+        ) {
+            $c = file_get_contents($this->item()->getRealPath());
             if (is_string($c)) {
                 $this->content = $c;
-
             }
         }
         return $this->content;
@@ -123,14 +94,12 @@ class Event
         $content = $this->content();
         if (strlen($content) === 0) {
             return '';
-
         }
 
         $parts = $this->contentParts();
         $title = array_shift($parts);
         if ($title === null) {
             return '';
-
         }
         return trim($title);
     }
@@ -140,14 +109,12 @@ class Event
         $content = $this->content();
         if (strlen($content) === 0) {
             return '';
-
         }
 
         $parts = $this->contentParts();
         $body  = array_pop($parts);
         if ($body === null) {
             return '';
-
         }
         return trim($body);
     }
@@ -172,6 +139,9 @@ class Event
 
     public function hasEvents(): bool
     {
-        return $this->item()->isFile();
+        if ($this->item()) {
+            return $this->item()->isFile();
+        }
+        return false;
     }
 }

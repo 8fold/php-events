@@ -10,17 +10,16 @@
     }
   ],
   "require": {
-    "php": "^7.4||^8.0",
-    "nesbot/carbon": "^2.53",
-    "8fold/php-filesystem": "*",
-    "8fold/php-html-builder": "*",
-    "8fold/commonmark-fluent-markdown": "*"
+    "php": "^8.0",
+    "8fold/php-filesystem": "^0.7.1",
+    "8fold/php-html-builder": "^1.0",
+    "8fold/commonmark-fluent-markdown": "^0.10.8",
+    "symfony/finder": "^6.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.6",
-    "phpstan/phpstan": "^0.12",
-    "pestphp/pest": "^1.20",
-    "psr/log": "^1.0.1"
+    "phpstan/phpstan": "^1.5",
+    "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-4": {
@@ -29,10 +28,14 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "Eightfold\\Events\\Tests\\": "./tests/"
     }
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   },
   "prefer-stable": true,
   "scripts": {
@@ -40,6 +43,6 @@
     "production": ["@style", "@stan", "@test"],
     "style": "./vendor/bin/phpcs --standard=phpcs.xml -p ./src",
     "stan": "./vendor/bin/phpstan analyze",
-    "test": "./vendor/bin/pest"
+    "test": "./vendor/bin/phpunit"
   }
 }

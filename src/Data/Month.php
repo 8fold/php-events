@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Data;
 
-use Eightfold\Events\Data\DataAbstract;
+use SplFileInfo;
 
-use Eightfold\FileSystem\Item;
+use Symfony\Component\Finder\Finder;
+
+use Eightfold\Events\Data\DataAbstract;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 use Eightfold\Events\Implementations\Parts as PartsImp;
 use Eightfold\Events\Implementations\Year as YearImp;
 use Eightfold\Events\Implementations\Month as MonthImp;
+use Eightfold\Events\Implementations\Item as ItemImp;
 
 class Month
 {
@@ -19,87 +22,73 @@ class Month
     use PartsImp;
     use YearImp;
     use MonthImp;
+    use ItemImp;
 
     /**
-     * @var Item|null
-     */
-    private $item;
-
-    /**
-     * @var array<Date>
+     * @var Date[]
      */
     private array $content = [];
 
-    public static function fromItem(string $rootPath, Item $item): Month
+    public function __construct(string $root, int $year, int $month)
     {
-        $p = $item->thePath();
-        $parts = explode('/', $p);
-
-        $month = intval(array_pop($parts));
-
-        $year = intval(array_pop($parts));
-
-        return new Month($rootPath, $year, $month, $item);
-    }
-
-    /**
-     * @param mixed $args [description]
-     */
-    public static function fold(...$args): Month
-    {
-        return new Month(...$args);
-    }
-
-    public function __construct(
-        string $root,
-        int $year,
-        int $month,
-        Item $item = null
-    ) {
         $this->root  = $root;
         $this->parts = [$year, $month];
-        $this->item  = $item;
     }
 
-    public function item(): Item
+    public function item(): SplFileInfo|false
     {
-        if ($this->item === null) {
-            $this->item = Item::create($this->root)->append(
-                $this->yearString(),
-                $this->monthString(),
+        if ($this->item === false) {
+            $check = new SplFileInfo(
+                $this->root . '/' .
+                $this->yearString() . '/' .
+                $this->monthString()
             );
+
+            if ($check->isDir()) {
+                $this->item = $check;
+            }
         }
         return $this->item;
     }
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        if ($this->item() === false) {
+            return '';
+        }
+        return $this->item()->getRealPath();
     }
 
     /**
-     * @return array<Date>
+     * @return Date[]
      */
-    public function content()
+    public function content(): array
     {
-        if (count($this->content) === 0) {
-            $c = $this->item()->content();
-            if (is_array($c)) {
-                foreach ($c as $item) {
-                    $path     = $item->thePath();
-                    $p        = explode('/', $path);
-                    $fileName = array_pop($p);
-                    if (substr($path, -6) === '.event') {
-                        $date = substr($fileName, 0, 2);
-                        $key  = 'i' . $date;
-                        if (! isset($this->content[$key])) {
-                            $item = Item::create($this->path() . '/' . $date);
-                            $this->content[$key] = Date::fromItem($this->root, $item);
-
-                        }
-                    }
+        if (
+            count($this->content) === 0 and
+            $this->item() !== false and
+            $this->item()->isDir()
+        ) {
+            $c = (new Finder())->files()->depth('== 0')->name('*.event')
+                ->in($this->item()->getRealPath());
+            foreach ($c as $item) {
+                $path     = $item->getRealPath();
+                $p        = explode('/', $path);
+                $fileName = array_pop($p);
+                $date = substr($fileName, 0, 2);
+                $key  = 'i' . $date;
+                if (! isset($this->content[$key])) {
+                    $d = new Date(
+                        $this->root,
+                        $this->year(),
+                        $this->month(),
+                        intval($date)
+                    );
+                    $this->content[$key] = $d;
                 }
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }
@@ -147,8 +136,6 @@ class Month
 
     public function uri(): string
     {
-        $parts = explode('/', $this->path());
-        $parts = array_slice($parts, -2);
-        return '/' . implode('/', $parts);
+        return str_replace($this->root, '', $this->path());
     }
 }

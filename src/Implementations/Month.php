@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Events\Implementations;
 
-use Carbon\Carbon;
-
 trait Month
 {
     public function month(): int
@@ -24,9 +22,6 @@ trait Month
 
     public function daysInMonth(): int
     {
-        return Carbon::now()
-            ->year($this->year())
-            ->month($this->month())
-            ->daysInMonth;
+        return cal_days_in_month(CAL_GREGORIAN, $this->month(), $this->year());
     }
 }

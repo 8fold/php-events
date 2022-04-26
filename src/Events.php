@@ -4,13 +4,6 @@ declare(strict_types=1);
 
 namespace Eightfold\Events;
 
-// use Eightfold\Foldable\Fold;
-
-// use Carbon\Carbon;
-
-// use Eightfold\ShoopShelf\Shoop;
-use Eightfold\FileSystem\Item;
-
 use Eightfold\Events\Data\Years;
 use Eightfold\Events\Data\Year;
 use Eightfold\Events\Data\Month;
@@ -18,14 +11,11 @@ use Eightfold\Events\Data\Date;
 
 use Eightfold\Events\Implementations\Root as RootImp;
 
-class Events // extends Fold
+class Events
 {
     use RootImp;
 
-    /**
-     * @var Years
-     */
-    private $years;
+    private Years|false $years = false;
 
     public static function fold(string $root): Events
     {
@@ -39,16 +29,13 @@ class Events // extends Fold
 
     public function years(): Years
     {
-        if ($this->years === null) {
-            $this->years = Years::fold($this->root());
+        if ($this->years === false) {
+            $this->years = new Years($this->root());
         }
         return $this->years;
     }
 
-    /**
-     * @return Year|bool|boolean        [description]
-     */
-    public function year(int $year)
+    public function year(int $year): Year|false
     {
         if ($this->years()->count() === 0) {
             return false;
@@ -60,14 +47,10 @@ class Events // extends Fold
         if (! array_key_exists($yearKey, $years)) {
             return false;
         }
-
         return  $years[$yearKey];
     }
 
-    /**
-     * @return Month|bool|boolean        [description]
-     */
-    public function month(int $year, int $month)
+    public function month(int $year, int $month): Month|false
     {
         $y = $this->year($year);
         if (! is_object($y)) {
@@ -86,10 +69,7 @@ class Events // extends Fold
         return $months[$monthKey];
     }
 
-    /**
-     * @return Date|bool|boolean        [description]
-     */
-    public function date(int $year, int $month, int $date)
+    public function date(int $year, int $month, int $date): Date|false
     {
         $m = $this->month($year, $month);
         if (! is_object($m)) {
@@ -108,33 +88,25 @@ class Events // extends Fold
         return $dates[$dateKey];
     }
 
-    /**
-     * @return Year|bool|boolean        [description]
-     */
-    public function nextYearWithEvents(int $baseYear)
+    public function nextYearWithEvents(int $baseYear): Year|false
     {
         $years = [];
         foreach ($this->years()->content() as $year) {
             if ($year->isAfter($baseYear) and $year->hasEvents()) {
                 $years[] = $year;
-
             }
         }
 
         if (count($years) === 0) {
             return false;
         }
-
-        return $years[0];
+        return array_shift($years);
     }
 
-    /**
-     * @return Year|bool|boolean        [description]
-     */
-    public function previousYearWithEvents(int $baseYear = 0)
+    public function previousYearWithEvents(int $baseYear = 0): Year|false
     {
         $years = $this->years()->content();
-        $years = array_reverse($years);
+        krsort($years);
 
         $y = [];
         foreach ($years as $year) {
@@ -146,13 +118,10 @@ class Events // extends Fold
         if (count($y) === 0) {
             return false;
         }
-        return $y[0];
+        return array_shift($y);
     }
 
-    /**
-     * @return Month|bool|boolean        [description]
-     */
-    public function nextMonthWithEvents(int $year, int $month)
+    public function nextMonthWithEvents(int $year, int $month): Month|false
     {
         $years = $this->years();
 
@@ -189,93 +158,45 @@ class Events // extends Fold
         return false;
     }
 
-    /**
-     * @return Month|bool|boolean        [description]
-     */
-    public function previousMonthWithEvents(int $year, int $month)
+    public function previousMonthWithEvents(int $year, int $month): Month|false
     {
-        $years = $this->years();
+        $years = $this->years()->content();
 
-        if ($years->count() === 0) {
+        if (count($years) === 0) {
             return false;
         }
 
-        if ($y = $years->year($year) and is_object($y)) {
-            $months = [];
-            foreach ($y->content() as $m) {
-                if ($m->isBefore($month) and $m->hasEvents()) {
-                    $months[] = $m;
+        $requestedYearKey = 'i' . $year;
+        if (array_key_exists($requestedYearKey, $years)) {
+            $requestedYear = $years[$requestedYearKey];
+            $requestedYearMonths = $requestedYear->content();
+            $mon = false;
+            foreach ($requestedYearMonths as $m) {
+                if ($mon !== false and $mon->isAfter($month)) {
+                    $mon = $m;
+
+                } elseif ($m->isBefore($month) and $m->hasEvents()) {
+                    $mon = $m;
+
                 }
             }
 
-            // Check if there is a previous year with events.
-            if (count($months) === 0) {
-                if (
-                    $previousYear = $this->previousYearWithEvents($y->year()) and
-                    is_object($previousYear)
-                ) {
-                    // Return a month from a previous year.
-                    return $this->previousMonthWithEvents($previousYear->year(), 13);
-                }
-                return false;
+            if ($mon !== false) {
+                return $mon;
             }
-
-            $months = array_reverse($months);
-            return $months[0];
         }
 
-        $years = $years->content();
-        $years = array_reverse($years);
-        $year  = array_shift($years);
-        if (is_object($year)) {
-            return $this->previousMonthWithEvents($year->year(), 13);
+        $previousYear = false;
+        foreach ($years as $y) {
+            if ($y->isBefore($year) and $y->hasEvents()) {
+                $previousYear = $y;
+
+            }
         }
-        return false;
+
+        if ($previousYear === false) {
+            return false;
+        }
+        return $this->previousMonthWithEvents($previousYear->year(), 13);
     }
-
-    /**
-     * @deprecated No replacement
-     */
-    // public function nearestMonthWithEvents(int $year, int $month): ?Month
-    // {
-    //     $m = $this->month($year, $month);
-    //     if ($m and $m->hasEvents()) {
-    //         return $m;
-    //     }
-
-    //     $m = $this->nextMonthWithEvents($year, $month);
-    //     if ($m) {
-    //         return $m;
-    //     }
-
-    //     $m = $this->previousMonthWithEvents($year, $month);
-    //     if ($m) {
-    //         return $m;
-    //     }
-
-    //     return null;
-    // }
-
-    /**
-     * @deprecated No replacement
-     */
-    // public function nearestYearWithEvents(int $year): ?Year
-    // {
-    //     $y = $this->year($year);
-    //     if ($y and $y->hasEvents()) {
-    //         return $y;
-    //     }
-
-    //     $y = $this->nextYearWithEvents($year);
-    //     if ($y) {
-    //         return $y;
-    //     }
-
-    //     $y = $this->previousYearWithEvents($year);
-    //     if ($y) {
-    //         return $y;
-    //     }
-
-    //     return null;
-    // }
 }
