@@ -31,14 +31,12 @@ class YearsBaselineTest extends TestCase
     {
         $year = (new Years($this->path))->year(2020);
 
-        // TODO: assertion fails
-        // $this->assertInstanceOf(Year::class, $year);
+        $this->assertInstanceOf(Year::class, $year);
 
-        // TODO: assertion fails
-        // $this->assertEquals(
-        //     $year,
-        //     Year::fold($this->path, 2020)
-        // );
+        $this->assertEquals(
+            $year,
+            new Year($this->path, 2020)
+        );
 
         $this->assertFalse((new Years($this->path))->year(2021));
     }
@@ -51,24 +49,20 @@ class YearsBaselineTest extends TestCase
      */
     public function years_has_content(): void
     {
-        // TODO: assertion fails
-        // $this->assertEquals(
-        //     [
-        //         "i2020" => Year::fold($this->path, 2020),
-        //         "i2022" => Year::fold($this->path, 2022)
-        //     ],
-        //     Years::fold($this->path)->content()
-        // );
+        $this->assertEquals(
+            [
+                "i2020" => new Year($this->path, 2020),
+                "i2022" => new Year($this->path, 2022)
+            ],
+            (new Years($this->path))->content()
+        );
 
         $result = (new Years($this->path))->count();
         $this->assertIsInt($result);
-        // TODO: assertion fails
-        // $this->assertEquals(2, $result);
+        $this->assertEquals(2, $result);
 
-        // TODO: assertion fails
-        // $this->assertTrue(Years::fold($this->path)->couldHaveEvents());
+        $this->assertTrue((new Years($this->path))->couldHaveEvents());
 
-        // TODO: assertion fails
-        // $this->assertTrue(Years::fold($this->path)->hasEvents());
+        $this->assertTrue((new Years($this->path))->hasEvents());
     }
 }
