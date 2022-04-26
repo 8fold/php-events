@@ -14,7 +14,7 @@ trait Render
     private string $uriPrefix = '/events';
 
     public function navLink(
-        Year|Month|bool $uriObject,
+        Year|Month|false $uriObject,
         string $title,
         string $class
     ): HtmlElement {

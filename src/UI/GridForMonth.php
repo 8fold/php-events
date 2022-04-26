@@ -29,7 +29,7 @@ class GridForMonth
     use YearImp;
     use MonthImp;
 
-    private $carbon;
+    private DateTime $carbon;
 
     private int $weeksToDisplay = 6;
 
@@ -52,7 +52,7 @@ class GridForMonth
 
     public function carbon(): DateTime
     {
-        if ($this->carbon === null) {
+        if (isset($this->carbon) === false) {
             $this->carbon = (new DateTime())->setDate(
                 $this->year(),
                 $this->month(),
@@ -82,11 +82,6 @@ class GridForMonth
         return 7 * $this->weeksToDisplay;
     }
 
-    public function totalDaysInMonth(): int
-    {
-        return $this->carbon()->daysInMonth;
-    }
-
 // -> rendering
     public function header(): HtmlElement
     {
@@ -97,70 +92,87 @@ class GridForMonth
 
     public function previousLink(): HtmlElement
     {
-        $month = $this->events()
-            ->previousMonthWithEvents($this->year(), $this->month());
+        $events = $this->events();
+        $month = false;
         $title = '';
+        if ($events !== null) {
+            $month = $events->previousMonthWithEvents(
+                $this->year(),
+                $this->month()
+            );
 
-        if (is_object($month)) {
-            $format = $this->monthTitleFormat;
+            if ($month !== false) {
+                $format = $this->monthTitleFormat;
 
-            $cc = clone $this->carbon();
-            $title = $cc->setDate($month->year(), $month->month(), 1)
-                ->format($format);
+                $cc = clone $this->carbon();
+                $title = $cc->setDate($month->year(), $month->month(), 1)
+                    ->format($format);
+            }
         }
         return $this->navLink($month, $title, 'ef-grid-previous-month');
     }
 
     public function nextLink(): HtmlElement
     {
-        $month = $this->events()
-            ->nextMonthWithEvents($this->year(), $this->month());
+        $events = $this->events();
+        $month = false;
         $title = '';
 
-        if (is_object($month)) {
-            $format = $this->monthTitleFormat;
+        if ($events !== null) {
+            $month = $events->nextMonthWithEvents(
+                $this->year(),
+                $this->month()
+            );
 
-            $cc = clone $this->carbon();
-            $cc->setDate($month->year(), $month->month(), 1);
+            if (is_object($month)) {
+                $format = $this->monthTitleFormat;
 
-            $title = $cc->format($format);
+                $cc = clone $this->carbon();
+                $cc->setDate($month->year(), $month->month(), 1);
+
+                $title = $cc->format($format);
+            }
         }
         return $this->navLink($month, $title, 'ef-grid-next-month');
     }
 
     public function gridItem(int $itemNumber): HtmlElement
     {
-        $month = $this->events()->month($this->year(), $this->month());
-        if (! $month) {
-            return $this->gridItemBlank($itemNumber);
+        $events = $this->events();
+        $e = [];
+        if ($events !== null) {
+            $month = $events->month($this->year(), $this->month());
+            if (! $month) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $date = $events->date($this->year(), $this->month(), $itemNumber);
+            if (! is_object($date) or (is_object($date) and ! $date->hasEvents())) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $cc = clone $this->carbon();
+            $cc->setDate($date->year(), $date->month(), $date->date());
+
+            $id     = $cc->format('Y') . $cc->format('m') . $cc->format('d');
+            $abbr   = $cc->format('j');
+            $title  = $cc->format($this->dayTitleFormat);
+
+            foreach ($date->content() as $event) {
+                $e[] = HtmlElement::span($event->title());
+            }
+
+            return HtmlElement::button(
+                HtmlElement::abbr($abbr)->props('title ' . $title),
+                ...$e
+            )->props(
+                'id toggle-' . $id,
+                'aria-expanded false',
+                'class calendar-date',
+                'onclick EFEventsModals.init(this, ' . $id . ')'
+            );
         }
-
-        $date = $this->events()->date($this->year(), $this->month(), $itemNumber);
-        if (! is_object($date) or (is_object($date) and ! $date->hasEvents())) {
-            return $this->gridItemBlank($itemNumber);
-        }
-
-        $cc = clone $this->carbon();
-        $cc->setDate($date->year(), $date->month(), $date->date());
-
-        $id     = $cc->format('Y') . $cc->format('m') . $cc->format('d');
-        $abbr   = $cc->format('j');
-        $title  = $cc->format($this->dayTitleFormat);
-
-        $events = [];
-        foreach ($date->content() as $event) {
-            $events[] = HtmlElement::span($event->title());
-        }
-
-        return HtmlElement::button(
-            HtmlElement::abbr($abbr)->props('title ' . $title),
-            ...$events
-        )->props(
-            'id toggle-' . $id,
-            'aria-expanded false',
-            'class calendar-date',
-            'onclick EFEventsModals.init(this, ' . $id . ')'
-        );
+        return $this->gridItemBlank($itemNumber);
     }
 
     public function gridItemBlank(int $itemNumber): HtmlElement
@@ -276,20 +288,18 @@ class GridForMonth
 
             } else {
                 $i = $itemNumber - $startingBlanks;
-                $date = $this->events()->date(
-                    $this->year(),
-                    $this->month(),
-                    $i
-                );
+                $events = $this->events();
+                if ($events !== null) {
+                    $date = $events->date($this->year(), $this->month(), $i);
 
-                if ($date) {
-                    $eventItems[] = $this->eventsModalItem($date);
+                    if ($date) {
+                        $eventItems[] = $this->eventsModalItem($date);
+                    }
+
+                    // blank date grid items
+                    // event date grid items
+                    $gItems[] = $this->gridItem($i);
                 }
-
-                // blank date grid items
-                // event date grid items
-                $gItems[] = $this->gridItem($i);
-
             }
         }
 

@@ -22,8 +22,6 @@ class Event
 
     private string $root;
 
-    private int $count;
-
     private string $content = '';
 
     /**
@@ -70,7 +68,10 @@ class Event
 
     public function path(): string
     {
-        return $this->item()->thePath();
+        if ($this->item() === false) {
+            return '';
+        }
+        return $this->item()->getRealPath();
     }
 
     public function content(): string

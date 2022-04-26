@@ -23,7 +23,7 @@ class Year
     use ItemImp;
 
     /**
-     * @var [Month]
+     * @var Month[]
      */
     private array $content = [];
 
@@ -48,6 +48,10 @@ class Year
 
             if ($check->isDir()) {
                 $this->item = $check;
+
+            } else {
+                return false;
+
             }
         }
         return $this->item;
@@ -62,16 +66,16 @@ class Year
     }
 
     /**
-     * @return [Month]
+     * @return Month[]
      */
     public function content(): array
     {
+        $path = $this->path() . '/' . $this->yearString();
         if (
             count($this->content) === 0 and
-            $path = $this->path() . '/' . $this->yearString() and
             file_exists($path) and
             is_dir($path)
-         ) {
+        ) {
             $c = (new Finder())->directories()->depth('== 0')->in($path);
             foreach ($c as $month) {
                 $parts = explode('/', $month->getRealPath());

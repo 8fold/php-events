@@ -25,7 +25,7 @@ class Date
     use ItemImp;
 
     /**
-     * @var [Event]
+     * @var Event[]
      */
     private array $content = [];
 
@@ -49,11 +49,14 @@ class Date
 
     public function path(): string
     {
+        if ($this->item() === false) {
+            return '';
+        }
         return $this->item()->getRealPath();
     }
 
     /**
-     * @return [Event]
+     * @return Event[]
      */
     public function content(): array
     {

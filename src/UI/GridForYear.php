@@ -26,7 +26,7 @@ class GridForYear
     use RenderImp;
     use YearImp;
 
-    private $carbon;
+    private DateTime $carbon;
 
     private string $yearTitleFormat = 'Y';
 
@@ -34,18 +34,15 @@ class GridForYear
 
     protected string $monthTitleFormat = 'F Y';
 
-    public function __construct(
-        string $root,
-        int $year,
-        string $uriPrefix = '/events'
-    ) {
+    public function __construct(string $root, int $year)
+    {
         $this->root = $root;
         $this->parts = [$year];
     }
 
     public function carbon(): DateTime
     {
-        if ($this->carbon === null) {
+        if (isset($this->carbon) === false) {
             $this->carbon = (new DateTime())->setDate(
                 $this->year(),
                 1,
@@ -70,64 +67,74 @@ class GridForYear
 
     public function previousLink(): HtmlElement
     {
-        $year = $this->events()->previousYearWithEvents($this->year());
-        $title = '';
+        $events = $this->events();
+        $year   = false;
+        $title  = '';
+        if ($events !== null) {
+            $year = $events->previousYearWithEvents($this->year());
 
-        if (is_object($year)) {
-            $format = $this->yearTitleFormat;
+            if (is_object($year)) {
+                $format = $this->yearTitleFormat;
 
-            $cc = clone $this->carbon();
-            $cc->setDate($year->year(), 6, 10);
+                $cc = clone $this->carbon();
+                $cc->setDate($year->year(), 6, 10);
 
-            $title = $cc->format($format);
+                $title = $cc->format($format);
+            }
         }
-
         return $this->navLink($year, $title, 'ef-grid-previous-year');
     }
 
     public function nextLink(): HtmlElement
     {
-        $year = $this->events()->nextYearWithEvents($this->year());
+        $events = $this->events();
+        $year   = false;
         $title = '';
+        if ($events !== null) {
+            $year = $events->nextYearWithEvents($this->year());
 
-        if (is_object($year)) {
-            $format = $this->yearTitleFormat;
+            if (is_object($year)) {
+                $format = $this->yearTitleFormat;
 
-            $cc = clone $this->carbon();
-            $cc->setDate($year->year(), 6, 1);
+                $cc = clone $this->carbon();
+                $cc->setDate($year->year(), 6, 1);
 
-            $title = $cc->format($format);
+                $title = $cc->format($format);
+            }
         }
-
         return $this->navLink($year, $title, 'ef-grid-next-year');
     }
 
     public function gridItem(int $itemNumber): HtmlElement
     {
-        $year = $this->events()->year($this->year());
-        if (! $year) {
-            return $this->gridItemBlank($itemNumber);
+        $events = $this->events();
+        if ($events !== null) {
+            $year = $events->year($this->year());
+            if (! $year) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $month = $events->month($this->year(), $itemNumber);
+            if (! is_object($month) or (is_object($month) and ! $month->hasEvents())) {
+                return $this->gridItemBlank($itemNumber);
+            }
+
+            $cc = clone $this->carbon();
+            $cc->setDate($month->year(), $month->month(), 1);
+
+            $abbr   = $cc->format($this->monthAbbrFormat);
+            $title  = $cc->format($this->monthTitleFormat);
+            $total = strval($month->count());
+
+            return HtmlElement::a(
+                HtmlElement::abbr($abbr)
+                    ->props('title ' . $title),
+                HtmlElement::span($total)
+            )->props(
+                'href ' . $this->uriPrefix() . $month->uri()
+            );
         }
-
-        $month = $this->events()->month($this->year(), $itemNumber);
-        if (! is_object($month) or (is_object($month) and ! $month->hasEvents())) {
-            return $this->gridItemBlank($itemNumber);
-        }
-
-        $cc = clone $this->carbon();
-        $cc->setDate($month->year(), $month->month(), 1);
-
-        $abbr   = $cc->format($this->monthAbbrFormat);
-        $title  = $cc->format($this->monthTitleFormat);
-        $total = strval($month->count());
-
-        return HtmlElement::a(
-            HtmlElement::abbr($abbr)
-                ->props('title ' . $title),
-            HtmlElement::span($total)
-        )->props(
-            'href ' . $this->uriPrefix() . $month->uri()
-        );
+        return $this->gridItemBlank($itemNumber);
     }
 
     public function gridItemBlank(int $itemNumber): HtmlElement

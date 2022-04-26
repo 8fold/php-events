@@ -17,7 +17,7 @@ class Years
     use ItemImp;
 
     /**
-     * @var [Year]
+     * @var Year[]
      */
     private array $content = [];
 
@@ -40,11 +40,11 @@ class Years
     }
 
     /**
-     * @return [Year]
+     * @return Year[]
      */
     public function content(): array
     {
-        if (count($this->content) === 0) {
+        if (count($this->content) === 0 and $this->item() !== false) {
             $c = (new Finder())->directories()->depth('== 0')
                 ->in($this->item()->getRealPath());
             foreach ($c as $year) {

@@ -24,10 +24,8 @@ class Month
     use MonthImp;
     use ItemImp;
 
-    // private SplFileInfo|false $item = false;
-
     /**
-     * @var [Date]
+     * @var Date[]
      */
     private array $content = [];
 
@@ -55,11 +53,14 @@ class Month
 
     public function path(): string
     {
+        if ($this->item() === false) {
+            return '';
+        }
         return $this->item()->getRealPath();
     }
 
     /**
-     * @return [Date]
+     * @return Date[]
      */
     public function content(): array
     {
