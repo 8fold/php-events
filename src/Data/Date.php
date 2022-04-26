@@ -86,6 +86,8 @@ class Date
                         ));
                 }
             }
+
+            ksort($this->content);
         }
         return $this->content;
     }
