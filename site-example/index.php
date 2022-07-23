@@ -28,11 +28,10 @@ $request = (new ServerRequestCreator(
 ))->fromGlobals();
 
 $path = $request->getUri()->getPath();
+$pathParts    = explode('/', $path);
+$filteredPath = array_values(array_filter($pathParts));
 
 $dataPath = __DIR__ . '/data'; // where the events live
-
-$pathParts = explode('/', $path);
-$filteredPath = array_values(array_filter($pathParts));
 
 if (str_ends_with($path, 'ef-events.css')) {
     $css = file_get_contents('./' . $path);
