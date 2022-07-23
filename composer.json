@@ -10,9 +10,9 @@
     }
   ],
   "require": {
-    "php": "^8.0",
+    "php": "^8.1",
     "8fold/php-html-builder": "^1.0",
-    "8fold/commonmark-fluent-markdown": "^0.10",
+    "8fold/commonmark-fluent-markdown": "^1.0",
     "symfony/finder": "^6.0",
     "nyholm/psr7": "^1.4",
     "nyholm/psr7-server": "^1.0",

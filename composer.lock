@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99c895059bb9aa3ba9705a8d06485703",
+    "content-hash": "c61916637b2c9df32eb2615fd11771cf",
     "packages": [
         {
             "name": "8fold/commonmark-abbreviations",
@@ -64,26 +64,25 @@
         },
         {
             "name": "8fold/commonmark-accessible-heading-permalinks",
-            "version": "0.0.1",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/commonmark-accessible-heading-permalinks.git",
-                "reference": "c409111e8f6668ccd6268b0466b66e5d791d8b05"
+                "reference": "24cb899ed571fbdfa09fa5d7f7fd95c43a02def1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/commonmark-accessible-heading-permalinks/zipball/c409111e8f6668ccd6268b0466b66e5d791d8b05",
-                "reference": "c409111e8f6668ccd6268b0466b66e5d791d8b05",
+                "url": "https://api.github.com/repos/8fold/commonmark-accessible-heading-permalinks/zipball/24cb899ed571fbdfa09fa5d7f7fd95c43a02def1",
+                "reference": "24cb899ed571fbdfa09fa5d7f7fd95c43a02def1",
                 "shasum": ""
             },
             "require": {
-                "league/commonmark": "^2.0.2",
-                "php": "^7.4||^8.0"
+                "league/commonmark": "^2.3",
+                "php": "^8.1"
             },
             "require-dev": {
-                "pestphp/pest": "^1.20.0",
-                "phpstan/phpstan": "^1.1.0",
-                "psr/log": "^1.0.1",
+                "phpstan/phpstan": "^1.7",
+                "phpunit/phpunit": "^9.5",
                 "squizlabs/php_codesniffer": "^3.6"
             },
             "type": "library",
@@ -105,7 +104,7 @@
             "description": "An extension of PHP League's CommonMark library to enable accessible Heading Permalinks usage.",
             "support": {
                 "issues": "https://github.com/8fold/commonmark-accessible-heading-permalinks/issues",
-                "source": "https://github.com/8fold/commonmark-accessible-heading-permalinks/tree/0.0.1"
+                "source": "https://github.com/8fold/commonmark-accessible-heading-permalinks/tree/1.0.0"
             },
             "funding": [
                 {
@@ -117,27 +116,27 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-13T20:22:56+00:00"
+            "time": "2022-07-23T20:52:09+00:00"
         },
         {
             "name": "8fold/commonmark-fluent-markdown",
-            "version": "0.10.9",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/8fold/commonmark-fluent-markdown.git",
-                "reference": "8f5d54e772b73501ef7b5eb6dd15ca0f3f1183c8"
+                "reference": "0e30c5e023accfbd0cded8a7a602186618d66ca2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/8fold/commonmark-fluent-markdown/zipball/8f5d54e772b73501ef7b5eb6dd15ca0f3f1183c8",
-                "reference": "8f5d54e772b73501ef7b5eb6dd15ca0f3f1183c8",
+                "url": "https://api.github.com/repos/8fold/commonmark-fluent-markdown/zipball/0e30c5e023accfbd0cded8a7a602186618d66ca2",
+                "reference": "0e30c5e023accfbd0cded8a7a602186618d66ca2",
                 "shasum": ""
             },
             "require": {
                 "8fold/commonmark-abbreviations": "^1.2 || ^2.1",
-                "8fold/commonmark-accessible-heading-permalinks": "^0.0.1",
+                "8fold/commonmark-accessible-heading-permalinks": "^1.0",
                 "league/commonmark": "^2.0",
-                "php": "^8.0",
+                "php": "^8.1",
                 "symfony/yaml": "^2.3 || ^3.0 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
@@ -164,7 +163,7 @@
             "description": "A fluent API for CommonMark by the PHP League",
             "support": {
                 "issues": "https://github.com/8fold/commonmark-fluent-markdown/issues",
-                "source": "https://github.com/8fold/commonmark-fluent-markdown/tree/0.10.9"
+                "source": "https://github.com/8fold/commonmark-fluent-markdown/tree/1.0.0"
             },
             "funding": [
                 {
@@ -176,7 +175,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-04-26T19:55:45+00:00"
+            "time": "2022-07-23T20:59:43+00:00"
         },
         {
             "name": "8fold/php-html-builder",
@@ -3687,7 +3686,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.2.0"
