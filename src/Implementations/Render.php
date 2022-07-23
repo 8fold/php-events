@@ -19,12 +19,17 @@ trait Render
         string $class
     ): HtmlElement {
         if (is_object($uriObject)) {
+            $uri = $this->uriPrefix() . $uriObject->uri();
+            if (strlen($this->uriPrefix()) === 0) {
+                $uri = $uriObject->uri();
+            }
+
             return HtmlElement::a(
                 HtmlElement::span($title)
             )->props(
                 "class {$class}",
                 "title {$title}",
-                'href ' . $this->uriPrefix() . $uriObject->uri()
+                'href ' . $uri
             );
         }
         return HtmlElement::span()->props("class {$class}");

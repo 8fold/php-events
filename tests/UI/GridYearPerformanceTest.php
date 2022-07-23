@@ -59,7 +59,7 @@ class GridYearPerformanceTest extends TestCase
     {
         $start = memory_get_usage();
 
-        $result = Grid::forYear($this->path, 2020, 5)->unfold();
+        $result = Grid::forYear($this->path, 2020)->unfold();
 
         $end = memory_get_usage();
 

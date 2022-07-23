@@ -39,10 +39,15 @@ class GridForMonth
     private string $dayAbbrFormat = 'j';
     private string $dayTitleFormat = 'jS \\of F Y';
 
-    public function __construct(string $root, int $year, int $month)
-    {
+    public function __construct(
+        string $root,
+        int $year,
+        int $month,
+        string $uriPrefix = '/events'
+    ) {
         $this->root = $root;
         $this->parts = [$year, $month];
+        $this->uriPrefix = $uriPrefix;
 
         $endBlanks = $this->totalEndGridBlanks();
         if ($endBlanks >= 7) {
