@@ -80,7 +80,7 @@ if (str_ends_with($path, 'ef-events.css')) {
     // Year view.
     $year  = intval($filteredPath[0]);
 
-    $grid = Grid::forYear($dataPath, $year)->unfold();
+    $grid = Grid::forYear($dataPath, $year, '')->unfold();
     (new SapiEmitter())->emit(
         new Response(
             status: 200,
@@ -103,7 +103,7 @@ if (str_ends_with($path, 'ef-events.css')) {
     $year  = intval($filteredPath[0]);
     $month = intval($filteredPath[1]);
 
-    $grid = Grid::forMonth($dataPath, $year, $month)->unfold();
+    $grid = Grid::forMonth($dataPath, $year, $month, '')->unfold();
     (new SapiEmitter())->emit(
         new Response(
             status: 200,
